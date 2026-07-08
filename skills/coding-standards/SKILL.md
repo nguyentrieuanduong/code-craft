@@ -75,6 +75,61 @@ description: >-
 - Imports at top of module; `if TYPE_CHECKING:` for type-only or optional
   dependencies.
 
+## Examples
+
+**Stateless + immutable + lazy-init:**
+
+```python
+# ❌ mutable module state, eager connection, hidden global
+_cache = {}
+client = boto3.client("s3")          # connects at import time
+
+def get_user(user_id):
+    if user_id not in _cache:
+        _cache[user_id] = client.get_object(...)
+    return _cache[user_id]
+
+# ✅ frozen config, lazy resource, output derived from inputs
+@dataclass(frozen=True)
+class UserStore:
+    bucket: str
+
+    @cached_property
+    def _client(self) -> "S3Client":   # created on first use
+        return boto3.client("s3")
+
+    def get_user(self, user_id: str) -> User:
+        return User.from_json(self._client.get_object(Bucket=self.bucket, Key=user_id))
+```
+
+**Boundary error handling:**
+
+```python
+# ❌ guarding a library-native failure, swallowing context
+try:
+    value = payload["amount"]
+except KeyError:
+    value = None  # silent None propagates a corrupt state downstream
+
+# ✅ let it raise; catch once at the job boundary with full context
+def handle_request(payload: Mapping[str, Any]) -> Result:   # boundary
+    try:
+        return process(payload)          # inner code does NOT try/except
+    except Exception:
+        logger.exception("request failed", extra={"trace_id": payload.get("trace_id")})
+        raise
+```
+
+**Comments:**
+
+```python
+# ❌ increment retry counter                    (restates the code)
+retries += 1
+
+# ✅ provider throttles bursts >5 rps; spacing calls avoids 429 storms   (the WHY)
+time.sleep(0.2)
+```
+
 ## Review posture
 
 - Never fabricate. Cite evidence for claims.
