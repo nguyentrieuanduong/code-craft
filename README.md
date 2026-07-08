@@ -20,6 +20,31 @@ process, not raw capability.
 - **`docs/model-routing.md`** — which model tier runs which stage, and how
   to escalate on failure.
 
+## Install
+
+**As a plugin (recommended — skills + bootstrap + enforcement hooks):**
+
+```bash
+# try it in one session
+claude --plugin-dir /path/to/code-craft
+
+# or install persistently
+claude plugin marketplace add /path/to/code-craft
+claude plugin install code-craft@code-craft
+```
+
+**As a skills-directory plugin:** copy the whole repo to
+`~/.claude/skills/code-craft/` — Claude Code detects `.claude-plugin/plugin.json`
+and loads it as a plugin in all projects.
+
+**Skills only (no hooks, no bootstrap):** copy `skills/*` into
+`~/.claude/skills/`. Skill dispatch then relies on the model reading the
+descriptions — enforcement rules from `AGENTS.md` become advisory.
+
+**Other harnesses (Codex, Gemini, Copilot, ...):** copy the repo into your
+project; the harness picks up `AGENTS.md` / `GEMINI.md`. See
+`docs/tool-mapping.md`.
+
 ## Sources
 
 Merged from `references/` (gitignored, clone locally), in priority order:
