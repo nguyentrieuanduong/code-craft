@@ -2,9 +2,7 @@
 name: finishing-work
 description: >-
   Use when all plan tasks are complete, verification passed, and review is
-  done — the branch is ready to conclude. Verifies the full suite one final
-  time, then presents exactly four options: merge locally, push + PR, keep
-  as-is, or discard. The user chooses; never merge or discard unprompted.
+  done — the branch is ready to conclude.
 ---
 
 # Finishing Work

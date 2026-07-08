@@ -1,10 +1,9 @@
 ---
 name: systematic-debugging
 description: >-
-  Use for ANY bug, test failure, error, or unexpected behavior. Four-phase
-  root-cause process: investigate, analyze patterns, hypothesize, then fix.
-  IRON LAW: no fix proposed before investigation is complete. Don't use for
-  designing new features (use brainstorming).
+  Use for ANY bug, test failure, error, or unexpected behavior — before
+  proposing or attempting any fix. Don't use for designing new features (use
+  brainstorming).
 ---
 
 # Systematic Debugging

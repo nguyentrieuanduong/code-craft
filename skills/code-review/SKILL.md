@@ -1,9 +1,8 @@
 ---
 name: code-review
 description: >-
-  Use when completing a task or feature (request review before merge) and when
-  receiving review feedback (respond with technical rigor, not compliance).
-  Separates spec-compliance review from code-quality review. Don't use before
+  Use when a task or feature is complete and needs review before merge, when
+  asked to review code, and when handling review feedback. Don't use before
   verification-before-completion has passed.
 ---
 

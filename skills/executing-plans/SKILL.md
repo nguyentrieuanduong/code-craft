@@ -1,9 +1,8 @@
 ---
 name: executing-plans
 description: >-
-  Use after a plan is approved to implement it step by step. Enforces exact
-  plan-driven execution, checkbox state tracking for resumability, and stop
-  conditions when reality diverges from the plan. Don't use without an approved
+  Use when an approved plan file exists and it is time to implement it, or
+  when resuming interrupted implementation work. Don't use without an approved
   plan file.
 ---
 
