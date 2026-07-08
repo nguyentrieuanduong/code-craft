@@ -50,9 +50,9 @@ project; the harness picks up `AGENTS.md` / `GEMINI.md`. See
 Merged from `references/` (gitignored, clone locally), in priority order:
 
 1. [superpowers](https://github.com/obra/superpowers) — workflow skills, hard gates, rationalization tables
-2. Everything Claude Code (ECC) — verification loop, TDD gates, enforcement hooks, security checklists
-3. anthropics/skills — SKILL.md format conventions, safety-guardrail patterns
-4. AWS AI-DLC workflows — adaptive depth, plan-driven codegen, security baseline, state/resume
+2. [ECC](https://github.com/affaan-m/ECC) — verification loop, TDD gates, enforcement hooks, security checklists
+3. [google/skills](https://github.com/google/skills) — SKILL.md format conventions, safety-guardrail patterns
+4. [AI-DLC](https://github.com/awslabs/aidlc-workflows) — adaptive depth, plan-driven codegen, security baseline, state/resume
 
 Plus the maintainer's personal coding style, folded into
 `skills/coding-standards`.
