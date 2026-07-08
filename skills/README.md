@@ -5,7 +5,8 @@ It encodes the discipline of a top-tier engineer as explicit rules, hard gates, 
 checklists — so quality comes from process, not raw capability.
 
 Sources, in priority order: [superpowers](https://github.com/obra/superpowers),
-Everything Claude Code (ECC), google/skills conventions, AWS AI-DLC workflows,
+[ECC](https://github.com/affaan-m/ECC), [google/skills](https://github.com/google/skills),
+[AI-DLC](https://github.com/awslabs/aidlc-workflows),
 plus the maintainer's personal coding style.
 
 ## The workflow
