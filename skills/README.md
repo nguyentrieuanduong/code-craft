@@ -18,6 +18,7 @@ must pass before the next stage starts.
 2. brainstorming                 <- understand + design (GATE: user approves design)
 3. writing-plans                 <- bite-sized plan   (GATE: user approves plan)
 4. executing-plans               <- run the plan step by step
+     |- dispatching-parallel-agents <- when 2+ plan tasks are independent
      |- test-driven-development  <- inside every implementation step
      |- systematic-debugging     <- whenever anything unexpected happens
      |- coding-standards         <- style rules for all code written
@@ -35,6 +36,7 @@ must pass before the next stage starts.
 | [brainstorming](brainstorming/SKILL.md) | Turn a vague request into an approved design; adaptive depth; no code before approval |
 | [writing-plans](writing-plans/SKILL.md) | Turn an approved design into a numbered, placeholder-free implementation plan |
 | [executing-plans](executing-plans/SKILL.md) | Execute the plan exactly, checkbox by checkbox; resumable after interruption |
+| [dispatching-parallel-agents](dispatching-parallel-agents/SKILL.md) | Orchestrate concurrent subagents for independent plan tasks, with review between waves |
 | [test-driven-development](test-driven-development/SKILL.md) | RED → GREEN → REFACTOR; no production code without a failing test first |
 | [systematic-debugging](systematic-debugging/SKILL.md) | Four-phase root-cause process; no fixes before investigation |
 | [verification-before-completion](verification-before-completion/SKILL.md) | Run the command, read the output, then claim — never before |
