@@ -49,7 +49,7 @@ must pass before the next stage starts.
 
 1. **Hard gates, not suggestions.** A gate is written as a rule the model cannot
    rationalize around. If the gate fails, the work stops.
-2. **Rationalization tables.** Weaker models talk themselves out of process under
+2. **Forbidden rationalizations.** Weaker models talk themselves out of process under
    pressure. Each skill lists the exact excuses ("too simple to test", "I'm
    confident it passes") and forbids them by name.
 3. **Evidence before claims.** Every success statement must be backed by a
@@ -69,8 +69,8 @@ must pass before the next stage starts.
 
 ## Beyond Claude Code
 
-- `AGENTS.md` / `GEMINI.md` at the repo root bootstrap harnesses without hook
-  support; the enforcement rules become self-enforced instructions there.
+- `AGENTS.md` at the repo root bootstraps harnesses without hook support;
+  the enforcement rules become self-enforced instructions there.
 - `docs/tool-mapping.md` translates the skills' harness-agnostic action names
   to each harness's tools. Porting = extending that table, never editing skills.
 - `docs/model-routing.md` — which model tier runs which stage, and how to
