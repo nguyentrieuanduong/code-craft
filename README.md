@@ -13,7 +13,7 @@ process, not raw capability.
 - **`.claude-plugin/` + `hooks/`** — Claude Code plugin: SessionStart
   bootstrap injection plus enforcement hooks (linter-config protection,
   secret scan, `git --no-verify`/force-push guard, debug-print audit).
-- **`CLAUDE.md` / `AGENTS.md` / `GEMINI.md`** — per-harness loaders. Thin
+- **`CLAUDE.md` / `AGENTS.md`** — per-harness loaders. Thin
   pointers only; skill content lives in `skills/`.
 - **`docs/tool-mapping.md`** — translates the skills' action names to each
   harness's tools. Porting = extending this table, never editing skills.
@@ -41,9 +41,10 @@ and loads it as a plugin in all projects.
 `~/.claude/skills/`. Skill dispatch then relies on the model reading the
 descriptions — enforcement rules from `AGENTS.md` become advisory.
 
-**Other harnesses (Codex, Gemini, Copilot, ...):** copy the repo into your
-project; the harness picks up `AGENTS.md` / `GEMINI.md`. See
-`docs/tool-mapping.md`.
+**Other harnesses (Codex, Copilot, OpenCode, ...):** copy the repo into your
+project; the harness picks up `AGENTS.md`. See `docs/tool-mapping.md`.
+Non-Claude harnesses are instruction-file only: the four rules are advisory
+there, hooks are not enforced.
 
 ## Sources
 
