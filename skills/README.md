@@ -19,6 +19,7 @@ must pass before the next stage starts.
 2. brainstorming                 <- understand + design (GATE: user approves design)
 3. writing-plans                 <- bite-sized plan   (GATE: user approves plan)
 4. executing-plans               <- run the plan step by step
+     |- using-git-worktrees      <- when work must not touch the current workspace
      |- dispatching-parallel-agents <- when 2+ plan tasks are independent
      |- test-driven-development  <- inside every implementation step
      |- systematic-debugging     <- whenever anything unexpected happens
@@ -29,6 +30,11 @@ must pass before the next stage starts.
 7. finishing-work                <- merge / PR / keep / discard, user chooses
 ```
 
+For maintainers of this suite (off the workflow):
+
+- **writing-skills** — Use when creating or editing a SKILL.md in `skills/`.
+  TDD adapted to skill authoring.
+
 ## The skills
 
 | Skill | Purpose |
@@ -37,6 +43,7 @@ must pass before the next stage starts.
 | [brainstorming](brainstorming/SKILL.md) | Turn a vague request into an approved design; adaptive depth; no code before approval |
 | [writing-plans](writing-plans/SKILL.md) | Turn an approved design into a numbered, placeholder-free implementation plan |
 | [executing-plans](executing-plans/SKILL.md) | Execute the plan exactly, checkbox by checkbox; resumable after interruption |
+| [using-git-worktrees](using-git-worktrees/SKILL.md) | Ensure feature work happens in an isolated workspace via native tools or a git worktree fallback |
 | [dispatching-parallel-agents](dispatching-parallel-agents/SKILL.md) | Orchestrate concurrent subagents for independent plan tasks, with review between waves |
 | [test-driven-development](test-driven-development/SKILL.md) | RED → GREEN → REFACTOR; no production code without a failing test first |
 | [systematic-debugging](systematic-debugging/SKILL.md) | Four-phase root-cause process; no fixes before investigation |
@@ -45,6 +52,12 @@ must pass before the next stage starts.
 | [security-baseline](security-baseline/SKILL.md) | Eight blocking security rules; violations stop the work |
 | [code-review](code-review/SKILL.md) | Requesting and receiving code review with technical rigor |
 | [finishing-work](finishing-work/SKILL.md) | Verify tests, then present the four ways to conclude a branch |
+
+Maintainer meta-skill (not part of the workflow ordering):
+
+| Skill | Purpose |
+|-------|---------|
+| [writing-skills](writing-skills/SKILL.md) | TDD adapted to skill authoring — pressure-test SKILL.md files against subagents before shipping |
 
 ## Design principles of this suite
 
