@@ -17,6 +17,7 @@ writing code.** User instructions override skills; nothing else does.
 | "Build X", new feature, any behavior change | brainstorming |
 | Design approved | writing-plans |
 | Plan approved, or resuming work | executing-plans |
+| Plan has 2+ independent tasks, harness has subagents | dispatching-parallel-agents |
 | Writing any production code | test-driven-development + coding-standards + security-baseline |
 | Bug, error, test failure, unexpected behavior | systematic-debugging |
 | About to say "done", "passes", "fixed", "works" | verification-before-completion |
