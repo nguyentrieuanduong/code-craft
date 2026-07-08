@@ -2,10 +2,8 @@
 name: brainstorming
 description: >-
   Use BEFORE any creative or implementation work: new features, behavior
-  changes, refactors, new projects. Turns a request into an approved design
-  through context exploration, clarifying questions, and alternatives with
-  trade-offs. HARD GATE: no production code until the user approves the design.
-  Don't use for pure bug fixes (use systematic-debugging).
+  changes, refactors, new projects — before any code is written. Don't use for
+  pure bug fixes (use systematic-debugging).
 ---
 
 # Brainstorming

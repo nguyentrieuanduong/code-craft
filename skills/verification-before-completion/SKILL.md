@@ -1,11 +1,9 @@
 ---
 name: verification-before-completion
 description: >-
-  Use BEFORE any claim of success, completion, or correctness: "done", "tests
-  pass", "fixed", "builds", "works". Requires running a fresh command and
-  reading its full output before the claim. Also defines the full verification
-  loop to run when a feature is complete. Skipping verification is lying, not
-  optimism.
+  Use BEFORE any claim of success, completion, or correctness — "done", "tests
+  pass", "fixed", "builds", "works" — and whenever a feature appears complete
+  and ready for review.
 ---
 
 # Verification Before Completion

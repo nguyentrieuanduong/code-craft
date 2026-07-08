@@ -1,11 +1,8 @@
 ---
 name: coding-standards
 description: >-
-  Use whenever writing or reviewing production code, in any language. Enforces
-  stateless, immutable, declarative, lazy-init design; boundary error handling;
-  structured logging; smallest sufficient abstraction; and Python/PEP 8
-  specifics. Apply alongside test-driven-development on every implementation
-  step.
+  Use whenever writing or reviewing production code, in any language, on every
+  implementation step.
 ---
 
 # Coding Standards

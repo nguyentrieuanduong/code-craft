@@ -1,10 +1,9 @@
 ---
 name: test-driven-development
 description: >-
-  Use whenever writing production code: features, bug fixes, refactors.
-  Enforces RED -> GREEN -> REFACTOR with verification at each phase. IRON LAW:
-  no production code without a failing test first. Don't use for throwaway
-  exploration scripts explicitly marked as such by the user.
+  Use whenever writing or changing production code: features, bug fixes,
+  refactors. Don't use for throwaway exploration scripts explicitly marked as
+  such by the user.
 ---
 
 # Test-Driven Development

@@ -1,10 +1,8 @@
 ---
 name: using-code-craft
 description: >-
-  Meta-skill that governs all development work. Use at the start of EVERY
-  conversation and before EVERY response involving code, features, bugs, or
-  design. Enforces checking for an applicable skill before acting and following
-  the mandatory workflow ordering. Don't use for pure conversation with no
+  Use at the start of EVERY session and before EVERY response involving code,
+  features, bugs, or design. Don't use for pure conversation with no
   engineering task.
 ---
 

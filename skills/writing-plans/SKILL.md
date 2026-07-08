@@ -1,10 +1,8 @@
 ---
 name: writing-plans
 description: >-
-  Use after a design is approved, before implementation. Converts a design into
-  a numbered, placeholder-free plan of bite-sized TDD steps with exact files,
-  code sketches, and test commands. HARD GATE: no implementation until the user
-  approves the plan. Don't use before brainstorming is complete.
+  Use after a design is approved and before any implementation begins. Don't
+  use before brainstorming is complete.
 ---
 
 # Writing Plans

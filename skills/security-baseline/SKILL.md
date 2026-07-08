@@ -2,9 +2,7 @@
 name: security-baseline
 description: >-
   Use whenever writing code that touches data, networking, auth, user input,
-  configuration, or infrastructure. Eight blocking security rules plus a
-  pre-commit checklist. Violations are hard gates: stop and fix, never defer
-  with a TODO.
+  configuration, or infrastructure, and before every commit.
 ---
 
 # Security Baseline
