@@ -30,4 +30,6 @@ nothing blocks you, so the rules bind you directly:
 `brainstorming → writing-plans → executing-plans → verification-before-completion → code-review → finishing-work`
 
 Every stage runs; depth scales with the task. No production code before an
-approved design and plan.
+approved design and plan. Exception: pure bug fixes start at
+systematic-debugging instead of brainstorming/writing-plans — verification,
+code-review, and finishing-work still run.
