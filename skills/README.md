@@ -56,3 +56,20 @@ must pass before the next stage starts.
    code, and test commands. Small steps leave no room for drift.
 5. **Resumable state.** Long workflows persist state to files (plans with
    checkboxes) so work survives context loss and session restarts.
+6. **Mechanical enforcement over trust.** A Claude Code plugin
+   (`.claude-plugin/`, `hooks/`) injects the dispatch skill at every session
+   start (including after compaction) and blocks linter-config tampering,
+   secret-shaped writes, `git --no-verify`, and force-pushes to main at the
+   tool layer. Instructions request; hooks enforce.
+7. **Trigger-only descriptions.** A skill's `description` says only *when* to
+   use it, never *what* to do — weaker models otherwise follow the one-line
+   summary and skip the skill body (Skill Discovery Optimization).
+
+## Beyond Claude Code
+
+- `AGENTS.md` / `GEMINI.md` at the repo root bootstrap harnesses without hook
+  support; the enforcement rules become self-enforced instructions there.
+- `docs/tool-mapping.md` translates the skills' harness-agnostic action names
+  to each harness's tools. Porting = extending that table, never editing skills.
+- `docs/model-routing.md` — which model tier runs which stage, and how to
+  escalate on failure.
