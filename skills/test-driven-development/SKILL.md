@@ -60,6 +60,35 @@ Commit at GREEN (or after refactor). One cycle ≈ one commit.
 4. **Bug fixes start with a reproducing test** that fails before the fix and
    passes after. No reproducing test = the bug is not understood yet.
 
+## Example cycle
+
+```python
+# RED — one test, real behavior, named for the behavior
+def test_expired_token_is_rejected():
+    token = make_token(expires_at=NOW - timedelta(seconds=1))
+    with pytest.raises(AuthError, match="expired"):
+        authenticate(token)
+# run: pytest tests/test_auth.py -k expired  -> FAILS: AuthError not raised
+
+# GREEN — minimal code, nothing speculative
+def authenticate(token: Token) -> Session:
+    if token.expires_at < now():
+        raise AuthError("token expired")
+    return Session(user_id=token.user_id)
+# run: pytest  -> all pass, output pristine. Commit.
+```
+
+```python
+# ❌ NOT TDD — test written after, mirrors the implementation, cannot fail
+def test_authenticate():
+    session = authenticate(make_token())
+    assert session is not None          # asserts existence, not behavior
+
+# ❌ NOT an integration test — mocks the system under test's dependency away
+mock_db.get_user.return_value = User(...)   # verifies the mock, not the code
+# ✅ integration: run against a local container / fake server, real wire format
+```
+
 ## Forbidden rationalizations
 
 | Excuse | Reality |
