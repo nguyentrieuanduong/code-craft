@@ -29,6 +29,15 @@ description: >-
    one call site. Add helpers only when reused, domain-significant,
    independently tested, or clearly better for readability. Three similar
    lines beat a premature abstraction.
+8. **Single resolution point for configuration** — apply ALL defaults,
+   fallbacks, derivations, and validation in one parse step — nowhere else —
+   producing a fully-resolved immutable config; log the raw input unchanged
+   and the resolved result. Execution reads only the resolved config: no
+   reinterpretation, defaulting, or hidden decisions later. The resolved-config
+   log is the contract — reading it tells exactly what will happen. For
+   jobs/pipelines, structure this as four explicit phases:
+   read → parse → execute → cleanup (cleanup releases resources — sessions,
+   connections, temp files — on success and failure alike).
 
 ## Error handling — at the boundary, not everywhere
 
