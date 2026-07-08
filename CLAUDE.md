@@ -19,9 +19,18 @@ folded into `skills/coding-standards`.
 
 ### Current state
 
-Complete first version. 11 skills in `skills/`, each a directory with a
-`SKILL.md` (Anthropic frontmatter format: `name` + `description`):
+Second iteration: hardened for weaker models and other harnesses.
 
+- 11 skills in `skills/` (Anthropic SKILL.md format). Descriptions are
+  trigger-only (SDO); `using-code-craft` compressed for always-loading;
+  coding-standards and TDD carry good/bad example pairs.
+- Claude Code plugin: `.claude-plugin/plugin.json` + `hooks/` — SessionStart
+  bootstrap injection plus enforcement hooks (linter-config protection,
+  secret scan, git --no-verify/force-push guard, debug-print audit). All
+  hook scripts are python3-stdlib, tested via stdin payloads.
+- Cross-harness: `AGENTS.md`, `GEMINI.md`, `docs/tool-mapping.md`,
+  `docs/model-routing.md`.
+[settings.json](../../.claude/settings.json)
 - `using-code-craft` — meta-dispatch, mandatory workflow ordering
 - `brainstorming` → `writing-plans` → `executing-plans` — planning pipeline with approval gates
 - `test-driven-development`, `systematic-debugging`, `verification-before-completion` — execution discipline
@@ -33,8 +42,9 @@ principles.
 
 ### Possible next steps
 
-- Test the suite on a Sonnet/Haiku session against a sample task; refine rules that get rationalized around
-- Package as a Claude Code plugin (marketplace.json / plugin manifest)
+- Pressure-test on a real Sonnet/Haiku session (superpowers method: baseline
+  without skill, record rationalizations verbatim, patch the tables, re-test)
+- Publish to a plugin marketplace (marketplace.json)
 - Add optional skills: writing-skills (meta), dispatching-parallel-agents, git-worktrees
 
 ### Workflow
