@@ -7,9 +7,9 @@ process, not raw capability.
 
 ## What's here
 
-- **`skills/`** — 12 harness-agnostic skills covering the full development
-  workflow. See [skills/README.md](skills/README.md) for the ordering and
-  design principles.
+- **`skills/`** — 13 harness-agnostic workflow skills plus 1 maintainer
+  meta-skill (`writing-skills`). See [skills/README.md](skills/README.md)
+  for the ordering and design principles.
 - **`.claude-plugin/` + `hooks/`** — Claude Code plugin: SessionStart
   bootstrap injection plus enforcement hooks (linter-config protection,
   secret scan, `git --no-verify`/force-push guard, debug-print audit).
@@ -48,7 +48,9 @@ there, hooks are not enforced.
 
 ## Sources
 
-Merged from `references/` (gitignored, clone locally), in priority order:
+code-craft ships as a self-contained suite — no local clone of upstream
+repos is needed to use it. Credit to the sources it was merged from, in
+priority order:
 
 1. [superpowers](https://github.com/obra/superpowers) — workflow skills, hard gates, rationalization tables
 2. [ECC](https://github.com/affaan-m/ECC) — verification loop, TDD gates, enforcement hooks, security checklists
@@ -69,4 +71,3 @@ from `git log`.
 - Pressure-test on a real Sonnet/Haiku session (baseline without the skill,
   record rationalizations verbatim, patch the tables, re-test)
 - Publish to a plugin marketplace (marketplace.json)
-- Add optional skills: writing-skills (meta), using-git-worktrees
