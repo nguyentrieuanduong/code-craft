@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 CHECKS = {
-    ".py": re.compile(r"^\s*print\("),
+    ".py": re.compile(r"\bprint\("),
     ".js": re.compile(r"\bconsole\.(log|debug)\("),
     ".jsx": re.compile(r"\bconsole\.(log|debug)\("),
     ".ts": re.compile(r"\bconsole\.(log|debug)\("),

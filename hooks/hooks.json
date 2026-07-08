@@ -6,22 +6,25 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py\""
+            "command": "python3",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py"]
           }
         ]
       }
     ],
     "PreToolUse": [
       {
-        "matcher": "Edit|Write|MultiEdit",
+        "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/protect-configs.py\""
+            "command": "python3",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/protect-configs.py"]
           },
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/scan-secrets.py\""
+            "command": "python3",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/scan-secrets.py"]
           }
         ]
       },
@@ -30,18 +33,20 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/guard-bash.py\""
+            "command": "python3",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/guard-bash.py"]
           }
         ]
       }
     ],
     "PostToolUse": [
       {
-        "matcher": "Edit|Write|MultiEdit",
+        "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/audit-debug-prints.py\""
+            "command": "python3",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/audit-debug-prints.py"]
           }
         ]
       }
