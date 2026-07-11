@@ -2,7 +2,7 @@
 name: security-baseline
 description: >-
   Use whenever writing code that touches data, networking, auth, user input,
-  configuration, or infrastructure, and before every commit.
+  configuration, dependencies, or infrastructure, and before every commit.
 ---
 
 # Security Baseline
@@ -11,7 +11,7 @@ These rules are **blocking constraints**, not advice. Code violating one does
 not ship, does not get committed with a TODO, and does not wait for review to
 be caught.
 
-## The eight rules
+## The nine rules
 
 **SEC-01 Encryption everywhere** — encryption at rest for all data stores;
 TLS 1.2+ in transit. No plaintext transport, even "internal".
@@ -45,6 +45,14 @@ server, never only the client; IDOR prevention (verify the requester owns the
 resource); restricted CORS; JWT signature + expiry validation. Auth tokens in
 httpOnly cookies, not localStorage. CSRF tokens on state-changing requests.
 
+**SEC-09 Supply-chain vetting** — before adding any dependency: confirm the
+package exists on the official registry under exactly that name, with
+plausible age, maintenance, and adoption (~20% of LLM package suggestions are
+hallucinated, and recurring fake names get pre-registered by attackers —
+"slopsquatting"). Pin the version, commit the lockfile in the same change,
+prefer provenance/signed releases where the ecosystem offers them, and state
+why the dependency is needed.
+
 ## Pre-commit security checklist
 
 - [ ] `grep` the diff for key-like strings (`sk-`, `api_key`, `password`,
@@ -53,7 +61,8 @@ httpOnly cookies, not localStorage. CSRF tokens on state-changing requests.
 - [ ] Every new input path has validation at the boundary
 - [ ] Every new query is parameterized
 - [ ] Every new endpoint checks authorization server-side
-- [ ] No new dependency added without stating why (supply-chain surface)
+- [ ] Every new dependency passed SEC-09: exists on the registry, healthy,
+      version pinned, lockfile committed, reason stated
 
 ## Forbidden rationalizations
 
@@ -63,3 +72,4 @@ httpOnly cookies, not localStorage. CSRF tokens on state-changing requests.
 | "I'll rotate the hardcoded key later" | Committed secrets live in git history forever. Never commit one. |
 | "This input comes from our own frontend" | Attackers do not use your frontend. Validate server-side. |
 | "Wildcard permissions unblock me now" | Scoping later never happens. Scope now. |
+| "The model suggested this package, so it exists" | ~20% of LLM package suggestions are hallucinated; attackers pre-register the recurring ones. Check the registry first. |

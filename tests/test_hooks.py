@@ -66,6 +66,57 @@ class GuardBashTest(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
 
 
+class GuardInstallsTest(unittest.TestCase):
+    ASKED = (
+        "npm install left-pad",
+        "npm i express",
+        "npm install --save-dev typescript",
+        "pnpm add lodash",
+        "yarn add react",
+        "pip install requests",
+        "pip3 install flask",
+        "python -m pip install numpy",
+        "sudo pip install requests",
+        "pip install --upgrade requests",
+        "uv add httpx",
+        "uv pip install rich",
+        "cargo add serde",
+        "go get github.com/pkg/errors",
+        "cd app && npm install foo",
+    )
+    ALLOWED = (
+        "npm install",
+        "npm ci",
+        "npm run build",
+        "pnpm install",
+        "yarn install",
+        "pip install -r requirements.txt",
+        "pip install -e .",
+        "pip install .",
+        "uv sync",
+        "cargo build",
+        "go mod tidy",
+        'echo "pip install requests"',
+        "git commit -m 'pip install docs'",
+    )
+
+    def test_asks_for_new_packages(self):
+        for command in self.ASKED:
+            with self.subTest(command=command):
+                result = run_hook("guard-installs.py", bash(command))
+                self.assertEqual(result.returncode, 0, result.stderr)
+                decision = json.loads(result.stdout)["hookSpecificOutput"]
+                self.assertEqual(decision["permissionDecision"], "ask")
+                self.assertIn("SEC-09", decision["permissionDecisionReason"])
+
+    def test_allows_routine_commands(self):
+        for command in self.ALLOWED:
+            with self.subTest(command=command):
+                result = run_hook("guard-installs.py", bash(command))
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stdout.strip(), "")
+
+
 class ScanSecretsTest(unittest.TestCase):
     def test_blocks_api_key_in_content(self):
         payload = {"tool_input": {"content": "key = 'sk-" + "a" * 24 + "'"}}
