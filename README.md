@@ -73,7 +73,9 @@ Plus the maintainer's personal coding style, folded into
 
 Commit each time you create a file or complete a major update — sessions can
 be interrupted at any time, and small commits let the next session resume
-from `git log`.
+from `git log`. Skill and hook changes are gated: see
+[CONTRIBUTING.md](CONTRIBUTING.md) before editing anything under `skills/`
+or `hooks/`.
 
 ## Possible next steps
 
