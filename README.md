@@ -19,6 +19,9 @@ process, not raw capability.
   harness's tools. Porting = extending this table, never editing skills.
 - **`docs/model-routing.md`** — which model tier runs which stage, and how
   to escalate on failure.
+- **`docs/anti-patterns.md`** — evidence-backed catalog of mistakes to avoid
+  at every lifecycle stage (framing → deploy → ops), with an incident map and
+  sources. Pre-mortem/review checklist and raw material for skill authoring.
 
 ## Install
 
