@@ -26,3 +26,4 @@ plan file's checkboxes replace any task tool: they are the durable state.
 |-------------|-------------|-----------------|
 | Bootstrap injection | SessionStart hook (`hooks/hooks.json`) | `AGENTS.md` read at startup |
 | Config protection, secret scan, git guard, print audit | PreToolUse/PostToolUse hooks | self-enforced rules listed in `AGENTS.md` |
+| New-dependency vetting gate (ask before install) | PreToolUse Bash hook (`guard-installs.py`) | SEC-09 in `skills/security-baseline` |

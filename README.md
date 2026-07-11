@@ -12,7 +12,8 @@ process, not raw capability.
   for the ordering and design principles.
 - **`.claude-plugin/` + `hooks/`** — Claude Code plugin: SessionStart
   bootstrap injection plus enforcement hooks (linter-config protection,
-  secret scan, `git --no-verify`/force-push guard, debug-print audit).
+  secret scan, `git --no-verify`/force-push guard, new-dependency vetting
+  gate, debug-print audit).
 - **`CLAUDE.md` / `AGENTS.md`** — per-harness loaders. Thin
   pointers only; skill content lives in `skills/`.
 - **`docs/tool-mapping.md`** — translates the skills' action names to each
