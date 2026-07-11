@@ -1,2 +1,7 @@
 .idea/
 references/
+.DS_Store
+__pycache__/
+*.pyc
+.worktrees/
+worktrees/
