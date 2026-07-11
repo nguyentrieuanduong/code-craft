@@ -3,7 +3,10 @@
 A skill suite for junior developers and lower-capability models (e.g. Claude
 Sonnet/Haiku) that encodes disciplined development as explicit rules, hard
 gates, checklists, and mechanical enforcement — so output quality comes from
-process, not raw capability.
+process, not raw capability. The premise is measured, not aspirational:
+[docs/evidence.md](docs/evidence.md) collects the numbers behind every gate
+(TDD −40–90% pre-release defects, DORA's −7.2% delivery stability per +25%
+AI adoption, the METR perception gap).
 
 ## What's here
 
@@ -23,6 +26,8 @@ process, not raw capability.
 - **`docs/anti-patterns.md`** — evidence-backed catalog of mistakes to avoid
   at every lifecycle stage (framing → deploy → ops), with an incident map and
   sources. Pre-mortem/review checklist and raw material for skill authoring.
+- **`docs/evidence.md`** — the empirical case for the suite: the measured
+  AI-assisted failure mode and the study behind each mechanism.
 
 ## Install
 
