@@ -28,6 +28,9 @@ AI adoption, the METR perception gap).
   sources. Pre-mortem/review checklist and raw material for skill authoring.
 - **`docs/evidence.md`** — the empirical case for the suite: the measured
   AI-assisted failure mode and the study behind each mechanism.
+- **`tests/`** — hook regression tests plus `tests/scenarios/`, the skill
+  eval harness: pressure-test corpus + headless runner implementing the
+  writing-skills RED→GREEN cycle for skill wording.
 
 ## Install
 
@@ -79,6 +82,7 @@ or `hooks/`.
 
 ## Possible next steps
 
-- Pressure-test on a real Sonnet/Haiku session (baseline without the skill,
-  record rationalizations verbatim, patch the tables, re-test)
+- Run the eval corpus (`tests/scenarios/`) against real Sonnet/Haiku
+  sessions at 5+ reps per arm, record rationalizations verbatim, patch the
+  tables, re-test
 - Publish to a plugin marketplace (marketplace.json)
