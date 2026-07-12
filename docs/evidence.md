@@ -2,8 +2,8 @@
 
 The suite's premise is that output quality comes from process, not raw
 capability. That premise is measurable. Sources verified 2026-07-11;
-full citations in [anti-patterns.md](anti-patterns.md) Appendix B and the
-source list in `recommend.md`.
+full citations in the Sources section below and in
+[anti-patterns.md](anti-patterns.md) Appendix B.
 
 ## The documented AI-assisted failure mode
 
@@ -53,3 +53,30 @@ organizational: data ecosystems, AI-accessible internal data, user focus):
 Skill pressure-tests should target exactly the failure modes on this page:
 code before test, done without verification, batch inflation, invented
 dependencies, copy-paste instead of refactoring.
+
+## Sources (verified 2026-07-11)
+
+- Nagappan, Maximilien, Bhat, Williams, *Realizing quality improvement
+  through test driven development*, Empirical Software Engineering 13(3), 2008
+- Sadowski et al., *Modern Code Review: A Case Study at Google*, ICSE-SEIP 2018
+- Cohen, SmartBear/Cisco code review study of 2,500 reviews, 2006
+- Haynes et al., *A Surgical Safety Checklist to Reduce Morbidity and
+  Mortality in a Global Population*, NEJM 360:491–9, 2009
+- METR, *Measuring the Impact of Early-2025 AI on Experienced Open-Source
+  Developer Productivity* (2025-07-10) and *We are Changing our Developer
+  Productivity Experiment Design* (2026-02-24) — original result now labeled
+  historical; follow-up confounded by selection effects. metr.org
+- GitClear, *AI Copilot Code Quality* 2025/2026 research — vendor dataset
+  (211M changed lines); directionally corroborated by DORA 2024. gitclear.com
+- DORA, *Accelerate State of DevOps 2024* (−1.5% throughput, −7.2% stability
+  per +25% AI adoption) and *State of AI-assisted Software Development 2025*
+  (amplifier thesis, seven AI capabilities). dora.dev
+- Google, OSS-Fuzz — 13,000+ vulnerabilities / 50,000+ bugs across ~1,000
+  projects as of May 2025; backs the TDD fuzz/property-test row.
+  google.github.io/oss-fuzz
+- Klein, *Performing a Project Premortem*, HBR 2007 — backs the
+  writing-plans pre-mortem step
+- Nygard, *Documenting Architecture Decisions*, 2011 (ADRs)
+- Spracklen et al. (USENIX Security 2025), Yuan et al. (OSDI 2014), OWASP
+  Top 10:2025, DORA 2025 — full citations in
+  [anti-patterns.md](anti-patterns.md) Appendix B
