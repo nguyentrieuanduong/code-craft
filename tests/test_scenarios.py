@@ -224,6 +224,16 @@ class EvaluateCheckTest(unittest.TestCase):
         self.assertFalse(self.check(spec, touched))
 
 
+class RepLabelTest(unittest.TestCase):
+    def test_no_rep_keeps_base_label(self):
+        self.assertEqual(runner.rep_label("haiku", None), "haiku")
+        self.assertIsNone(runner.rep_label(None, None))
+
+    def test_rep_suffix_keeps_filenames_distinct(self):
+        self.assertEqual(runner.rep_label("haiku", 3), "haiku-r3")
+        self.assertEqual(runner.rep_label(None, 3), "r3")
+
+
 class CorpusTest(unittest.TestCase):
     def test_all_shipped_scenarios_parse(self):
         scenarios = runner.find_scenarios()
