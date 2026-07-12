@@ -10,7 +10,7 @@ AI adoption, the METR perception gap).
 
 ## What's here
 
-- **`skills/`** — 13 harness-agnostic workflow skills plus 1 maintainer
+- **`skills/`** — 14 harness-agnostic workflow skills plus 1 maintainer
   meta-skill (`writing-skills`). See [skills/README.md](skills/README.md)
   for the ordering and design principles.
 - **`.claude-plugin/` + `hooks/`** — Claude Code plugin: SessionStart
