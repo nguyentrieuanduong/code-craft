@@ -15,10 +15,20 @@ Run the FULL test suite one last time (not a partial run, not from memory).
 If anything fails, stop — back to systematic-debugging. A branch does not get
 presented for conclusion with failing tests.
 
+## Step 1.5 — Diff-size check
+
+Run `git diff --stat main...HEAD`. If changed lines exceed ~400, flag it in
+the report and recommend splitting into independently reviewable slices
+before merging — reviewer defect detection collapses past that size (see
+docs/evidence.md). Still present the Step 3 options; the split is a
+recommendation, the choice stays with the user. At or under the threshold
+the check is silent: report the size in Step 2, but say nothing about
+thresholds or splitting.
+
 ## Step 2 — Report state
 
-Summarize in a few lines: branch name, commits ahead of main, design/plan
-links, verification evidence (numbers).
+Summarize in a few lines: branch name, commits ahead of main, diff size
+(files / lines changed), design/plan links, verification evidence (numbers).
 
 ## Step 3 — Present exactly four options
 

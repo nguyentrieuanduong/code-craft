@@ -53,11 +53,16 @@ Commit at GREEN (or after refactor). One cycle ≈ one commit.
 1. **Happy path** — the documented, intended behavior.
 2. **Worst cases** — incorrect input, invalid configuration, boundary values,
    simulated crash/failure of a dependency. Every feature gets at least one.
-3. **Integration tests when external services are involved** — make everything
+3. **Input boundaries get a fuzz/property test.** Anything parsing external
+   input (parsers, codecs, deserializers) gets one test that throws many
+   generated inputs at it — `hypothesis` if the project has it, otherwise a
+   seeded `random` loop — asserting the invariant: valid shapes parse,
+   everything else raises the documented error, nothing else escapes.
+4. **Integration tests when external services are involved** — make everything
    as real as possible: fakes, local containers (testcontainers), or dedicated
    test services. Avoid mocking the external system's client; mock-heavy
    integration tests verify your mocks, not your code.
-4. **Bug fixes start with a reproducing test** that fails before the fix and
+5. **Bug fixes start with a reproducing test** that fails before the fix and
    passes after. No reproducing test = the bug is not understood yet.
 
 ## Example cycle
