@@ -28,6 +28,7 @@ must pass before the next stage starts.
 5. verification-before-completion <- GATE: evidence before any "done" claim
 6. code-review                   <- request review, handle feedback rigorously
 7. finishing-work                <- merge / PR / keep / discard, user chooses
+8. releasing-safely              <- only when the change rolls out to a shared/prod environment
 ```
 
 For maintainers of this suite (off the workflow):
@@ -49,9 +50,10 @@ For maintainers of this suite (off the workflow):
 | [systematic-debugging](systematic-debugging/SKILL.md) | Four-phase root-cause process; no fixes before investigation |
 | [verification-before-completion](verification-before-completion/SKILL.md) | Run the command, read the output, then claim — never before |
 | [coding-standards](coding-standards/SKILL.md) | Stateless, immutable, declarative, lazy-init, boundary error handling, structured logging |
-| [security-baseline](security-baseline/SKILL.md) | Eight blocking security rules; violations stop the work |
+| [security-baseline](security-baseline/SKILL.md) | Nine blocking security rules; violations stop the work |
 | [code-review](code-review/SKILL.md) | Requesting and receiving code review with technical rigor |
 | [finishing-work](finishing-work/SKILL.md) | Verify tests, then present the four ways to conclude a branch |
+| [releasing-safely](releasing-safely/SKILL.md) | Canary → bake → promote ladder; rehearsed rollback; config/flags/data get code-grade rigor |
 
 Maintainer meta-skill (not part of the workflow ordering):
 

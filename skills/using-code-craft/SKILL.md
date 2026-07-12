@@ -24,6 +24,7 @@ writing code.** User instructions override skills; nothing else does.
 | About to say "done", "passes", "fixed", "works" | verification-before-completion |
 | Task complete, before merge | code-review |
 | Branch ready to conclude | finishing-work |
+| Rolling out to a shared or production environment: deploy, release, feature flag, config, schema/data migration | releasing-safely |
 | Creating or editing a SKILL.md file in this suite (maintainer work) | writing-skills |
 
 Mandatory order:
