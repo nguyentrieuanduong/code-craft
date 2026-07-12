@@ -262,10 +262,11 @@ def run_claude(scenario, workspace, skill_text, args):
 # ------------------------------------------------------------------- results
 
 def write_result(scenario, arm, label, results, transcript, args, skill_file):
-    RESULTS_DIR.mkdir(exist_ok=True)
+    results_dir = Path(args.results_dir) if args.results_dir else RESULTS_DIR
+    results_dir.mkdir(parents=True, exist_ok=True)
     date = datetime.date.today().isoformat()
     suffix = f"-{label}" if label else ""
-    out = RESULTS_DIR / f"{date}-{scenario['name']}-{arm}{suffix}.md"
+    out = results_dir / f"{date}-{scenario['name']}-{arm}{suffix}.md"
     lines = [
         f"# {scenario['name']} — {arm}{suffix}",
         "",
@@ -306,7 +307,13 @@ def write_result(scenario, arm, label, results, transcript, args, skill_file):
 
 # ---------------------------------------------------------------------- main
 
-def run_arm(scenario, arm, args):
+def rep_label(base, rep):
+    if rep is None:
+        return base
+    return f"{base}-r{rep}" if base else f"r{rep}"
+
+
+def run_arm(scenario, arm, args, rep=None):
     workspace = Path(tempfile.mkdtemp(prefix=f"eval-{scenario['name']}-"))
     try:
         if scenario["fixture"]:
@@ -328,26 +335,40 @@ def run_arm(scenario, arm, args):
         skill_text = None
         if arm == "skill":
             skill_text = (REPO_ROOT / skill_file).read_text()
-        proc = run_claude(scenario, workspace, skill_text, args)
-        transcript = parse_transcript(proc.stdout)
-        if proc.returncode != 0 and not transcript["tool_uses"]:
+        try:
+            proc = run_claude(scenario, workspace, skill_text, args)
+        except subprocess.TimeoutExpired:
+            print(f"  [{arm}] TIMEOUT after {args.timeout}s — counted as failed")
+            proc = None
+        transcript = parse_transcript(proc.stdout if proc else "")
+        if proc and proc.returncode != 0 and not transcript["tool_uses"]:
             print(f"  claude exited {proc.returncode}: {proc.stderr[:500]}")
         results = [
             (check, evaluate_check(check, transcript, workspace))
             for check in scenario["checks"]
         ]
         out = write_result(
-            scenario, arm, args.label, results, transcript, args, skill_file
+            scenario,
+            arm,
+            rep_label(args.label, rep),
+            results,
+            transcript,
+            args,
+            skill_file,
         )
         failed = [c for c, passed in results if not passed]
         status = "PASS" if not failed else f"{len(failed)} check(s) failed"
-        print(f"  [{arm}] {status} -> {out.relative_to(REPO_ROOT)}")
+        try:
+            shown = out.relative_to(REPO_ROOT)
+        except ValueError:
+            shown = out
+        print(f"  [{arm}] {status} -> {shown}")
         if arm == "baseline" and failed:
             print(
                 f"  [baseline] RED evidence: violated {len(failed)}/"
                 f"{len(results)} target checks"
             )
-        return arm == "skill" and bool(failed)
+        return not failed
     finally:
         if args.keep_workspace:
             print(f"  workspace kept: {workspace}")
@@ -372,6 +393,16 @@ def main():
         "--label", help="suffix for result filenames, e.g. 'r3-edit'"
     )
     parser.add_argument("--model", help="model for the agent under test")
+    parser.add_argument(
+        "--reps",
+        type=int,
+        default=1,
+        help="repetitions per arm; result files get -rN suffixes",
+    )
+    parser.add_argument(
+        "--results-dir",
+        help="write result files here instead of results/ (raw campaign runs)",
+    )
     parser.add_argument("--claude-bin", default="claude")
     parser.add_argument("--max-turns", type=int, default=None)
     parser.add_argument("--timeout", type=int, default=600)
@@ -409,10 +440,22 @@ def main():
 
     arms = ("baseline", "skill") if args.arm == "both" else (args.arm,)
     any_failed = False
+    tally = []
     for scenario in scenarios:
         print(f"{scenario['name']}:")
         for arm in arms:
-            any_failed |= run_arm(scenario, arm, args)
+            passes = 0
+            for rep in range(1, args.reps + 1):
+                all_passed = run_arm(
+                    scenario, arm, args, rep if args.reps > 1 else None
+                )
+                passes += int(all_passed)
+                any_failed |= arm == "skill" and not all_passed
+            tally.append((scenario["name"], arm, passes))
+    if args.reps > 1:
+        print(f"\nSUMMARY (passing reps out of {args.reps}):")
+        for name, arm, passes in tally:
+            print(f"  {name} [{arm}] {passes}/{args.reps}")
     return 1 if any_failed else 0
 
 
