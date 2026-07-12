@@ -19,7 +19,7 @@ Provide the reviewer a structured package:
 ## Review request: <task/feature name>
 - Spec/design: <link or path to the approved design>
 - Plan tasks covered: <task numbers>
-- Diff: <branch or `git diff main...HEAD --stat` summary>
+- Diff: <branch, plus files/lines changed from `git diff main...HEAD --stat`>
 - Verification evidence: <test counts, build/lint results — actual numbers>
 - Known concerns: <anything you are unsure about — hiding doubts wastes the review>
 ```
@@ -33,6 +33,10 @@ Ask for TWO separate verdicts (they fail independently):
 
 ## Performing review (when you are the reviewer)
 
+- Check the diff size first (`git diff main...HEAD --stat`). Past ~400
+  changed lines, reviewer defect detection collapses (see docs/evidence.md):
+  say so, recommend splitting into independently reviewable slices, then
+  review as thoroughly as the size allows anyway.
 - Read the design first, then the diff. Judge against the spec, not taste.
 - Check what is NOT there: missing worst-case tests, missing boundary
   validation, silently dropped requirements.
