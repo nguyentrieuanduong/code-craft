@@ -70,6 +70,44 @@ class ParseScenarioTest(unittest.TestCase):
 
 
 class ParseTranscriptTest(unittest.TestCase):
+    def test_falls_back_to_last_assistant_text_without_result(self):
+        lines = [
+            json.dumps(
+                {
+                    "type": "assistant",
+                    "message": {
+                        "content": [
+                            {"type": "text", "text": "first pass"},
+                            {
+                                "type": "tool_use",
+                                "name": "Bash",
+                                "input": {"command": "ls"},
+                            },
+                        ]
+                    },
+                }
+            ),
+            json.dumps(
+                {
+                    "type": "assistant",
+                    "message": {
+                        "content": [{"type": "text", "text": "second pass"}]
+                    },
+                }
+            ),
+        ]
+        parsed = runner.parse_transcript("\n".join(lines))
+        self.assertEqual(parsed["final_text"], "second pass")
+
+    def test_rate_limit_detected_in_final_or_stderr(self):
+        self.assertTrue(
+            runner.looks_rate_limited(
+                "You've hit your limit · resets 10:40pm", ""
+            )
+        )
+        self.assertTrue(runner.looks_rate_limited("", "HTTP 429 rate-limited"))
+        self.assertFalse(runner.looks_rate_limited("all green", ""))
+
     def test_extracts_tools_and_result(self):
         lines = [
             json.dumps(

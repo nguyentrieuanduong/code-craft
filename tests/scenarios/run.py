@@ -28,6 +28,10 @@ REPO_ROOT = SCENARIOS_DIR.parent.parent
 RESULTS_DIR = SCENARIOS_DIR / "results"
 NON_SCENARIO_DIRS = {"fixtures", "results", "__pycache__"}
 ALLOWED_TOOLS = "Bash,Read,Write,Edit,Glob,Grep"
+# CLI built-ins that fire even without --allowedTools membership. Blocking
+# ExitPlanMode is what stops the harness from ending in plan mode with an
+# empty `result` event and writing the plan draft to ~/.claude/plans/.
+DISALLOWED_TOOLS = "ExitPlanMode,Agent,Task,WebFetch,WebSearch,NotebookEdit"
 SKILL_PREAMBLE = (
     "You must follow this skill exactly; it overrides your defaults:\n\n"
 )
@@ -105,6 +109,7 @@ def parse_scenario(path):
 def parse_transcript(stdout):
     tool_uses = []
     final_text = ""
+    last_assistant_text = ""
     for line in stdout.splitlines():
         line = line.strip()
         if not line.startswith("{"):
@@ -119,9 +124,28 @@ def parse_transcript(stdout):
                     tool_uses.append(
                         (block.get("name", ""), block.get("input", {}))
                     )
+                elif block.get("type") == "text" and block.get("text"):
+                    last_assistant_text = block["text"]
         elif event.get("type") == "result":
             final_text = event.get("result") or ""
+    # Fall back to the last assistant text when the run ends without a
+    # `result` event (e.g. hit --max-turns, or the CLI errored after
+    # producing content). Checks then still see something to grade.
+    if not final_text:
+        final_text = last_assistant_text
     return {"tool_uses": tool_uses, "final_text": final_text}
+
+
+RATE_LIMIT_MARKER = re.compile(
+    r"you'?ve hit your limit|rate.?limit|429", re.IGNORECASE
+)
+
+
+def looks_rate_limited(final_text, stderr):
+    return bool(
+        RATE_LIMIT_MARKER.search(final_text or "")
+        or RATE_LIMIT_MARKER.search(stderr or "")
+    )
 
 
 # ------------------------------------------------------------------- checks
@@ -239,6 +263,10 @@ def run_claude(scenario, workspace, skill_text, args):
         str(args.max_turns or scenario["max_turns"]),
         "--allowedTools",
         ALLOWED_TOOLS,
+        "--disallowedTools",
+        DISALLOWED_TOOLS,
+        "--permission-mode",
+        "acceptEdits",
     ]
     if skill_text:
         cmd += ["--append-system-prompt", SKILL_PREAMBLE + skill_text]
@@ -341,6 +369,14 @@ def run_arm(scenario, arm, args, rep=None):
             print(f"  [{arm}] TIMEOUT after {args.timeout}s — counted as failed")
             proc = None
         transcript = parse_transcript(proc.stdout if proc else "")
+        if proc and looks_rate_limited(
+            transcript["final_text"], proc.stderr
+        ):
+            print(
+                f"  [{arm}] RATE-LIMITED — aborting the rest of this batch. "
+                f"Re-run after the quota resets."
+            )
+            return "rate_limited"
         if proc and proc.returncode != 0 and not transcript["tool_uses"]:
             print(f"  claude exited {proc.returncode}: {proc.stderr[:500]}")
         results = [
@@ -440,22 +476,35 @@ def main():
 
     arms = ("baseline", "skill") if args.arm == "both" else (args.arm,)
     any_failed = False
+    rate_limited = False
     tally = []
     for scenario in scenarios:
+        if rate_limited:
+            break
         print(f"{scenario['name']}:")
         for arm in arms:
+            if rate_limited:
+                break
             passes = 0
+            reps_run = 0
             for rep in range(1, args.reps + 1):
-                all_passed = run_arm(
+                outcome = run_arm(
                     scenario, arm, args, rep if args.reps > 1 else None
                 )
-                passes += int(all_passed)
-                any_failed |= arm == "skill" and not all_passed
-            tally.append((scenario["name"], arm, passes))
+                if outcome == "rate_limited":
+                    rate_limited = True
+                    break
+                reps_run += 1
+                passes += int(outcome)
+                any_failed |= arm == "skill" and not outcome
+            tally.append((scenario["name"], arm, passes, reps_run))
     if args.reps > 1:
         print(f"\nSUMMARY (passing reps out of {args.reps}):")
-        for name, arm, passes in tally:
-            print(f"  {name} [{arm}] {passes}/{args.reps}")
+        for name, arm, passes, reps_run in tally:
+            note = f" ({reps_run} ran)" if reps_run < args.reps else ""
+            print(f"  {name} [{arm}] {passes}/{args.reps}{note}")
+    if rate_limited:
+        print("\nStopped early: rate limit reached.")
     return 1 if any_failed else 0
 
 
