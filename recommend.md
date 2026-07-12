@@ -13,6 +13,27 @@ Evidence basis: full skill/hook/test inventory re-read 2026-07-11 (14 skills,
 practice evidence gathered 2026-07-11 (sources at end); incident evidence in
 `docs/anti-patterns.md` appendices. Vendor-research caveats are marked.
 
+## 0. Implementation status (2026-07-11)
+
+All nine recommendations are implemented. Skill-wording changes (R3, R5, R6,
+R7) went through the writing-skills RED→GREEN cycle; results live in
+`tests/scenarios/results/`. Every eval arm ran **once** on the session-default
+model — a smoke signal, not proof. Standing next step (also in README): re-run
+the corpus at 5+ reps per arm on Sonnet/Haiku before further wording churn.
+
+| Rec | Status | Commit | Eval evidence |
+|---|---|---|---|
+| R1 eval harness | Done | `132d68e` | n/a — it is the eval (12 scenarios, runner, fixtures) |
+| R2 SEC-09 + install-guard hook | Done | `10dc239` | n/a — hook, covered by regression tests |
+| R3 diff-size gate | Done | `cb49635` | RED `0913482` → GREEN fw01 4/4, cr01 3/3; fw02 control caught over-narration, wording refactored, re-GREEN 5/5 |
+| R4 evidence doc | Done | `9c470b4` | n/a |
+| R5 pre-mortem in writing-plans | Done | `cb49635` | RED 4/5 → GREEN 5/5 (agent restructured the plan around the predicted failure) |
+| R6 releasing-safely skill | Done | `f29cb5d` | RED: baseline canaried, then auto-promoted to full fleet on an instant-green smoke → GREEN 4/4 (stopped after canary, demanded bake + go-ahead) |
+| R7 fuzz/property row in TDD | Done | `cb49635` | RED 3/4 (hand-picked examples only) → GREEN 4/4 (seeded 2,500-input fuzz test) |
+| R7 duplication check in review | **Dropped** | — | Baseline already passed cr02 2/2 — iron law forbids wording changes without a failing test; scenario retained as regression guard |
+| R8 CONTRIBUTING gate | Done | `ea0ae20` | n/a |
+| R9 housekeeping | Done | `95e3ac6` | n/a — `.gitignore` covers `.DS_Store`, this file is tracked, GEMINI.md was already dropped (`ab54eca`) |
+
 ## 1. What the suite already gets right — now with numbers
 
 Do not churn these; the evidence says keep them. Attach these numbers to the
