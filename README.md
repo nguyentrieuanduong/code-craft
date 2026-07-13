@@ -80,9 +80,17 @@ from `git log`. Skill and hook changes are gated: see
 [CONTRIBUTING.md](CONTRIBUTING.md) before editing anything under `skills/`
 or `hooks/`.
 
+## Eval status (2026-07-13 campaigns)
+
+The full corpus ran at 5 reps per scenario on both target models (skill
+arm, hardened headless runner). After two evidence-gated patch rounds:
+Sonnet 12/12 scenarios at 5/5; Haiku 9/12 at 5/5 with three 4/5 residuals
+documented as a capability floor in `docs/model-routing.md`. Campaign
+summaries with verbatim failure quotes live in `tests/scenarios/results/`
+(`2026-07-13-campaign-*-summary.md`).
+
 ## Possible next steps
 
-- Run the eval corpus (`tests/scenarios/`) against real Sonnet/Haiku
-  sessions at 5+ reps per arm, record rationalizations verbatim, patch the
-  tables, re-test
+- Multi-rep baseline (no-skill) arms for the seven scenarios that only have
+  single-rep baseline evidence (fw01, fw02, cr01, cr02, wp01, tdd02, rs01)
 - Publish to a plugin marketplace (marketplace.json)
