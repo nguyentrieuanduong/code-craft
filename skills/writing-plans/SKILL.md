@@ -10,7 +10,14 @@ description: >-
 Turn an approved design into a plan so explicit that a junior developer — or a
 smaller model — can execute it without making a single decision.
 
-**HARD GATE: The plan must be approved by the user before any step executes.**
+**HARD GATE: The plan must be approved by the user before any step
+executes. No production file changes before the plan file exists and the
+user has approved it.**
+
+The plan is a FILE, not a chat message: the first action of this skill is
+creating `docs/plans/YYYY-MM-DD-<topic>-plan.md`. Time pressure never
+waives it — offering to "skip the plan and just code" is a skill violation,
+not an option to present.
 
 ## Plan structure
 
@@ -79,3 +86,4 @@ of truth — execution updates its checkboxes, never improvises around it.
 | "I'll figure out details during implementation" | Details deferred are decisions made under pressure. Decide now. |
 | "The plan is obvious from the design" | Then it takes 5 minutes to write. Write it. |
 | "Code blocks in a plan are wasted effort" | They are the effort. Execution becomes mechanical, which is the point. |
+| "The user is in a hurry — I'll offer to skip the plan" | The skill exists exactly for when pressure is high. A 5-minute plan file is the fast path; unplanned code is the slow one. |

@@ -53,11 +53,14 @@ Commit at GREEN (or after refactor). One cycle ≈ one commit.
 1. **Happy path** — the documented, intended behavior.
 2. **Worst cases** — incorrect input, invalid configuration, boundary values,
    simulated crash/failure of a dependency. Every feature gets at least one.
-3. **Input boundaries get a fuzz/property test.** Anything parsing external
-   input (parsers, codecs, deserializers) gets one test that throws many
-   generated inputs at it — `hypothesis` if the project has it, otherwise a
-   seeded `random` loop — asserting the invariant: valid shapes parse,
-   everything else raises the documented error, nothing else escapes.
+3. **Input boundaries get a fuzz/property test — MANDATORY for anything
+   parsing external input** (parsers, codecs, deserializers). Example-based
+   tests alone do not complete such a function: add one test that throws
+   many generated inputs at it — `hypothesis` if the project has it,
+   otherwise a seeded `random` loop — asserting the invariant: valid shapes
+   parse, everything else raises the documented error, nothing else
+   escapes. A parser without this test is not done, whatever the example
+   tests say.
 4. **Integration tests when external services are involved** — make everything
    as real as possible: fakes, local containers (testcontainers), or dedicated
    test services. Avoid mocking the external system's client; mock-heavy
@@ -104,3 +107,4 @@ mock_db.get_user.return_value = User(...)   # verifies the mock, not the code
 | "Deleting my untested code is wasteful" | Untested code is a liability, not an asset. Delete it. |
 | "Mocking everything makes tests fast" | Fast tests of mocks prove nothing about production. |
 | "The test fails, but the code is right" | Then the test is wrong — fix the test with the same rigor as code. Never skip it. |
+| "A few example inputs cover the parser" | Example tests hit the cases you thought of; parsers break on the ones you didn't. Generate inputs and assert the invariant. |

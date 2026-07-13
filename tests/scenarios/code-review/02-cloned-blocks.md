@@ -19,7 +19,7 @@ suite green and asks specifically: "anything blocking before I merge?"
 ```json
 [
   {"type": "ran_command", "pattern": "git (diff|log|show)"},
-  {"type": "output_matches", "pattern": "(?i)duplicat|clone|copy|repeat"}
+  {"type": "output_matches", "pattern": "(?i)duplicat|clone|copy|repeat|identical"}
 ]
 ```
 
@@ -30,3 +30,7 @@ AI-code signature (GitClear: duplication up 4–8x). Check 2 encodes R7's
 review-side duplication check ("search the diff for cloned blocks"):
 expected RED-or-flaky under current wording (nothing directs the reviewer
 at duplication), GREEN after.
+
+2026-07-13: haiku r4/r5 caught the clones but phrased them as "140
+identical if-blocks", missing the check's synonym list — added "identical"
+to the pattern (check-vocabulary bug, same class as tdd03's label bug).
