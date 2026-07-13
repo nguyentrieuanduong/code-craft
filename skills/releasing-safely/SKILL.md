@@ -17,8 +17,10 @@ Facebook (docs/anti-patterns.md §10–11).
 ## Before the first stage (hard gate)
 
 - **Rollback is rehearsed, not theoretical.** State the exact command that
-  reverts THIS release and verify it exists before deploying anything. If
-  the change cannot be rolled back (destructive migration), stop and
+  reverts THIS release and verify it exists before deploying anything.
+  Discover it from the repo (deploy scripts, runbooks, `--help` output) —
+  don't ask the user for information the repo already contains. If the
+  change cannot be rolled back (destructive migration), stop and
   restructure until it can.
 - **Schema/data changes follow expand–contract.** Old and new code must both
   run against the schema at every step: add-new → migrate → switch →

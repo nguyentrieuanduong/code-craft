@@ -33,10 +33,14 @@ Ask for TWO separate verdicts (they fail independently):
 
 ## Performing review (when you are the reviewer)
 
-- Check the diff size first (`git diff main...HEAD --stat`). Past ~400
-  changed lines, reviewer defect detection collapses (see docs/evidence.md):
-  say so, recommend splitting into independently reviewable slices, then
-  review as thoroughly as the size allows anyway.
+- **Step 0 — diff size verdict, before any code comment.** Run
+  `git diff main...HEAD --stat` and OPEN the review with the number and its
+  verdict: "Diff: N changed lines — within/over the ~400-line review
+  threshold." Past ~400 changed lines, reviewer defect detection collapses
+  (see docs/evidence.md): if over, the review's FIRST finding is that the
+  diff is too large and should be split into independently reviewable
+  slices. Then review as thoroughly as the size allows anyway. A review
+  that never states the size verdict is incomplete.
 - Read the design first, then the diff. Judge against the spec, not taste.
 - Check what is NOT there: missing worst-case tests, missing boundary
   validation, silently dropped requirements.
@@ -65,3 +69,4 @@ Ask for TWO separate verdicts (they fail independently):
 | "The reviewer is senior, just do what they say" | Seniors are wrong sometimes. Verify, then act. |
 | "It's a nit, I'll skip responding" | Unaddressed comments erode trust. Respond to every one, even with 'declined because X'. |
 | "Review will catch what I missed" | Review is a safety net, not a substitute for verification. Arrive clean. |
+| "The diff is big, but I can review it all" | Nobody can — detection rates collapse past ~400 changed lines. State the size verdict first, recommend the split, then do your best. |
