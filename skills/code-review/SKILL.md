@@ -44,6 +44,12 @@ Ask for TWO separate verdicts (they fail independently):
 - Read the design first, then the diff. Judge against the spec, not taste.
 - Check what is NOT there: missing worst-case tests, missing boundary
   validation, silently dropped requirements.
+- **Search the diff for cloned blocks.** Repeated or near-identical code is
+  the measured signature of generated code (duplication up 4–8×, see
+  docs/evidence.md): if the same shape appears more than twice, name the
+  duplication as a finding and propose the loop/table/function that
+  collapses it. Check this explicitly on every review — it hides in diffs
+  that look busy but uniform.
 - Cite evidence for every finding: file, line, and the rule or spec clause it
   violates. No vague "this could be better".
 - Classify findings: **Blocking** (spec violation, security, broken tests) /

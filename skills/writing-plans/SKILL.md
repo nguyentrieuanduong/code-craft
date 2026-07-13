@@ -54,8 +54,11 @@ Save to `docs/plans/YYYY-MM-DD-<topic>-plan.md`:
 2. **Right-size tasks.** A task is the smallest unit that carries its own test
    cycle and can be reviewed independently. Each step takes 2–5 minutes.
 3. **No placeholders.** "TBD", "similar to above", "handle appropriately", and
-   "etc." are banned. Every step contains its actual content: real code blocks,
-   real commands, real names.
+   "etc." are banned. Every step contains its actual content: fenced code
+   blocks (``` … ```) with the real code, real commands, real names. A plan
+   whose steps describe code instead of containing it is placeholders by
+   definition — if you could paste the step into an editor and run it, it's
+   done; otherwise keep writing.
 4. **Every task ends in a commit.** One task ≈ one small feature or 1–3 related
    functions. Commit messages 5–20 words.
 5. **Brownfield: modify in place.** List existing files to change by exact
