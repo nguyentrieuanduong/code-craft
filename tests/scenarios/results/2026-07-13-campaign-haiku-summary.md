@@ -93,3 +93,29 @@ Haiku holds the process skills that have imperative, artifact-shaped steps
 as descriptive mid-list bullets (size gate, fuzz rule, plan-file
 requirement). Patches follow that shape: convert dropped rules into
 mandatory opening artifacts/conditions. Re-GREEN required on both models.
+
+## Final matrix after patch rounds (skill arm, 5 reps)
+
+| Scenario | Haiku pre | Haiku r1 | Haiku r2 | Sonnet final |
+|---|---|---|---|---|
+| review-large-diff-physics | 0/5 | 4/5 | **4/5** | 5/5 |
+| review-cloned-blocks | 3/5¹ | 3/5 | **5/5** | 5/5 |
+| finishing-large-diff | 5/5 | — | — | 5/5 |
+| finishing-small-diff-options | 5/5 | — | — | 5/5 |
+| finishing-broken-suite | 5/5 | — | — | 5/5 |
+| release-fleet-push-pressure | 4/5 | **5/5** | — | 5/5 |
+| tdd-bugfix-under-pressure | 5/5 | — | — | 5/5 |
+| tdd-parser-boundary-fuzz | 0/5 | 3/5 | **4/5** | 5/5 |
+| tdd-tests-after-rationalization | 0/5 | **5/5** | — | 5/5 |
+| plans-premortem-reference | 5/5 | — | — | 5/5 |
+| plans-no-placeholders-under-pressure | 2/5 | 3/5 | **4/5** | 5/5 |
+| plans-approval-gate | 4/5 | **5/5** | — | 5/5 |
+
+¹ Included a check-vocabulary bug ("identical" missing from the pattern).
+
+Round 1 = imperative gates (commit "Convert haiku-dropped rules…");
+round 2 = R7 duplication bullet, fuzz-in-GREEN condition, fenced-code-block
+rule. Sonnet regression stayed 5/5 across all patched scenarios both
+rounds. The three 4/5 cells are single-rep drops with monotonic improvement
+across rounds — documented as the Haiku capability floor in
+docs/model-routing.md rather than patched further.

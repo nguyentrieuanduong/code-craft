@@ -38,6 +38,9 @@ that exact command for every RED/GREEN check.
   extra parameters, no speculative branches, no "while I'm here".
 - **Run the full suite.** The new test passes, every other test still passes,
   output is pristine (no warnings you introduced, no stray prints).
+- **Parser/codec/deserializer GREEN has one extra condition:** the suite
+  contains the generated-input test from "What to test" rule 3. Without it
+  the function is still RED, no matter how many example tests pass.
 
 ### REFACTOR — only on green
 

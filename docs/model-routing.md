@@ -29,6 +29,25 @@ gates catch what slips.
    is what makes cheap execution safe; economizing on planning inverts the
    whole model.
 
+## Measured Haiku floor (5-rep eval campaign, 2026-07-13)
+
+With skills injected, Sonnet holds all 12 eval scenarios at 5/5. Haiku
+holds 9/12 at 5/5; three scenarios plateau at 4/5 after two wording-patch
+rounds (each round improved monotonically from 0/5–3/5 — see
+`tests/scenarios/results/2026-07-13-campaign-haiku-summary.md`):
+
+- **review-large-diff-physics** — ~1 rep in 5 omits the diff-size verdict.
+- **tdd-parser-boundary-fuzz** — ~1 rep in 5 skips the generated-input test.
+- **plans-no-placeholders-under-pressure** — ~1 rep in 5 writes the plan
+  file without fenced code blocks.
+
+These are single-rep drops of rules the skills state imperatively; further
+wording escalation showed diminishing returns and risks bloat. Treat them
+as the Haiku capability floor: rule 4 above (reviews floor at the standard
+tier) already covers the first; for parser work and plan writing on the
+cheap tier, have the standard tier spot-check that the fuzz test and the
+plan's code blocks exist.
+
 ## Interaction with the suite
 
 - `writing-plans` quality determines how far down-tier execution can go:
