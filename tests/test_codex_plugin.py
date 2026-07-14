@@ -48,6 +48,13 @@ PLUGIN_VALIDATOR = (
     / ".codex/skills/.system/plugin-creator/scripts/validate_plugin.py"
 )
 CODEX_CLI = shutil.which("codex")
+README_CODEX_COMMANDS = (
+    "codex plugin marketplace add /absolute/path/to/code-craft",
+    "codex plugin add code-craft@code-craft",
+    "codex plugin list --json",
+    "codex plugin marketplace upgrade code-craft",
+    "codex plugin remove code-craft@code-craft",
+)
 
 
 def _read_json(relative_path: str) -> dict[str, object]:
@@ -196,6 +203,14 @@ class CodexPluginManifestTest(unittest.TestCase):
             error_lines,
             ["- plugin.json field `hooks` is not accepted by plugin validation"],
         )
+
+
+class ReadmeInstallContractTest(unittest.TestCase):
+    def test_readme_documents_the_codex_install_commands(self) -> None:
+        content = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+        for command in README_CODEX_COMMANDS:
+            with self.subTest(command=command):
+                self.assertIn(command, content)
 
 
 @unittest.skipUnless(CODEX_CLI, "Codex CLI unavailable")

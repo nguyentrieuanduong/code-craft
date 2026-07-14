@@ -525,7 +525,7 @@ Claude-only and untouched.
 
 ## Task 4 — README and installation contract
 
-- [ ] 4.1 Add a failing README test asserting these literal commands
+- [x] 4.1 Add a failing README test asserting these literal commands
   appear in `README.md`:
 
   ```text
@@ -536,7 +536,7 @@ Claude-only and untouched.
   codex plugin remove code-craft@code-craft
   ```
 
-- [ ] 4.2 README Install section, after the Claude plugin block:
+- [x] 4.2 README Install section, after the Claude plugin block:
 
   ```bash
   # Codex CLI / desktop (native plugin: skills + bootstrap + hooks)
@@ -550,7 +550,7 @@ Claude-only and untouched.
   #   codex plugin remove code-craft@code-craft
   ```
 
-- [ ] 4.3 Surface matrix (P2 wording):
+- [x] 4.3 Surface matrix (P2 wording):
 
   ```markdown
   | Surface | Installation | Skills | Bootstrap | Enforcement |
@@ -561,14 +561,14 @@ Claude-only and untouched.
   | Claude Code | Existing Claude plugin | Full | SessionStart hook | 4 hard PreToolUse policies + advisory PostToolUse audit |
   ```
 
-- [ ] 4.4 Update "Other harnesses": Codex moves out of the
+- [x] 4.4 Update "Other harnesses": Codex moves out of the
   instruction-file-only list; Copilot/OpenCode remain. SEC-09 on Codex
   is enforced via `security-baseline` (instruction-level).
-- [ ] 4.5 Update "What's here": add `.codex-plugin/` next to
+- [x] 4.5 Update "What's here": add `.codex-plugin/` next to
   `.claude-plugin/`; point the moved-doc bullets at the new
   `skills/<owner>/references/` paths.
-- [ ] 4.6 Run 4.1 — green.
-- [ ] 4.7 Commit: `Document Codex install surface; 3-hard + 1-advisory
+- [x] 4.6 Run 4.1 — green.
+- [x] 4.7 Commit: `Document Codex install surface; 3-hard + 1-advisory
   enforcement contract`.
 
 ## Task 5 — verify, review, finish
