@@ -30,8 +30,12 @@ NON_SCENARIO_DIRS = {"fixtures", "results", "__pycache__"}
 ALLOWED_TOOLS = "Bash,Read,Write,Edit,Glob,Grep"
 # CLI built-ins that fire even without --allowedTools membership. Blocking
 # ExitPlanMode is what stops the harness from ending in plan mode with an
-# empty `result` event and writing the plan draft to ~/.claude/plans/.
-DISALLOWED_TOOLS = "ExitPlanMode,Agent,Task,WebFetch,WebSearch,NotebookEdit"
+# empty `result` event; blocking EnterPlanMode stops plan mode from starting
+# at all — 2026-07-14 baseline runs entered it unprompted and wrote plan
+# drafts to ~/.claude/plans/ despite the ExitPlanMode block.
+DISALLOWED_TOOLS = (
+    "EnterPlanMode,ExitPlanMode,Agent,Task,WebFetch,WebSearch,NotebookEdit"
+)
 SKILL_PREAMBLE = (
     "You must follow this skill exactly; it overrides your defaults:\n\n"
 )
