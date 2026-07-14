@@ -272,6 +272,16 @@ class RepLabelTest(unittest.TestCase):
         self.assertEqual(runner.rep_label(None, 3), "r3")
 
 
+class DisallowedToolsTest(unittest.TestCase):
+    def test_both_plan_mode_tools_blocked(self):
+        # EnterPlanMode alone is enough to leak plan drafts into
+        # ~/.claude/plans/ (observed 2026-07-14 baseline runs); ExitPlanMode
+        # alone leaves runs ending without a result event. Both must stay.
+        blocked = runner.DISALLOWED_TOOLS.split(",")
+        self.assertIn("EnterPlanMode", blocked)
+        self.assertIn("ExitPlanMode", blocked)
+
+
 class CorpusTest(unittest.TestCase):
     def test_all_shipped_scenarios_parse(self):
         scenarios = runner.find_scenarios()
