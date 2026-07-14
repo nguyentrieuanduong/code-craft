@@ -1,9 +1,12 @@
 """Contracts for packaging code-craft as a native Codex plugin."""
 
 import json
+import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 import unittest
 from importlib.util import find_spec
 from pathlib import Path
@@ -44,6 +47,7 @@ PLUGIN_VALIDATOR = (
     Path.home()
     / ".codex/skills/.system/plugin-creator/scripts/validate_plugin.py"
 )
+CODEX_CLI = shutil.which("codex")
 
 
 def _read_json(relative_path: str) -> dict[str, object]:
@@ -192,6 +196,64 @@ class CodexPluginManifestTest(unittest.TestCase):
             error_lines,
             ["- plugin.json field `hooks` is not accepted by plugin validation"],
         )
+
+
+@unittest.skipUnless(CODEX_CLI, "Codex CLI unavailable")
+class CodexPluginInstallTest(unittest.TestCase):
+    def _run(
+        self,
+        codex_home: str,
+        *arguments: str,
+    ) -> object:
+        env = os.environ.copy()
+        env["CODEX_HOME"] = codex_home
+        completed = subprocess.run(
+            [CODEX_CLI, "plugin", *arguments, "--json"],
+            check=False,
+            capture_output=True,
+            env=env,
+            text=True,
+            timeout=30,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        return json.loads(completed.stdout)
+
+    def test_repo_marketplace_installs_and_removes_plugin(self) -> None:
+        with tempfile.TemporaryDirectory() as codex_home:
+            self._run(
+                codex_home,
+                "marketplace",
+                "add",
+                str(REPO_ROOT.resolve()),
+            )
+            self._run(codex_home, "add", "code-craft@code-craft")
+
+            listed = self._run(codex_home, "list")
+            self.assertIsInstance(listed, dict)
+            installed_plugins = listed.get("installed")
+            self.assertIsInstance(installed_plugins, list)
+            installed = [
+                plugin
+                for plugin in installed_plugins
+                if isinstance(plugin, dict) and plugin.get("name") == "code-craft"
+            ]
+            self.assertEqual(len(installed), 1)
+            self.assertEqual(installed[0].get("version"), "0.3.0")
+
+            removed = self._run(codex_home, "remove", "code-craft@code-craft")
+            self.assertIn("code-craft", json.dumps(removed))
+
+            listed_after_remove = self._run(codex_home, "list")
+            self.assertIsInstance(listed_after_remove, dict)
+            remaining = listed_after_remove.get("installed")
+            self.assertIsInstance(remaining, list)
+            self.assertFalse(
+                any(
+                    isinstance(plugin, dict)
+                    and plugin.get("name") == "code-craft"
+                    for plugin in remaining
+                )
+            )
 
 
 if __name__ == "__main__":

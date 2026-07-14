@@ -319,7 +319,7 @@ Claude-only and untouched.
 
 ### 3A — RED: dual-payload + boundary tests
 
-- [ ] 3.1 Add failing Codex-shaped fixtures to `tests/test_hooks.py`
+- [x] 3.1 Add failing Codex-shaped fixtures to `tests/test_hooks.py`
   (keep Claude fixtures green):
   - `protect-configs`: `apply_patch` touching `.eslintrc.js` → exit 2 +
     stderr; clean file → exit 0.
@@ -339,14 +339,14 @@ Claude-only and untouched.
 
   ```json
   {
+    "tool_name": "apply_patch",
     "tool_input": {
-      "command": "apply_patch",
-      "input": "*** Begin Patch\n*** Update File: .eslintrc.js\n@@\n-old\n+new\n*** End Patch\n"
+      "command": "*** Begin Patch\n*** Update File: .eslintrc.js\n@@\n-old\n+new\n*** End Patch\n"
     }
   }
   ```
 
-- [ ] 3.2 Add the mandated generated-input boundary test for the parser
+- [x] 3.2 Add the mandated generated-input boundary test for the parser
   (`test-driven-development` contract), deterministic and stdlib-only:
 
   ```python
@@ -378,13 +378,13 @@ Claude-only and untouched.
   `target_paths()` always returns a deduplicated tuple of `Path`; no
   payload content reaches stdout/stderr.
 
-- [ ] 3.3 `python3 -m unittest tests.test_hooks -v` — new Codex cases
+- [x] 3.3 `python3 -m unittest tests.test_hooks -v` — new Codex cases
   fail (policies only read Claude fields today); boundary test fails on
   import (`hook_payload` does not exist yet). Both are the RED state.
 
 ### 3B — GREEN: normalizer, policy refactor, SessionStart
 
-- [ ] 3.4 Create `hooks/hook_payload.py` — typed per `coding-standards`,
+- [x] 3.4 Create `hooks/hook_payload.py` — typed per `coding-standards`,
   no payload logging:
 
   ```python
@@ -439,11 +439,11 @@ Claude-only and untouched.
       return tuple(dict.fromkeys(Path(p) for p in out))
   ```
 
-- [ ] 3.5 Refactor `protect-configs.py`, `scan-secrets.py`,
+- [x] 3.5 Refactor `protect-configs.py`, `scan-secrets.py`,
   `guard-bash.py`, `audit-debug-prints.py` to consume `hook_payload`.
   Preserve every policy constant, stderr message, exit code, and Claude
   behavior. `guard-installs.py` is NOT touched.
-- [ ] 3.6 Update `hooks/session-start.py` root selection:
+- [x] 3.6 Update `hooks/session-start.py` root selection:
 
   ```python
   root = Path(
@@ -453,7 +453,7 @@ Claude-only and untouched.
   )
   ```
 
-- [ ] 3.7 Add a SessionStart JSON regression test to
+- [x] 3.7 Add a SessionStart JSON regression test to
   `tests/test_hooks.py`:
 
   ```python
@@ -477,12 +477,12 @@ Claude-only and untouched.
           self._assert_contract(self._run({"CLAUDE_PLUGIN_ROOT": str(REPO_ROOT)}).stdout)
   ```
 
-- [ ] 3.8 `python3 -m unittest tests.test_hooks -v` — all Claude and
+- [x] 3.8 `python3 -m unittest tests.test_hooks -v` — all Claude and
   Codex cases plus the boundary test green.
 
 ### 3C — automated Codex install test, full suite, single commit
 
-- [ ] 3.9 Add to `tests/test_codex_plugin.py`, guarded by
+- [x] 3.9 Add to `tests/test_codex_plugin.py`, guarded by
   `@unittest.skipUnless(shutil.which("codex"), ...)`, with
   `tempfile.TemporaryDirectory()` as `CODEX_HOME` (no user credentials
   or state touched):
@@ -492,11 +492,12 @@ Claude-only and untouched.
   codex plugin add code-craft@code-craft --json
   codex plugin list --json          # assert code-craft 0.3.0 present
   codex plugin remove code-craft@code-craft --json
+  codex plugin list --json          # assert code-craft absent
   ```
 
-  Assert all four exit 0 and the plugin appears/disappears in the JSON.
-- [ ] 3.10 `python3 -m unittest discover tests` — full suite green.
-- [ ] 3.11 Commit ALL Task 3 code and tests (nothing left uncommitted
+  Assert all five exit 0 and the plugin appears/disappears in the JSON.
+- [x] 3.10 `python3 -m unittest discover tests` — full suite green.
+- [x] 3.11 Commit ALL Task 3 code and tests (nothing left uncommitted
   at the pause): `Add typed payload normalizer, dual-payload policies,
   PLUGIN_ROOT-first session start, Codex install test`.
 
