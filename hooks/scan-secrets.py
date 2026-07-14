@@ -8,6 +8,8 @@ import json
 import re
 import sys
 
+from hook_payload import proposed_text
+
 SECRET_PATTERNS = (
     ("Anthropic/OpenAI-style key", re.compile(r"\bsk-[A-Za-z0-9_-]{20,}")),
     ("GitHub token", re.compile(r"\bgh[pousr]_[A-Za-z0-9]{36,}")),
@@ -21,10 +23,7 @@ SECRET_PATTERNS = (
 
 def main() -> None:
     payload = json.load(sys.stdin)
-    tool_input = payload.get("tool_input", {})
-    content = "\n".join(
-        str(tool_input.get(field, "")) for field in ("content", "new_string")
-    )
+    content = proposed_text(payload)
     findings = [label for label, pattern in SECRET_PATTERNS if pattern.search(content)]
     if findings:
         print(

@@ -10,7 +10,11 @@ from pathlib import Path
 
 
 def main() -> None:
-    root = Path(os.environ.get("CLAUDE_PLUGIN_ROOT") or Path(__file__).resolve().parent.parent)
+    root = Path(
+        os.environ.get("PLUGIN_ROOT")
+        or os.environ.get("CLAUDE_PLUGIN_ROOT")
+        or Path(__file__).resolve().parent.parent
+    )
     skill = (root / "skills" / "using-code-craft" / "SKILL.md").read_text(encoding="utf-8")
     context = (
         "<code-craft-bootstrap>\n"

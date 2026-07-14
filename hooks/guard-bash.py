@@ -11,6 +11,8 @@ import json
 import shlex
 import sys
 
+from hook_payload import command as payload_command
+
 PROTECTED_BRANCHES = ("main", "master")
 
 NO_VERIFY_MSG = (
@@ -65,7 +67,7 @@ def violation(tokens):
 
 def main() -> None:
     payload = json.load(sys.stdin)
-    command = payload.get("tool_input", {}).get("command", "")
+    command = payload_command(payload)
     try:
         segments = list(split_commands(command))
     except ValueError:
