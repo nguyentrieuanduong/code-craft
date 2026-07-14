@@ -171,7 +171,7 @@ fixing the installed `plugin-creator` validator.
 
 ## Task 2 — Codex plugin manifests, hooks manifest, version bump
 
-- [ ] 2.1 Add failing tests to `tests/test_codex_plugin.py`:
+- [x] 2.1 Add failing tests to `tests/test_codex_plugin.py`:
   - `.codex-plugin/plugin.json` parses; contains `name`, `version`,
     `skills`, `hooks`, `interface`, `author`, `license`; the interface
     block contains a non-empty `defaultPrompt` array of strings; every
@@ -190,7 +190,7 @@ fixing the installed `plugin-creator` validator.
   - `.claude-plugin/plugin.json` at `0.3.0`.
   - `skills/` contains exactly 15 `SKILL.md` files.
 
-- [ ] 2.2 Create `.codex-plugin/plugin.json`:
+- [x] 2.2 Create `.codex-plugin/plugin.json`:
 
   ```json
   {
@@ -215,7 +215,7 @@ fixing the installed `plugin-creator` validator.
   }
   ```
 
-- [ ] 2.3 Create `.agents/plugins/marketplace.json` (entry fields match
+- [x] 2.3 Create `.agents/plugins/marketplace.json` (entry fields match
   the official example — no `description`):
 
   ```json
@@ -236,7 +236,7 @@ fixing the installed `plugin-creator` validator.
   }
   ```
 
-- [ ] 2.4 Create `hooks/codex-hooks.json` (five commands; `hooks/hooks.json`
+- [x] 2.4 Create `hooks/codex-hooks.json` (five commands; `hooks/hooks.json`
   is NOT edited):
 
   ```json
@@ -294,16 +294,18 @@ fixing the installed `plugin-creator` validator.
   }
   ```
 
-- [ ] 2.5 `apply_patch` `.claude-plugin/plugin.json`: version
+- [x] 2.5 `apply_patch` `.claude-plugin/plugin.json`: version
   `0.2.0` → `0.3.0`. No other field changes.
-- [ ] 2.6 Run 2.1 tests — green.
-- [ ] 2.7 Validator gate (P1 scope enforcement), guarded by
-  `@unittest.skipUnless(Path("~/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py").expanduser().is_file(), ...)`:
+- [x] 2.6 Run 2.1 tests — green.
+- [x] 2.7 Validator gate (P1 scope enforcement), guarded by the
+  validator file existing **and** its authoring-only PyYAML dependency
+  being importable. Run it from a disposable local venv with PyYAML for
+  release evidence; plugin users do not need that dependency:
   run the validator against the repo root; assert exit code 1 and that
   the output contains **exactly one** `- ` error line, exactly:
   `` - plugin.json field `hooks` is not accepted by plugin validation ``.
   Any second error line is a release failure.
-- [ ] 2.8 Commit: `Add Codex plugin, marketplace, and hooks manifests;
+- [x] 2.8 Commit: `Add Codex plugin, marketplace, and hooks manifests;
   bump suite to 0.3.0`. This commit is structurally installable: every
   manifest-referenced path exists.
 

@@ -1,0 +1,20 @@
+{
+  "name": "code-craft",
+  "interface": {
+    "displayName": "Code Craft"
+  },
+  "plugins": [
+    {
+      "name": "code-craft",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
