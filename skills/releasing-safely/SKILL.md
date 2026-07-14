@@ -12,7 +12,7 @@ A release is an experiment on real users. Run it like one: smallest real
 exposure first, evidence before expansion, rollback rehearsed before stage
 one. Deploy and config mechanics — not exotic logic bugs — sank Knight
 ($440M in 45 minutes), CrowdStrike (~8.5M machines), Cloudflare, and
-Facebook (docs/anti-patterns.md §10–11).
+Facebook (`../using-code-craft/references/anti-patterns.md` §10–11).
 
 ## Before the first stage (hard gate)
 
@@ -53,7 +53,8 @@ Facebook (docs/anti-patterns.md §10–11).
 A config, flag, or data change gets the same rigor as code: reviewed,
 tested, and released down the same ladder. Feature flags get an owner and
 an expiry date at creation; an expired or repurposed flag is a live bug —
-one fired eight-year-dead code at Knight (docs/anti-patterns.md §10).
+one fired eight-year-dead code at Knight
+(`../using-code-craft/references/anti-patterns.md` §10).
 
 ## Forbidden rationalizations
 

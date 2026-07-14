@@ -8,7 +8,8 @@ This file is the entry point for agents whose harness reads `AGENTS.md`
 Read `skills/using-code-craft/SKILL.md` NOW, before responding to any
 engineering request. It contains the dispatch table mapping situations to
 skills. When a row matches, read that skill's `skills/<name>/SKILL.md` and
-follow it. Skill wording is harness-agnostic — see `docs/tool-mapping.md` to
+follow it. Skill wording is harness-agnostic — see
+`skills/using-code-craft/references/tool-mapping.md` to
 translate named actions ("dispatch a subagent", "run a command") to your
 harness's tools.
 

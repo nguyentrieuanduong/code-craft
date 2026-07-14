@@ -87,7 +87,9 @@ Maintainer meta-skill (not part of the workflow ordering):
 
 - `AGENTS.md` at the repo root bootstraps harnesses without hook support;
   the enforcement rules become self-enforced instructions there.
-- `docs/tool-mapping.md` translates the skills' harness-agnostic action names
+- `skills/using-code-craft/references/tool-mapping.md` translates the skills'
+  harness-agnostic action names
   to each harness's tools. Porting = extending that table, never editing skills.
-- `docs/model-routing.md` — which model tier runs which stage, and how to
+- `skills/dispatching-parallel-agents/references/model-routing.md` — which
+  model tier runs which stage, and how to
   escalate on failure.
