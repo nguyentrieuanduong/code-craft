@@ -1,7 +1,11 @@
 """Contracts for packaging code-craft as a native Codex plugin."""
 
+import json
 import re
+import subprocess
+import sys
 import unittest
+from importlib.util import find_spec
 from pathlib import Path
 
 
@@ -36,6 +40,19 @@ ROOT_RUNTIME_LINK = re.compile(
     r"docs/(?:tool-mapping|anti-patterns|evidence|model-routing)\.md"
 )
 MARKDOWN_LINK = re.compile(r"\[[^]]+\]\(([^)]+)\)")
+PLUGIN_VALIDATOR = (
+    Path.home()
+    / ".codex/skills/.system/plugin-creator/scripts/validate_plugin.py"
+)
+
+
+def _read_json(relative_path: str) -> dict[str, object]:
+    path = REPO_ROOT / relative_path
+    with path.open(encoding="utf-8") as stream:
+        value = json.load(stream)
+    if not isinstance(value, dict):
+        raise AssertionError(f"expected object in {relative_path}")
+    return value
 
 
 class RuntimeReferencePackagingTest(unittest.TestCase):
@@ -74,6 +91,107 @@ class RuntimeReferencePackagingTest(unittest.TestCase):
             with self.subTest(skill=skill_path.parent.name):
                 content = skill_path.read_text(encoding="utf-8")
                 self.assertIsNone(ROOT_RUNTIME_LINK.search(content))
+
+
+class CodexPluginManifestTest(unittest.TestCase):
+    def test_plugin_manifest_has_complete_installable_metadata(self) -> None:
+        manifest = _read_json(".codex-plugin/plugin.json")
+        required = {
+            "name",
+            "version",
+            "skills",
+            "hooks",
+            "interface",
+            "author",
+            "license",
+        }
+        self.assertTrue(required.issubset(manifest))
+        self.assertEqual(manifest["name"], "code-craft")
+
+        interface = manifest["interface"]
+        self.assertIsInstance(interface, dict)
+        default_prompt = interface.get("defaultPrompt")
+        self.assertIsInstance(default_prompt, list)
+        self.assertTrue(default_prompt)
+        self.assertTrue(all(isinstance(item, str) and item for item in default_prompt))
+
+        for field in ("skills", "hooks"):
+            with self.subTest(field=field):
+                relative = manifest[field]
+                self.assertIsInstance(relative, str)
+                target = (REPO_ROOT / relative).resolve()
+                self.assertTrue(target.is_relative_to(REPO_ROOT.resolve()))
+                self.assertTrue(target.exists(), f"missing manifest path: {relative}")
+
+        claude_manifest = _read_json(".claude-plugin/plugin.json")
+        self.assertEqual(manifest["version"], claude_manifest["version"])
+
+    def test_marketplace_points_to_the_repository_plugin(self) -> None:
+        marketplace = _read_json(".agents/plugins/marketplace.json")
+        plugins = marketplace.get("plugins")
+        self.assertIsInstance(plugins, list)
+        self.assertEqual(len(plugins), 1)
+        plugin = plugins[0]
+        self.assertIsInstance(plugin, dict)
+        self.assertEqual(plugin.get("name"), "code-craft")
+        self.assertNotIn("description", plugin)
+        self.assertEqual(plugin.get("source"), {"source": "local", "path": "./"})
+
+    def test_codex_hooks_manifest_has_the_five_planned_commands(self) -> None:
+        manifest = _read_json("hooks/codex-hooks.json")
+        hooks = manifest.get("hooks")
+        self.assertIsInstance(hooks, dict)
+        expected_matchers = {
+            "SessionStart": ["startup|resume|clear|compact"],
+            "PreToolUse": ["Edit|Write", "Bash"],
+            "PostToolUse": ["Edit|Write"],
+        }
+        commands: list[dict[str, object]] = []
+        for event, matchers in expected_matchers.items():
+            with self.subTest(event=event):
+                groups = hooks.get(event)
+                self.assertIsInstance(groups, list)
+                self.assertEqual([group.get("matcher") for group in groups], matchers)
+                for group in groups:
+                    commands.extend(group["hooks"])
+
+        self.assertEqual(len(commands), 5)
+        for command in commands:
+            self.assertEqual(command.get("type"), "command")
+            self.assertIsInstance(command.get("command"), str)
+            self.assertIsInstance(command.get("commandWindows"), str)
+            self.assertEqual(command.get("timeout"), 30)
+        serialized = json.dumps(manifest)
+        self.assertNotIn("guard-installs.py", serialized)
+
+    def test_suite_version_and_skill_count_are_release_ready(self) -> None:
+        claude_manifest = _read_json(".claude-plugin/plugin.json")
+        self.assertEqual(claude_manifest.get("version"), "0.3.0")
+        skill_files = sorted((REPO_ROOT / "skills").glob("*/SKILL.md"))
+        self.assertEqual(len(skill_files), 15)
+
+    @unittest.skipUnless(
+        PLUGIN_VALIDATOR.is_file() and find_spec("yaml") is not None,
+        "Codex plugin validator or its authoring-only PyYAML dependency unavailable",
+    )
+    def test_validator_rejects_only_its_stale_hooks_schema(self) -> None:
+        completed = subprocess.run(
+            [sys.executable, str(PLUGIN_VALIDATOR), str(REPO_ROOT)],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(completed.returncode, 1)
+        output = f"{completed.stdout}\n{completed.stderr}"
+        error_lines = [
+            line.strip()
+            for line in output.splitlines()
+            if line.strip().startswith("- ")
+        ]
+        self.assertEqual(
+            error_lines,
+            ["- plugin.json field `hooks` is not accepted by plugin validation"],
+        )
 
 
 if __name__ == "__main__":
