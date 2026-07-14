@@ -64,16 +64,26 @@ fixing the installed `plugin-creator` validator.
 
 ## Task 1 — self-contained runtime references
 
-- [ ] 1.0a Probe:
+- [x] 1.0a Probe:
   `git check-ignore -v skills/using-code-craft/references/probe.md` and
   `git check-ignore -v references/probe.md` — expect both matched by
   `.gitignore:2:references/`.
-- [ ] 1.0b `apply_patch` `.gitignore` line 2 only:
+- [x] 1.0b `apply_patch` `.gitignore` line 2 only:
   `references/` → `/references/` (working tree edit; nothing staged yet).
-- [ ] 1.0c Stage ONLY the anchor change with a deterministic cached
-  patch — do not use interactive `git add -p` (after 1.0b the anchor and
-  scratch hunks share context and merge into one hunk). Write this exact
-  patch to a temp file and run `git apply --cached <file>`:
+- [ ] 1.0c *(Amended 2026-07-14: verification showed 1.0b's worktree
+  edit did not persist — worktree line 2 is still `references/`,
+  identical to HEAD. `git apply --cached` alone would therefore stage
+  the anchor while leaving the worktree unanchored, failing 1.0d checks
+  2–3. This step now applies the anchor to worktree AND index in one
+  deterministic command, superseding 1.0b's lost edit.)*
+
+  Precondition (else STOP and re-verify state):
+  `git diff --cached -- .gitignore` is empty and worktree line 2 is
+  exactly `references/`.
+
+  Write this exact patch to `/tmp/gitignore-anchor.patch` with the
+  harness's file-write tool (strip the two-space list indentation —
+  every line must start at column 0), then apply it to both sides:
 
   ```diff
   diff --git a/.gitignore b/.gitignore
@@ -83,6 +93,13 @@ fixing the installed `plugin-creator` validator.
   -references/
   +/references/
   ```
+
+  ```bash
+  git apply --index /tmp/gitignore-anchor.patch
+  ```
+
+  Do not use interactive `git add -p` (the anchor and scratch hunks
+  share context and merge into one hunk).
 
 - [ ] 1.0d Verify:
   - `git diff --cached -- .gitignore` → only the one-line anchor change;
