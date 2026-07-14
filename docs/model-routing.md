@@ -6,11 +6,19 @@ gates catch what slips.
 
 ## Tiering
 
-| Tier | Models (example) | Use for |
-|------|------------------|---------|
-| Cheap | Haiku | Mechanical plan steps with exact code blocks, formatting/import fixes, running tests, file exploration, transcription |
-| Standard | Sonnet | Implementing plan tasks, multi-file integration, refactors, reviewing small diffs |
-| Capable | Opus | Brainstorming/architecture, writing plans, debugging after a cheap model stalled, final whole-branch review |
+Tiers are generic — map them to whatever model family the harness runs
+(Claude names below as the worked example; on another harness, e.g.
+ChatGPT, substitute its equivalent tier).
+
+| Tier | Claude (example) | Generic equivalent | Use for |
+|------|------------------|--------------------|---------|
+| Cheap | Haiku | Smallest/fastest tier | Mechanical plan steps with exact code blocks, formatting/import fixes, running tests, file exploration, transcription |
+| Standard | Sonnet | Default tier | Implementing plan tasks, multi-file integration, refactors, reviewing small diffs |
+| Capable | Opus | Largest reasoning tier | Brainstorming/architecture, writing plans, debugging after a cheap model stalled, final whole-branch review |
+| Frontier (optional) | Fable | Flagship/preview tier, when available | Hardest tasks only: debugging the capable tier stalled on, architecture of large/risky changes, eval-failure diagnosis, final review before irreversible steps |
+
+The frontier tier is optional — the suite is designed to run fully on the
+three tiers above it. Route to it by exception, not by default.
 
 ## Rules
 
@@ -18,8 +26,8 @@ gates catch what slips.
    omitted model inherits the session default, often the most expensive one.
 2. **Escalate on failure, never retry sideways.** Cheap model fails a step
    twice → hand the same step to the next tier with the failure context.
-   Three failures at the capable tier → stop, question the approach
-   (systematic-debugging circuit breaker).
+   Three failures at the highest available tier → stop, question the
+   approach (systematic-debugging circuit breaker).
 3. **Turn count beats token price.** If a cheap model needs 3× the turns,
    it costs more than the standard model doing it once. Use the cheap tier
    only where the plan leaves nothing to decide.
