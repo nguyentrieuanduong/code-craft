@@ -80,17 +80,21 @@ from `git log`. Skill and hook changes are gated: see
 [CONTRIBUTING.md](CONTRIBUTING.md) before editing anything under `skills/`
 or `hooks/`.
 
-## Eval status (2026-07-13 campaigns)
+## Eval status (2026-07-13/14 campaigns)
 
 The full corpus ran at 5 reps per scenario on both target models (skill
 arm, hardened headless runner). After two evidence-gated patch rounds:
 Sonnet 12/12 scenarios at 5/5; Haiku 9/12 at 5/5 with three 4/5 residuals
-documented as a capability floor in `docs/model-routing.md`. Campaign
-summaries with verbatim failure quotes live in `tests/scenarios/results/`
-(`2026-07-13-campaign-*-summary.md`).
+documented as a capability floor in `docs/model-routing.md`. Baseline
+(no-skill) arms at 5 reps score 0–1/5 on six of seven measured scenarios
+on both models — the skill wording, not model capability, produces the
+behavior. One scenario (review-cloned-blocks) is at ceiling: its fixture
+is blatant enough that bare models pass; it stays as a regression check.
+Campaign summaries with verbatim failure quotes live in
+`tests/scenarios/results/` (`*-campaign-*-summary.md`).
 
 ## Possible next steps
 
-- Multi-rep baseline (no-skill) arms for the seven scenarios that only have
-  single-rep baseline evidence (fw01, fw02, cr01, cr02, wp01, tdd02, rs01)
+- Subtler fixture for review-cloned-blocks (3–4 clones across files) so the
+  scenario discriminates skill from baseline again
 - Publish to a plugin marketplace (marketplace.json)
