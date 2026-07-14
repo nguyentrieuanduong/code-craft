@@ -48,11 +48,11 @@ fixing the installed `plugin-creator` validator.
 - Repo: 15 SKILL.md; `.claude-plugin/plugin.json` at 0.2.0; four runtime
   docs in `docs/`; six consuming SKILL.md files (+ README, CONTRIBUTING,
   AGENTS.md, skills/README.md, two scenario fixtures).
-- `.gitignore:2` unanchored `references/`; lines 8–10 are the user's
-  uncommitted scratch entries (`requirements.md`, `recommend.md`,
-  `recommends.md`) — MUST remain uncommitted through this branch.
-  From Task 1.0c onward: never `git add .gitignore`, `git add -A`, or
-  `git add .` — stage listed paths only.
+- `.gitignore:2` has the unanchored `references/` rule. On 2026-07-14,
+  the user removed the three scratch ignore entries; `recommend.md` and
+  `recommends.md` are now untracked discussion files and MUST NOT be staged.
+  From Task 1.0c onward: never `git add -A` or `git add .` — stage listed
+  paths only.
 
 ## Task 0 — persist this plan (after user approval)
 
@@ -70,12 +70,10 @@ fixing the installed `plugin-creator` validator.
   `.gitignore:2:references/`.
 - [x] 1.0b `apply_patch` `.gitignore` line 2 only:
   `references/` → `/references/` (working tree edit; nothing staged yet).
-- [ ] 1.0c *(Amended 2026-07-14: verification showed 1.0b's worktree
-  edit did not persist — worktree line 2 is still `references/`,
-  identical to HEAD. `git apply --cached` alone would therefore stage
-  the anchor while leaving the worktree unanchored, failing 1.0d checks
-  2–3. This step now applies the anchor to worktree AND index in one
-  deterministic command, superseding 1.0b's lost edit.)*
+- [ ] 1.0c *(Amended 2026-07-14 after the user removed the scratch
+  ignore entries: worktree and index now match at the original
+  `references/` rule. This step applies one contextual patch separately
+  to the worktree and index, superseding 1.0b's lost edit.)*
 
   Precondition (else STOP and re-verify state):
   `git diff --cached -- .gitignore` is empty and worktree line 2 is
@@ -83,27 +81,31 @@ fixing the installed `plugin-creator` validator.
 
   Write this exact patch to `/tmp/gitignore-anchor.patch` with the
   harness's file-write tool (strip the two-space list indentation —
-  every line must start at column 0), then apply it to both sides:
+  every line must start at column 0):
 
   ```diff
   diff --git a/.gitignore b/.gitignore
   --- a/.gitignore
   +++ b/.gitignore
-  @@ -2 +2 @@
+  @@ -1,3 +1,3 @@
+   .idea/
   -references/
   +/references/
+   .DS_Store
   ```
 
   ```bash
-  git apply --index /tmp/gitignore-anchor.patch
+  git apply /tmp/gitignore-anchor.patch
+  git apply --cached /tmp/gitignore-anchor.patch
   ```
 
-  Do not use interactive `git add -p` (the anchor and scratch hunks
-  share context and merge into one hunk).
+  Do not use `git apply --index`; use the two independently preflighted
+  commands above.
 
 - [ ] 1.0d Verify:
   - `git diff --cached -- .gitignore` → only the one-line anchor change;
-  - `git diff -- .gitignore` → only the three scratch additions;
+  - `git diff -- .gitignore` → empty;
+  - `recommend.md` and `recommends.md` remain untracked;
   - `git check-ignore skills/using-code-craft/references/probe.md`
     exits 1; `git check-ignore references/probe.md` exits 0.
 
@@ -163,7 +165,7 @@ fixing the installed `plugin-creator` validator.
   links — they resolve through the compat pointers.
 - [ ] 1.6 Run 1.1's test — green.
 - [ ] 1.7 `python3 -m unittest discover tests` — full suite green.
-- [ ] 1.8 Commit (staging only the anchor hunk from 1.0c plus the
+- [ ] 1.8 Commit (staging the anchor from 1.0c plus the
   planned files): `Root-anchor references ignore; move runtime docs to
   owner skills with compatibility pointers`.
 
@@ -584,9 +586,9 @@ Claude-only and untouched.
 - [ ] 5.4 Compat-pointer shape: each of four `docs/*.md` is ≤10 lines
   and links to its packaged canonical target.
 - [ ] 5.5 `git diff --check` — no whitespace errors.
-- [ ] 5.6 Scratch-line safety: `git log -p .gitignore` shows only the
-  anchor change on this branch; `git diff -- .gitignore` still shows the
-  three scratch additions unstaged.
+- [ ] 5.6 Ignore safety: `git log -p .gitignore` shows only the anchor
+  change on this branch; `git diff -- .gitignore` is empty; discussion
+  files remain untracked.
 - [ ] 5.7 `code-review` of the whole branch. First line states
   changed-line count and the ~400-line-threshold verdict; doc moves
   inflate counts — judge on content.
@@ -603,8 +605,8 @@ extra path-substitution confidence.
 ## Acceptance criteria
 
 - `git check-ignore skills/using-code-craft/references/tool-mapping.md`
-  exits 1; the user's three `.gitignore` scratch lines remain
-  uncommitted at branch tip.
+  exits 1; `.gitignore` has no unstaged diff at branch tip; discussion
+  files remain untracked.
 - Four canonical runtime docs under `skills/<owner>/references/`; all
   consumers use skill-relative paths; root `docs/*.md` are ≤10-line
   compat pointers, no cycles; the Task 1 commit shows four renames.
