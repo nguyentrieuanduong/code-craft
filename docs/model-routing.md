@@ -6,24 +6,50 @@ gates catch what slips.
 
 ## Tiering
 
-Tiers are generic — map them to whatever model family the harness runs
-(Claude names below as the worked example; on another harness, e.g.
-ChatGPT, substitute its equivalent tier).
+Tiers are generic — they route **configurations** (model plus
+effort/reasoning setting), not model names. The Claude and OpenAI/Codex
+columns are worked examples; on another harness, substitute its equivalent
+configuration.
 
-| Tier | Claude (example) | Generic equivalent | Use for |
-|------|------------------|--------------------|---------|
-| Cheap | Haiku | Smallest/fastest tier | Mechanical plan steps with exact code blocks, formatting/import fixes, running tests, file exploration, transcription |
-| Standard | Sonnet | Default tier | Implementing plan tasks, multi-file integration, refactors, reviewing small diffs |
-| Capable | Opus | Largest reasoning tier | Brainstorming/architecture, writing plans, debugging after a cheap model stalled, final whole-branch review |
-| Frontier (optional) | Fable | Flagship/preview tier, when available | Hardest tasks only: debugging the capable tier stalled on, architecture of large/risky changes, eval-failure diagnosis, final review before irreversible steps |
+| Tier | Claude (example) | OpenAI/Codex (example) | Generic equivalent | Use for |
+|------|------------------|------------------------|--------------------|---------|
+| Cheap | Haiku — no effort control (4.5) | GPT-5.6 Luna (`gpt-5.6-luna`), effort low | Smallest/fastest qualified configuration | Mechanical plan steps with exact code blocks, formatting/import fixes, running tests, file exploration, transcription |
+| Standard | Sonnet — effort high (default) | GPT-5.6 Terra (`gpt-5.6-terra`), effort medium | Default tier | Implementing plan tasks, multi-file integration, refactors, reviewing small diffs |
+| Capable | Opus — effort xhigh for coding/agentic | GPT-5.6 Sol (`gpt-5.6-sol`), effort high/xhigh | Largest routine reasoning tier | Brainstorming/architecture, writing plans, debugging after a cheap model stalled, final whole-branch review |
+| Frontier (optional) | Fable — effort high (default), xhigh/max by exception | GPT-5.6 Sol, effort max; API pro mode by measured exception | Highest available quality-first configuration | Hardest tasks only: debugging the capable tier stalled on, architecture of large/risky changes, eval-failure diagnosis, final review before irreversible steps |
+
+Provider configuration notes (vendor guidance as of 2026-07-14, **not
+measured by this repository's evals** — existing campaigns controlled the
+model only, never effort; see the [Claude effort
+guide](https://platform.claude.com/docs/en/build-with-claude/effort), the
+[Codex model guide](https://learn.chatgpt.com/docs/models), and the
+[GPT-5.6 API guide](https://developers.openai.com/api/docs/guides/latest-model)):
+
+- The effort values above are vendor-recommended starting points; on
+  Sonnet, medium is a step-down candidate only after eval here. Haiku 4.5
+  exposes no effort parameter.
+- The frontier tier is asymmetric by design: Claude ships a distinct
+  frontier model, while OpenAI reuses Sol at higher compute — effort
+  `max`, or API `reasoning.mode: "pro"` on the same slug (never a
+  separate Pro slug).
+- Multi-agent settings are orchestration, not a tier: OpenAI's Ultra
+  delegates to subagents, and Claude Code's ultracode pairs xhigh with
+  standing multi-agent permission. Route those by task independence, not
+  capability.
 
 The frontier tier is optional — the suite is designed to run fully on the
 three tiers above it. Route to it by exception, not by default.
 
 ## Rules
 
-1. **Always specify the model explicitly** when dispatching a subagent — an
-   omitted model inherits the session default, often the most expensive one.
+1. **Pin the model and reasoning setting per dispatched agent when the
+   harness supports it** (Claude Code's Agent tool takes a `model`
+   argument; a Codex custom agent file can set `model` and
+   `model_reasoning_effort`) — an omitted model inherits the session
+   default, often the most expensive one. If only run- or session-level
+   selection exists, group tasks into a homogeneous wave under one
+   explicit configuration or run them inline; never claim a per-agent
+   selection the harness cannot enforce.
 2. **Escalate on failure, never retry sideways.** Cheap model fails a step
    twice → hand the same step to the next tier with the failure context.
    Three failures at the highest available tier → stop, question the

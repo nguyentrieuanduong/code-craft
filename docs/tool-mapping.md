@@ -8,7 +8,7 @@ When porting to a new harness, extend this file — never edit skill bodies.
 | Read a file | `Read` tool | built-in file read | `cat` via shell |
 | Edit / write a file | `Edit` / `Write` tools | built-in edit | `apply_patch` |
 | Run a command | `Bash` tool | terminal tool | `shell` |
-| Dispatch a subagent | `Agent` tool (`subagent_type`) | not available — do the work inline | not available — do the work inline |
+| Dispatch a subagent | `Agent` tool (`subagent_type`, `model`) | not available — do the work inline | custom agent files set `model` / `model_reasoning_effort`; `/agent` inspects threads (enabled by default in current releases, 2026-07-14) |
 | Track task state | `TaskCreate` / `TaskUpdate` | plan checkboxes in the plan file | plan checkboxes in the plan file |
 | Ask the user a question | plain response (or AskUserQuestion) | plain response | plain response |
 | Search the codebase | `grep`/`find` via Bash, or Explore agent | built-in search | `rg` via shell |
