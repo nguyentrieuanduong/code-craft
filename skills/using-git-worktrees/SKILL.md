@@ -71,7 +71,8 @@ consent, work in place and skip to Step 2.
 The user has asked for an isolated workspace (Step 0 consent). Do you already
 have a way to create a worktree? It might be a tool with a name like
 `EnterWorktree`, `WorktreeCreate`, a `/worktree` command, or a `--worktree`
-flag. If you do, use it and skip to Step 2. (See `docs/tool-mapping.md` for
+flag. If you do, use it and skip to Step 2. (See
+`../using-code-craft/references/tool-mapping.md` for
 the per-harness mapping of the "create isolated workspace" action.)
 
 Native tools handle directory placement, branch creation, and cleanup

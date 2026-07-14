@@ -29,7 +29,7 @@ costs more than the time saved.
   goal, exact file paths, the plan step's code blocks, the test command, the
   constraints (TDD, coding-standards, security-baseline apply), and the report
   format below. If the brief needs "as discussed above", it is not ready.
-- **Pick the model tier per task** (`docs/model-routing.md`): cheap for
+- **Pick the model tier per task** (`references/model-routing.md`): cheap for
   mechanical steps with exact code blocks, standard for integration, capable
   for anything ambiguous. Always specify the model explicitly.
 - Dispatch all independent tasks in one batch, then wait.

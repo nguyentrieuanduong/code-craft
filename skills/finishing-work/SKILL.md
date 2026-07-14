@@ -26,7 +26,8 @@ unreviewed" is failing.
 Run `git diff --stat main...HEAD`. If changed lines exceed ~400, flag it in
 the report and recommend splitting into independently reviewable slices
 before merging — reviewer defect detection collapses past that size (see
-docs/evidence.md). Still present the Step 3 options; the split is a
+`../using-code-craft/references/evidence.md`). Still present the Step 3
+options; the split is a
 recommendation, the choice stays with the user. At or under the threshold
 the check is silent: report the size in Step 2, but say nothing about
 thresholds or splitting.

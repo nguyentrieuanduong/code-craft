@@ -37,7 +37,8 @@ Ask for TWO separate verdicts (they fail independently):
   `git diff main...HEAD --stat` and OPEN the review with the number and its
   verdict: "Diff: N changed lines — within/over the ~400-line review
   threshold." Past ~400 changed lines, reviewer defect detection collapses
-  (see docs/evidence.md): if over, the review's FIRST finding is that the
+  (see `../using-code-craft/references/evidence.md`): if over, the review's
+  FIRST finding is that the
   diff is too large and should be split into independently reviewable
   slices. Then review as thoroughly as the size allows anyway. A review
   that never states the size verdict is incomplete.
@@ -46,7 +47,8 @@ Ask for TWO separate verdicts (they fail independently):
   validation, silently dropped requirements.
 - **Search the diff for cloned blocks.** Repeated or near-identical code is
   the measured signature of generated code (duplication up 4–8×, see
-  docs/evidence.md): if the same shape appears more than twice, name the
+  `../using-code-craft/references/evidence.md`): if the same shape appears
+  more than twice, name the
   duplication as a finding and propose the loop/table/function that
   collapses it. Check this explicitly on every review — it hides in diffs
   that look busy but uniform.

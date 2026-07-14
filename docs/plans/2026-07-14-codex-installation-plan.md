@@ -70,7 +70,7 @@ fixing the installed `plugin-creator` validator.
   `.gitignore:2:references/`.
 - [x] 1.0b `apply_patch` `.gitignore` line 2 only:
   `references/` → `/references/` (working tree edit; nothing staged yet).
-- [ ] 1.0c *(Amended 2026-07-14 after the user removed the scratch
+- [x] 1.0c *(Amended 2026-07-14 after the user removed the scratch
   ignore entries: worktree and index now match at the original
   `references/` rule. This step applies one contextual patch separately
   to the worktree and index, superseding 1.0b's lost edit.)*
@@ -102,14 +102,14 @@ fixing the installed `plugin-creator` validator.
   Do not use `git apply --index`; use the two independently preflighted
   commands above.
 
-- [ ] 1.0d Verify:
+- [x] 1.0d Verify:
   - `git diff --cached -- .gitignore` → only the one-line anchor change;
   - `git diff -- .gitignore` → empty;
   - `recommend.md` and `recommends.md` remain untracked;
   - `git check-ignore skills/using-code-craft/references/probe.md`
     exits 1; `git check-ignore references/probe.md` exits 0.
 
-- [ ] 1.1 Add a failing packaging test in a new
+- [x] 1.1 Add a failing packaging test in a new
   `tests/test_codex_plugin.py`:
   - All four canonical files exist at their packaged paths (1.2).
   - Every consuming `SKILL.md` links to the canonical path via a
@@ -118,7 +118,7 @@ fixing the installed `plugin-creator` validator.
     packaged canonical file, no cycles.
   - No `SKILL.md` retains a `docs/<name>.md` runtime link.
 
-- [ ] 1.2 Relocate the four docs with `apply_patch` add/delete pairs
+- [x] 1.2 Relocate the four docs with `apply_patch` add/delete pairs
   (no `mkdir`, no `git mv` — harness rule). For each: add the new file
   with content byte-identical to the old, delete the old.
 
@@ -134,7 +134,7 @@ fixing the installed `plugin-creator` validator.
   must then show four `renamed:` entries (rename detection survives the
   small link edits from 1.4).
 
-- [ ] 1.3 Write four root compat pointers (template; per-file
+- [x] 1.3 Write four root compat pointers (template; per-file
   title/target adjusted):
 
   ```markdown
@@ -145,7 +145,7 @@ fixing the installed `plugin-creator` validator.
   This page preserves existing repository links.
   ```
 
-- [ ] 1.4 Update consuming `SKILL.md` links (verified list):
+- [x] 1.4 Update consuming `SKILL.md` links (verified list):
 
   | File:line | New link (skill-relative) |
   |---|---|
@@ -159,13 +159,13 @@ fixing the installed `plugin-creator` validator.
   If `evidence.md` cross-links `anti-patterns.md`, rewrite it as a
   same-directory link (`anti-patterns.md`).
 
-- [ ] 1.5 Bootstrap pointers: `AGENTS.md:11` and
+- [x] 1.5 Bootstrap pointers: `AGENTS.md:11` and
   `skills/README.md:90,92` → packaged paths. `README.md`,
   `CONTRIBUTING.md`, `tests/scenarios/**/*.md` KEEP their `docs/*.md`
   links — they resolve through the compat pointers.
-- [ ] 1.6 Run 1.1's test — green.
-- [ ] 1.7 `python3 -m unittest discover tests` — full suite green.
-- [ ] 1.8 Commit (staging the anchor from 1.0c plus the
+- [x] 1.6 Run 1.1's test — green.
+- [x] 1.7 `python3 -m unittest discover tests` — full suite green.
+- [x] 1.8 Commit (staging the anchor from 1.0c plus the
   planned files): `Root-anchor references ignore; move runtime docs to
   owner skills with compatibility pointers`.
 

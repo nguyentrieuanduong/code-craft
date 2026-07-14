@@ -74,7 +74,8 @@ Save to `docs/plans/YYYY-MM-DD-<topic>-plan.md`:
 - [ ] Every step has an exact command or code block
 - [ ] Constraints section uses exact values, not descriptions of values
 - [ ] Pre-mortem: assume execution failed — name the likeliest failure and
-      add its guard to the plan (check `docs/anti-patterns.md` §1–3 for
+      add its guard to the plan (check
+      `../using-code-craft/references/anti-patterns.md` §1–3 for
       candidates when the repo has it); record the pre-mortem in the plan
 
 ## Handoff
