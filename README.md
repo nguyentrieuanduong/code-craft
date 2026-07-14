@@ -17,17 +17,24 @@ AI adoption, the METR perception gap).
   bootstrap injection plus enforcement hooks (linter-config protection,
   secret scan, `git --no-verify`/force-push guard, new-dependency vetting
   gate, debug-print audit).
+- **`.codex-plugin/` + `.agents/plugins/`** — Codex native plugin: same
+  skills and SessionStart bootstrap; three hard PreToolUse policies plus
+  the advisory debug-print audit via `hooks/codex-hooks.json` (dependency
+  vetting stays instruction-level via `security-baseline`).
 - **`CLAUDE.md` / `AGENTS.md`** — per-harness loaders. Thin
   pointers only; skill content lives in `skills/`.
-- **`docs/tool-mapping.md`** — translates the skills' action names to each
-  harness's tools. Porting = extending this table, never editing skills.
-- **`docs/model-routing.md`** — which model tier runs which stage, and how
-  to escalate on failure.
-- **`docs/anti-patterns.md`** — evidence-backed catalog of mistakes to avoid
-  at every lifecycle stage (framing → deploy → ops), with an incident map and
-  sources. Pre-mortem/review checklist and raw material for skill authoring.
-- **`docs/evidence.md`** — the empirical case for the suite: the measured
-  AI-assisted failure mode and the study behind each mechanism.
+- **`skills/using-code-craft/references/tool-mapping.md`** — translates the
+  skills' action names to each harness's tools. Porting = extending this
+  table, never editing skills.
+- **`skills/dispatching-parallel-agents/references/model-routing.md`** —
+  which model tier runs which stage, and how to escalate on failure.
+- **`skills/using-code-craft/references/anti-patterns.md`** —
+  evidence-backed catalog of mistakes to avoid at every lifecycle stage
+  (framing → deploy → ops), with an incident map and sources.
+  Pre-mortem/review checklist and raw material for skill authoring.
+- **`skills/using-code-craft/references/evidence.md`** — the empirical case
+  for the suite: the measured AI-assisted failure mode and the study behind
+  each mechanism. (Root `docs/*.md` remain as compatibility pointers.)
 - **`tests/`** — hook regression tests plus `tests/scenarios/`, the skill
   eval harness: pressure-test corpus + headless runner implementing the
   writing-skills RED→GREEN cycle for skill wording.
@@ -53,10 +60,35 @@ and loads it as a plugin in all projects.
 `~/.claude/skills/`. Skill dispatch then relies on the model reading the
 descriptions — enforcement rules from `AGENTS.md` become advisory.
 
-**Other harnesses (Codex, Copilot, OpenCode, ...):** copy the repo into your
+**Codex CLI / desktop app (native plugin — skills + bootstrap + hooks):**
+
+```bash
+# Codex CLI / desktop (native plugin: skills + bootstrap + hooks)
+codex plugin marketplace add /absolute/path/to/code-craft
+codex plugin add code-craft@code-craft
+codex plugin list --json
+# trust the five commands once:
+#   /hooks
+# upgrade / remove:
+#   codex plugin marketplace upgrade code-craft
+#   codex plugin remove code-craft@code-craft
+```
+
+**Other harnesses (Copilot, OpenCode, ...):** copy the repo into your
 project; the harness picks up `AGENTS.md`. See `docs/tool-mapping.md`.
-Non-Claude harnesses are instruction-file only: the four rules are advisory
-there, hooks are not enforced.
+These harnesses are instruction-file only: the four rules are advisory
+there, hooks are not enforced. On Codex, prefer the native plugin above;
+SEC-09 dependency vetting on Codex stays instruction-level via
+`security-baseline`.
+
+### Surface support
+
+| Surface | Installation | Skills | Bootstrap | Enforcement |
+|---|---|---:|---:|---:|
+| Codex CLI | Native plugin | Full | SessionStart hook | 3 hard PreToolUse policies + advisory PostToolUse audit after `/hooks` trust; SEC-09 via `security-baseline` |
+| Codex desktop app | Native plugin | Full | SessionStart hook | 3 hard PreToolUse policies + advisory PostToolUse audit after hook trust; SEC-09 via `security-baseline` |
+| Codex IDE extension | `$HOME/.agents/skills` fallback | Full | Advisory/global `AGENTS.md` | No plugin-hook parity |
+| Claude Code | Existing Claude plugin | Full | SessionStart hook | 4 hard PreToolUse policies + advisory PostToolUse audit |
 
 ## Sources
 
