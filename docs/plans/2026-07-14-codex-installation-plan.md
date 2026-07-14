@@ -573,26 +573,26 @@ Claude-only and untouched.
 
 ## Task 5 — verify, review, finish
 
-- [ ] 5.1 Stale runtime-reference scan (empty expected):
+- [x] 5.1 Stale runtime-reference scan (empty expected):
 
   ```bash
   rg -n 'docs/(tool-mapping|model-routing|anti-patterns|evidence)\.md' \
     skills AGENTS.md CLAUDE.md skills/README.md
   ```
 
-- [ ] 5.2 `python3 -m unittest discover tests` — all green (33 original
+- [x] 5.2 `python3 -m unittest discover tests` — all green (33 original
   + packaging/manifest/hooks-schema/dual-payload/boundary/SessionStart;
   validator gate and install test skip cleanly where their tools are
   absent).
-- [ ] 5.3 `python3 tests/scenarios/run.py --dry-run` — all 12 scenarios
+- [x] 5.3 `python3 tests/scenarios/run.py --dry-run` — all 12 scenarios
   parse; skill and fixture paths resolve.
-- [ ] 5.4 Compat-pointer shape: each of four `docs/*.md` is ≤10 lines
+- [x] 5.4 Compat-pointer shape: each of four `docs/*.md` is ≤10 lines
   and links to its packaged canonical target.
-- [ ] 5.5 `git diff --check` — no whitespace errors.
-- [ ] 5.6 Ignore safety: `git log -p .gitignore` shows only the anchor
+- [x] 5.5 `git diff --check` — no whitespace errors.
+- [x] 5.6 Ignore safety: `git log -p .gitignore` shows only the anchor
   change on this branch; `git diff -- .gitignore` is empty; discussion
   files remain untracked.
-- [ ] 5.7 `code-review` of the whole branch. First line states
+- [x] 5.7 `code-review` of the whole branch. First line states
   changed-line count and the ~400-line-threshold verdict; doc moves
   inflate counts — judge on content.
 - [ ] 5.8 Wait for the Task 3.12 transcript; if any hard policy failed
