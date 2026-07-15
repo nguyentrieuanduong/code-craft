@@ -27,7 +27,7 @@ your job is mechanical, disciplined execution — not improvisation.
   the command it specifies.
 - Production code follows **test-driven-development**, **coding-standards**,
   and **security-baseline** at all times.
-- Verify the target path: workspace source tree, never the docs/plans directory.
+- Verify the target path: workspace source tree, never the .plans directory.
 - Brownfield: modify the existing file in place. Creating `X_modified` or
   `X_new` copies is forbidden.
 

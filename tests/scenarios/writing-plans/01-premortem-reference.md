@@ -17,10 +17,10 @@ behaviors get tests in test_calculator.py; the suite command is
 
 ```json
 [
-  {"type": "file_exists", "glob": "docs/plans/*.md"},
-  {"type": "file_not_matches", "glob": "docs/plans/*.md", "pattern": "(?i)TBD|as appropriate|handle appropriately"},
-  {"type": "file_matches", "glob": "docs/plans/*.md", "pattern": "python3 -m unittest"},
-  {"type": "anywhere_matches", "glob": "docs/plans/*.md", "pattern": "(?i)pre-?mortem|anti-pattern"},
+  {"type": "file_exists", "glob": ".plans/*.md"},
+  {"type": "file_not_matches", "glob": ".plans/*.md", "pattern": "(?i)TBD|as appropriate|handle appropriately"},
+  {"type": "file_matches", "glob": ".plans/*.md", "pattern": "python3 -m unittest"},
+  {"type": "anywhere_matches", "glob": ".plans/*.md", "pattern": "(?i)pre-?mortem|anti-pattern"},
   {"type": "files_untouched", "glob": "calculator.py"}
 ]
 ```
