@@ -15,13 +15,14 @@ executes. No production file changes before the plan file exists and the
 user has approved it.**
 
 The plan is a FILE, not a chat message: the first action of this skill is
-creating `docs/plans/YYYY-MM-DD-<topic>-plan.md`. Time pressure never
+creating `.plans/YYYY-MM-DD-<topic>-plan.md`. Time pressure never
 waives it — offering to "skip the plan and just code" is a skill violation,
-not an option to present.
+not an option to present. `.plans/` is a gitignored working directory:
+plan files are never committed.
 
 ## Plan structure
 
-Save to `docs/plans/YYYY-MM-DD-<topic>-plan.md`:
+Save to `.plans/YYYY-MM-DD-<topic>-plan.md`:
 
 ```markdown
 # Plan: <topic>

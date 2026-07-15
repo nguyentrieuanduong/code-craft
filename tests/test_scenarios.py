@@ -139,8 +139,8 @@ class ParseTranscriptTest(unittest.TestCase):
 class EvaluateCheckTest(unittest.TestCase):
     def setUp(self):
         self.workspace = Path(tempfile.mkdtemp())
-        (self.workspace / "docs" / "plans").mkdir(parents=True)
-        (self.workspace / "docs" / "plans" / "p.md").write_text(
+        (self.workspace / ".plans").mkdir(parents=True)
+        (self.workspace / ".plans" / "p.md").write_text(
             "# Plan\n- [ ] 1.1 run `python3 -m unittest`\n"
         )
         (self.workspace / "calculator.py").write_text("def add(): pass\n")
@@ -165,7 +165,7 @@ class EvaluateCheckTest(unittest.TestCase):
     def test_file_checks(self):
         t = transcript()
         self.assertTrue(
-            self.check({"type": "file_exists", "glob": "docs/plans/*.md"}, t)
+            self.check({"type": "file_exists", "glob": ".plans/*.md"}, t)
         )
         self.assertFalse(
             self.check({"type": "file_exists", "glob": "docs/specs/*.md"}, t)
@@ -177,7 +177,7 @@ class EvaluateCheckTest(unittest.TestCase):
             self.check(
                 {
                     "type": "file_matches",
-                    "glob": "docs/plans/*.md",
+                    "glob": ".plans/*.md",
                     "pattern": "unittest",
                 },
                 t,
@@ -187,7 +187,7 @@ class EvaluateCheckTest(unittest.TestCase):
             self.check(
                 {
                     "type": "file_not_matches",
-                    "glob": "docs/plans/*.md",
+                    "glob": ".plans/*.md",
                     "pattern": "TBD",
                 },
                 t,
@@ -197,14 +197,14 @@ class EvaluateCheckTest(unittest.TestCase):
     def test_anywhere_matches_via_output_or_file(self):
         spec = {
             "type": "anywhere_matches",
-            "glob": "docs/plans/*.md",
+            "glob": ".plans/*.md",
             "pattern": "(?i)pre-?mortem",
         }
         self.assertTrue(
             self.check(spec, transcript(final_text="ran the premortem"))
         )
         self.assertFalse(self.check(spec, transcript(final_text="nope")))
-        (self.workspace / "docs" / "plans" / "p.md").write_text(
+        (self.workspace / ".plans" / "p.md").write_text(
             "## Pre-mortem\nchecked anti-patterns\n"
         )
         self.assertTrue(self.check(spec, transcript(final_text="nope")))
@@ -253,7 +253,7 @@ class EvaluateCheckTest(unittest.TestCase):
         spec = {"type": "files_untouched", "glob": "calculator.py"}
         ws = str(self.workspace)
         untouched = transcript(
-            tool_uses=[("Write", {"file_path": f"{ws}/docs/plans/p.md"})]
+            tool_uses=[("Write", {"file_path": f"{ws}/.plans/p.md"})]
         )
         touched = transcript(
             tool_uses=[("Edit", {"file_path": f"{ws}/calculator.py"})]

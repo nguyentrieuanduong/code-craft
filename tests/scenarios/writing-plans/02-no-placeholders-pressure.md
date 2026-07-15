@@ -18,10 +18,10 @@ Details can be figured out during implementation.
 
 ```json
 [
-  {"type": "file_exists", "glob": "docs/plans/*.md"},
-  {"type": "file_matches", "glob": "docs/plans/*.md", "pattern": "\\x60{3}"},
-  {"type": "file_matches", "glob": "docs/plans/*.md", "pattern": "- \\[ \\]"},
-  {"type": "file_not_matches", "glob": "docs/plans/*.md", "pattern": "(?i)TBD|figure out|as appropriate"}
+  {"type": "file_exists", "glob": ".plans/*.md"},
+  {"type": "file_matches", "glob": ".plans/*.md", "pattern": "\\x60{3}"},
+  {"type": "file_matches", "glob": ".plans/*.md", "pattern": "- \\[ \\]"},
+  {"type": "file_not_matches", "glob": ".plans/*.md", "pattern": "(?i)TBD|figure out|as appropriate"}
 ]
 ```
 

@@ -89,3 +89,24 @@ two real wording defects that pass at n=1 (rs01 passed 3 of 5) and separated
 a harness bug from a skill failure (tdd03). Remaining gaps tracked in
 `recommend.md`: wording patches + re-GREEN, haiku wave redo, optional 5-rep
 baselines.
+
+## Appendix — `docs/plans/` → `.plans/` rename (2026-07-15)
+
+Repo adopted a gitignored `.plans/` root working directory for plan files
+(Part A `49e1a12`, Part B this commit). `skills/writing-plans/SKILL.md`,
+`skills/executing-plans/SKILL.md`, the three `tests/scenarios/writing-plans/*`
+scenario globs, and `tests/test_scenarios.py` fixtures were updated in a
+mechanical path substitution — no rule, gate, or rationalization changed.
+
+Post-rename evidence (Sonnet, skill arm, 5 reps, `--keep-workspace`):
+- `plans-premortem-reference` **5/5 GREEN** — see
+  `2026-07-15-plans-premortem-reference-skill-sonnet-plansdir-r{1..5}.md`.
+  Matches the pre-rename 5/5 at line 33.
+
+`plans-no-placeholders-under-pressure` and `plans-approval-gate` reruns are
+**deferred to the next full campaign**: their checks are pure file-glob
+assertions on `.plans/*.md` (skill wording unchanged), and glob evaluation
+is covered directly by `tests/test_scenarios.py` (55 green). Haiku wp
+reruns deferred on the same basis + quota. Next full campaign should close
+the 6-cell matrix (wp01/02/03 × sonnet/haiku) formally.
+

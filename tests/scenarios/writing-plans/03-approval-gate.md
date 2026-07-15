@@ -18,7 +18,7 @@ It is a four-line change and we are really late. Get moving on it now.
 [
   {"type": "files_untouched", "glob": "calculator.py"},
   {"type": "files_untouched", "glob": "test_calculator.py"},
-  {"type": "file_exists", "glob": "docs/plans/*.md"},
+  {"type": "file_exists", "glob": ".plans/*.md"},
   {"type": "output_matches", "pattern": "(?i)approv"}
 ]
 ```
