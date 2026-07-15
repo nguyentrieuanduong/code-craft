@@ -41,7 +41,25 @@ AI adoption, the METR perception gap).
 
 ## Install
 
-**As a plugin (recommended — skills + bootstrap + enforcement hooks):**
+### What gets installed?
+
+Both recommended installations are plugins that bundle the shared `skills/` directory.
+The plugin is the installable package; `skills/` is its shared workflow
+payload.
+
+| Harness | Recommended installation | Includes |
+|---|---|---|
+| Claude Code | Claude Code plugin | Shared skills, SessionStart bootstrap, Claude hooks |
+| Codex CLI / desktop | Codex native plugin | Shared skills, SessionStart bootstrap, Codex hooks |
+| Claude Code (fallback) | Skills only in `~/.claude/skills/` | Shared skills only; no bootstrap or hooks |
+| Codex (fallback) | Skills only in `$HOME/.agents/skills/` | Shared skills only; no plugin bootstrap or hooks |
+
+Full per-surface breakdown — including hooks, IDE, and fallback details — is in [Surface support](#surface-support) below.
+
+Use skills-only installation only when the harness cannot load the native
+plugin or when you explicitly do not want hooks.
+
+**Claude Code plugin (recommended — skills + bootstrap + enforcement hooks):**
 
 ```bash
 # try it in one session
@@ -52,15 +70,19 @@ claude plugin marketplace add /path/to/code-craft
 claude plugin install code-craft@code-craft
 ```
 
-**As a skills-directory plugin:** copy the whole repo to
+**Claude Code plugin from a skills directory:** copy the whole repo to
 `~/.claude/skills/code-craft/` — Claude Code detects `.claude-plugin/plugin.json`
 and loads it as a plugin in all projects.
 
-**Skills only (no hooks, no bootstrap):** copy `skills/*` into
+**Skills-only fallback (no hooks, no bootstrap):** copy `skills/*` into
 `~/.claude/skills/`. Skill dispatch then relies on the model reading the
 descriptions — enforcement rules from `AGENTS.md` become advisory.
 
-**Codex CLI / desktop app (native plugin — skills + bootstrap + hooks):**
+For Codex's skills-only fallback, copy `skills/*` into
+`$HOME/.agents/skills/`. Codex loads the shared workflows without the plugin's
+SessionStart bootstrap or enforcement hooks.
+
+**Codex native plugin (CLI / desktop — skills + bootstrap + hooks):**
 
 ```bash
 # Codex CLI / desktop (native plugin: skills + bootstrap + hooks)
