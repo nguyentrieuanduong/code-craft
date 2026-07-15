@@ -55,6 +55,23 @@ README_CODEX_COMMANDS = (
     "codex plugin marketplace upgrade code-craft",
     "codex plugin remove code-craft@code-craft",
 )
+README_INSTALL_EXPLANATIONS = (
+    "Both recommended installations are plugins that bundle the shared `skills/` directory.",
+    "| Claude Code | Claude Code plugin | Shared skills, SessionStart bootstrap, Claude hooks |",
+    "| Codex CLI / desktop | Codex native plugin | Shared skills, SessionStart bootstrap, Codex hooks |",
+    (
+        "| Claude Code (fallback) | Skills only in `~/.claude/skills/` | "
+        "Shared skills only; no bootstrap or hooks |"
+    ),
+    (
+        "| Codex (fallback) | Skills only in `$HOME/.agents/skills/` | "
+        "Shared skills only; no plugin bootstrap or hooks |"
+    ),
+    (
+        "Full per-surface breakdown — including hooks, IDE, and fallback "
+        "details — is in [Surface support](#surface-support) below."
+    ),
+)
 
 
 def _read_json(relative_path: str) -> dict[str, object]:
@@ -211,6 +228,12 @@ class ReadmeInstallContractTest(unittest.TestCase):
         for command in README_CODEX_COMMANDS:
             with self.subTest(command=command):
                 self.assertIn(command, content)
+
+    def test_readme_explains_both_native_plugin_installations(self) -> None:
+        content = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+        for explanation in README_INSTALL_EXPLANATIONS:
+            with self.subTest(explanation=explanation):
+                self.assertIn(explanation, content)
 
 
 @unittest.skipUnless(CODEX_CLI, "Codex CLI unavailable")
