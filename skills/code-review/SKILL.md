@@ -52,6 +52,10 @@ Ask for TWO separate verdicts (they fail independently):
   duplication as a finding and propose the loop/table/function that
   collapses it. Check this explicitly on every review — it hides in diffs
   that look busy but uniform.
+  Also flag any NEW private helper in the diff that duplicates a utility
+  already existing elsewhere in the repo — cite the existing utility's
+  path and propose importing it (promote it if private) instead of
+  keeping the copy.
 - Cite evidence for every finding: file, line, and the rule or spec clause it
   violates. No vague "this could be better".
 - Classify findings: **Blocking** (spec violation, security, broken tests) /
