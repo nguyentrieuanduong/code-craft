@@ -28,7 +28,9 @@ description: >-
 7. **Smallest sufficient abstraction** — inline simple one-off logic local to
    one call site. Add helpers only when reused, domain-significant,
    independently tested, or clearly better for readability. Three similar
-   lines beat a premature abstraction.
+   lines beat a premature abstraction. Need a helper anyway? Grep the
+   repo first — an equivalent may already exist; import it (promote it
+   if private) rather than writing a copy.
 8. **Single resolution point for configuration** — apply ALL defaults,
    fallbacks, derivations, and validation in one parse step — nowhere else —
    producing a fully-resolved immutable config; log the raw input unchanged
