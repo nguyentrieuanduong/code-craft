@@ -147,6 +147,20 @@ is blatant enough that bare models pass; it stays as a regression check.
 Campaign summaries with verbatim failure quotes live in
 `tests/scenarios/results/` (`*-campaign-*-summary.md`).
 
+## Validation
+
+Install the pinned authoring dependency, then run the deterministic check:
+
+```bash
+python3 -m pip install --requirement requirements-dev.txt
+python3 -m tools.check
+```
+
+This is the only CI profile. It makes no model calls. For a behavior-shaping
+skill edit, run one selected scenario before and after the edit. Whole-corpus,
+multi-model, and repeated campaigns are explicit optional evidence; see
+`tests/scenarios/README.md`.
+
 ## Possible next steps
 
 - Subtler fixture for review-cloned-blocks (3–4 clones across files) so the
