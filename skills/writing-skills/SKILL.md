@@ -10,13 +10,16 @@ description: >-
 
 ## Overview
 
-**Writing skills IS Test-Driven Development applied to process documentation.**
+**Writing skills uses tiered evidence for process documentation.**
 
 **Personal skills live in your runtime's skills directory** 
 
-You write test cases (pressure scenarios with subagents), watch them fail (baseline behavior), write the skill (documentation), watch tests pass (agents comply), and refactor (close loopholes).
+Every change gets deterministic validation. New skills and behavior-shaping
+edits also use one focused before/after scenario. Larger repeated campaigns
+are optional release evidence.
 
-**Core principle:** If you didn't watch an agent fail without the skill, you don't know if the skill teaches the right thing.
+**Core principle:** Match evidence cost to risk and test behavioral claims with
+the smallest scenario that can disprove them.
 
 **REQUIRED BACKGROUND:** You MUST understand test-driven-development before using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle. This skill adapts TDD to documentation.
 
@@ -34,7 +37,7 @@ A **skill** is a reference guide for proven techniques, patterns, or tools. Skil
 
 | TDD Concept | Skill Creation |
 |-------------|----------------|
-| **Test case** | Pressure scenario with subagent |
+| **Test case** | Deterministic fixture or focused behavior scenario |
 | **Production code** | Skill document (SKILL.md) |
 | **Test fails (RED)** | Agent violates rule without skill (baseline) |
 | **Test passes (GREEN)** | Agent complies with skill present |
@@ -45,7 +48,9 @@ A **skill** is a reference guide for proven techniques, patterns, or tools. Skil
 | **Watch it pass** | Verify agent now complies |
 | **Refactor cycle** | Find new rationalizations → plug → re-verify |
 
-The entire skill creation process follows RED-GREEN-REFACTOR.
+New skills and behavior-shaping edits follow RED-GREEN-REFACTOR. Mechanical
+metadata, description, link, typo, and routing-fixture changes use the
+deterministic tier.
 
 ## When to Create a Skill
 
@@ -374,23 +379,51 @@ pptx/
 ```
 When: Reference material too large for inline
 
+## Evaluation tiers
+
+Match evidence cost to the change; do not fan out agents by default.
+
+| Tier | Required when | Command shape | Model calls |
+|---|---|---|---:|
+| Deterministic | Every skill change | `python3 -m tools.check` | 0 |
+| Focused behavioral | New skill or behavior-shaping rule change | One scenario, one before and one after run | 2 maximum |
+| Full campaign | Explicit release decision, unresolved variance, or user request | `--all --allow-many N`, chosen models and reps | Numeric budget required |
+
+Description, metadata, link, typo, and routing-fixture changes stop after
+the deterministic tier when structural, positive, and negative checks pass
+and collision warnings are reviewed. Do not spend model tokens merely to
+reconfirm a mechanical property.
+
+When an intended skill or description change alters routing, update the
+affected routing case with a rationale in the commit describing the
+intended shift. This is the only sanctioned exception to the rule against
+editing fixtures merely to recover a score.
+
+For a behavior-shaping edit, choose the smallest scenario that reproduces
+the failure. Run the current wording once, make the minimal edit, then run
+the same scenario once with the edited wording. Runs are sequential; do not
+dispatch a subagent fleet. Read both transcripts. A single sample is
+focused evidence, not a statistical claim.
+
+A full campaign is optional and never runs in CI. Use it only when the
+release decision needs cross-model or repeated evidence. Calculate the
+planned calls first, then pass that number as `--allow-many N`.
+
 ## The Iron Law (Same as TDD)
 
 ```
-NO SKILL WITHOUT A FAILING TEST FIRST
+NO BEHAVIOR-SHAPING SKILL CHANGE WITHOUT A FAILING FOCUSED TEST FIRST
 ```
 
-This applies to NEW skills AND EDITS to existing skills.
+This applies to new skills and edits that change what a skill teaches.
+Mechanical changes use deterministic RED/GREEN checks instead.
 
 Write skill before testing? Delete it. Start over.
 Edit skill without testing? Same violation.
 
-**No exceptions:**
-- Not for "simple additions"
-- Not for "just adding a section"
-- Not for "documentation updates"
+**No exceptions for behavior-shaping edits:**
 - Don't keep untested changes as "reference"
-- Don't "adapt" while running tests
+- Don't "adapt" while running the focused test
 - Delete means delete
 
 **REQUIRED BACKGROUND:** The test-driven-development skill explains why this matters. Same principles apply to documentation.
@@ -448,16 +481,16 @@ Different skill types need different test approaches:
 
 | Excuse | Reality |
 |--------|---------|
-| "Skill is obviously clear" | Clear to you ≠ clear to other agents. Test it. |
-| "It's just a reference" | References can have gaps, unclear sections. Test retrieval. |
-| "Testing is overkill" | Untested skills have issues. Always. 15 min testing saves hours. |
+| "Skill is obviously clear" | Clear to you ≠ clear to other agents. Run the applicable tier. |
+| "It's just a reference" | References can have gaps; deterministic checks still apply. |
+| "Testing is overkill" | Use deterministic checks for mechanical changes and focused evidence for behavior. |
 | "I'll test if problems emerge" | Problems = agents can't use skill. Test BEFORE deploying. |
 | "Too tedious to test" | Testing is less tedious than debugging bad skill in production. |
 | "I'm confident it's good" | Overconfidence guarantees issues. Test anyway. |
 | "Academic review is enough" | Reading ≠ using. Test application scenarios. |
 | "No time to test" | Deploying untested skill wastes more time fixing it later. |
 
-**All of these mean: Test before deploying. No exceptions.**
+**All of these mean: Complete the applicable tier before deploying.**
 
 ## Match the Form to the Failure
 
@@ -556,38 +589,48 @@ description: use when implementing any feature or bugfix, before writing impleme
 
 Follow the TDD cycle:
 
-### RED: Write Failing Test (Baseline)
+### RED: Write the smallest failing test
 
-Run pressure scenario with subagent WITHOUT the skill. Document exact behavior:
+For new skills and behavior changes, run one focused scenario against the
+current wording. Document exact behavior:
 - What choices did they make?
 - What rationalizations did they use (verbatim)?
 - Which pressures triggered violations?
 
 This is "watch the test fail" - you must see what agents naturally do before writing the skill.
 
+Trigger-only and other mechanical changes use failing deterministic routing or
+structure cases instead.
+
 ### GREEN: Write Minimal Skill
 
 Write skill that addresses those specific rationalizations. Don't add extra content for hypothetical cases.
 
-Run same scenarios WITH skill. Agent should now comply.
+Run the same focused scenario once with the edited skill. The agent should now
+comply. For a mechanical edit, rerun the deterministic check.
 
 ### REFACTOR: Close Loopholes
 
 Agent found new rationalization? Add explicit counter. Re-test until bulletproof.
 
-### Micro-Test Wording Before Full Scenarios
+### Optional full campaigns
 
-Full pressure-scenario runs are the final gate, but they are slow and expensive per iteration. Verify the wording itself first with micro-tests:
+Focused before/after evidence is the default behavioral gate. When a release
+decision needs statistical or cross-model evidence, run an explicit full
+campaign:
 
-1. **One fresh-context sample per call** — a raw API call, or a single-shot subagent if you don't have API access. System prompt = the realistic context the guidance will live in (the full skill or prompt template, not the guidance in isolation); user message = a task that tempts the failure.
-2. **Always include a no-guidance control.** If the control doesn't exhibit the failure, there is nothing to fix — stop, don't author the guidance.
-3. **5+ reps per variant.** Single samples lie.
-4. **Manually read every flagged match.** Score programmatically if you like, but template echoes and quoted counter-examples masquerade as hits; automated counts alone overstate both failure and success.
-5. **Variance is a metric.** When guidance lands, reps converge on the same shape. Five different interpretations across five reps means the wording isn't binding — tighten the form before adding words.
+1. Calculate calls across scenarios, arms, models, and repetitions.
+2. Pass the total with `--all --allow-many N`.
+3. Include a no-guidance control when attribution matters.
+4. Manually read every flagged match; template echoes and quoted
+   counter-examples can masquerade as hits.
+5. Treat variance as a metric, not proof from any single sample.
 
-Micro-tests verify wording; they do not replace pressure scenarios for discipline skills.
+Full campaigns strengthen focused evidence when a release decision needs it;
+they are not a routine merge requirement.
 
-**Testing methodology:** See [testing-skills-with-subagents.md](testing-skills-with-subagents.md) for the complete testing methodology:
+**Optional campaign methodology:** See
+[testing-skills-with-subagents.md](testing-skills-with-subagents.md) for:
 - How to write pressure scenarios
 - Pressure types (time, sunk cost, authority, exhaustion)
 - Plugging holes systematically
@@ -616,7 +659,7 @@ helper1, helper2, step3, pattern4
 
 ## STOP: Before Moving to Next Skill
 
-**After writing ANY skill, you MUST STOP and complete the deployment process.**
+**After writing any skill, stop and complete its applicable evaluation tier.**
 
 **Do NOT:**
 - Create multiple skills in batch without testing each
@@ -625,16 +668,16 @@ helper1, helper2, step3, pattern4
 
 **The deployment checklist below is MANDATORY for EACH skill.**
 
-Deploying untested skills = deploying untested code. It's a violation of quality standards.
+Deploying without the applicable evidence is a quality failure.
 
 ## Skill Creation Checklist (TDD Adapted)
 
 **IMPORTANT: Create a todo for EACH checklist item below.**
 
-**RED Phase - Write Failing Test:**
-- [ ] Create pressure scenarios (3+ combined pressures for discipline skills)
-- [ ] Run scenarios WITHOUT skill - document baseline behavior verbatim
-- [ ] Identify patterns in rationalizations/failures
+**RED Phase - Establish Evidence:**
+- [ ] Add deterministic positive/negative routing or structure coverage
+- [ ] For a new skill or behavior change, add one focused scenario
+- [ ] Run the focused scenario once with current wording and record the failure
 
 **GREEN Phase - Write Minimal Skill:**
 - [ ] Name uses only letters, numbers, hyphens (no parentheses/special chars)
@@ -645,17 +688,17 @@ Deploying untested skills = deploying untested code. It's a violation of quality
 - [ ] Clear overview with core principle
 - [ ] Address specific baseline failures identified in RED
 - [ ] Guidance form matches the failure type (see Match the Form to the Failure)
-- [ ] For behavior-shaping guidance: wording micro-tested against a no-guidance control (5+ reps, every flagged match read manually) — N/A for pure reference skills
+- [ ] For behavior-shaping guidance, run the same focused scenario once after the edit and read both transcripts
 - [ ] Code inline OR link to separate file
 - [ ] One excellent example (not multi-language)
-- [ ] Run scenarios WITH skill - verify agents now comply
+- [ ] Run `python3 -m tools.check`
 
 **REFACTOR Phase - Close Loopholes:**
 - [ ] Identify NEW rationalizations from testing
 - [ ] Add explicit counters (if discipline skill)
 - [ ] Build rationalization table from all test iterations
 - [ ] Create red flags list
-- [ ] Re-test until bulletproof
+- [ ] Re-run the focused scenario only when closing an observed behavioral loophole
 
 **Quality Checks:**
 - [ ] Small flowchart only if decision non-obvious
@@ -683,9 +726,10 @@ How future agents find your skill:
 
 ## The Bottom Line
 
-**Creating skills IS TDD for process documentation.**
+**Creating skills uses TDD where behavior changes and deterministic checks
+where it does not.**
 
-Same Iron Law: No skill without failing test first.
+Same Iron Law for behavior: no behavior-shaping edit without a focused RED.
 Same cycle: RED (baseline) → GREEN (write skill) → REFACTOR (close loopholes).
 Same benefits: Better quality, fewer surprises, bulletproof results.
 
