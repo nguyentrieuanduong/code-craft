@@ -7,16 +7,20 @@ skipping exactly these gates — read this before writing anything.
 ## The gate, in order
 
 1. **Read `skills/writing-skills/SKILL.md` before touching any skill.** Its
-   iron law governs this repo: no skill created or changed without a failing
-   (baseline) test first.
-2. **Skill wording changes require eval evidence.** Run the scenario
-   baseline with the current wording, then with your edit, using fresh
-   subagents as `writing-skills` prescribes. Include both results in the PR
-   (convention: `tests/scenarios/results/`). PRs that change skill wording
-   without before/after evidence are rejected without further review.
+   deterministic, focused, and optional full tiers govern this repo.
+2. **Match eval cost to the skill change.** Every skill change runs
+   `python3 -m tools.check`. Trigger-only, metadata, link, and typo changes
+   need no model calls when deterministic checks cover them. New skills and
+   behavior-shaping rule changes add one focused scenario and attach one
+   before/after sample (two sequential model calls maximum). Multi-model or
+   five-repetition campaigns are optional release evidence, never CI.
+
+   When an intended skill or description change alters routing, update the
+   affected routing case with a rationale in the commit describing the
+   intended shift; never edit fixtures merely to recover a score.
 3. **No drive-by edits.** Rationalization tables, red-flag lists, and gate
    wording are deliberately tuned against observed agent behavior. "Clearer
-   phrasing" that was never tested against an agent is churn, not
+   phrasing" without evidence from the applicable tier is churn, not
    improvement.
 4. **Hook changes require regression tests.** Every behavior change in
    `hooks/*.py` gets cases in `tests/test_hooks.py`, and
@@ -30,9 +34,9 @@ skipping exactly these gates — read this before writing anything.
 
 ## Automatic rejections
 
-- Skill change without baseline/eval evidence (rule 2)
+- Skill change without evidence for the applicable tier (rule 2)
 - Hook change without tests (rule 4)
-- Wording churn with no behavioral justification (rule 3)
+- Wording churn with no applicable evidence or justification (rule 3)
 - Secrets, debug prints, or linter-config edits — the plugin hooks block
   these mechanically; do not fight the hooks in a PR
 - Growth of the always-on bootstrap (`AGENTS.md`, session injection): its

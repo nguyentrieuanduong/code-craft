@@ -38,7 +38,7 @@ max_turns: 30                      # optional
 <expected baseline failure, which recommendation the checks encode, pressures used>
 ```
 
-Frontmatter values are single-line. Check types:
+Frontmatter uses strict YAML and supports standard scalar styles. Check types:
 
 | Type | Args | Passes when |
 |---|---|---|
@@ -58,34 +58,34 @@ the failing-test-first for that edit: RED with current wording, GREEN after.
 ## Running
 
 ```bash
-python3 tests/scenarios/run.py --dry-run                 # validate corpus
-python3 tests/scenarios/run.py --arm both                # full RED/GREEN run
-python3 tests/scenarios/run.py tests/scenarios/finishing-work/01-*.md \
-    --arm skill --label current                          # one scenario
+# Default: deterministic, zero model calls
+python3 -m tools.check
 
-# A/B wording eval: current wording vs edited wording
-python3 tests/scenarios/run.py tests/scenarios/finishing-work/*.md \
-    --arm skill --label before
-python3 tests/scenarios/run.py tests/scenarios/finishing-work/*.md \
-    --arm skill --skill-override /tmp/finishing-work-edited.md --label after
+# Focused behavior edit: one selected scenario, one sequential call
+python3 tests/scenarios/run.py path/to/scenario.md --arm skill --reps 1
+
+# Optional full campaign: explicit and never CI
+# 13 scenarios x 2 arms x 5 reps = 130 authorized calls
+python3 tests/scenarios/run.py --all --arm both --reps 5 --allow-many 130
 ```
 
-Requirements and caveats:
+`Agent` and `Task` are disabled inside the runner. A focused before/after pair
+is capped at two calls unless numeric `--allow-many N` is at least the printed
+planned total.
 
-- Needs the `claude` CLI. The agent under test executes model-chosen shell
+Model-run caveats:
+
+- Focused and full runs need the `claude` CLI. The agent under test executes
+  model-chosen shell
   commands inside a disposable temp workspace — keep fixtures self-contained
   and review a scenario before running it.
 - **Contamination:** if the code-craft plugin (or any always-on skill setup)
   is installed globally, it leaks into baseline arms. Use `--isolate` (fresh
   `CLAUDE_CONFIG_DIR`; requires `ANTHROPIC_API_KEY`) or run on a profile
   without the plugin.
-- The suite targets lower-capability models: run evals with `--model sonnet`
-  and `--model haiku`, not only the default.
-- One rep per arm is a smoke signal, not proof — writing-skills prescribes
-  5+ reps for wording micro-tests. State the rep count in the results file.
-- In-session alternative: dispatch fresh subagents with the scenario prompt
-  (skill text pasted in for the skill arm) and apply the checks manually —
-  same corpus, same results convention.
+- A focused sample is bounded behavioral evidence, not a statistical claim.
+  Multi-model and repeated runs belong only to an explicitly authorized full
+  campaign.
 
 ## Results convention
 
