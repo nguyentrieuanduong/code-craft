@@ -1,0 +1,155 @@
+# Lexical regression fixture: this detects routing drift; it does not
+# measure real-world dispatch quality. Behavioral scenarios cover that.
+version: 1
+top_k: 3
+skills:
+  brainstorming:
+    positive:
+      - This is creative work for new features; shape notification behavior before implementation.
+      - Help me decide the behavior of a payment-module refactor.
+      - We need to shape a new project and compare design options.
+    negative:
+      - prompt: Diagnose this unexpected failing unit test.
+        owner: systematic-debugging
+      - prompt: The design is approved; write the implementation plan.
+        owner: writing-plans
+  code-review:
+    positive:
+      - Review this completed feature before it is merged.
+      - Check this code diff for correctness and quality.
+      - Evaluate this review feedback before I apply it.
+    negative:
+      - prompt: Prove the finished feature passes its verification commands.
+        owner: verification-before-completion
+      - prompt: Execute the approved implementation plan now.
+        owner: executing-plans
+  coding-standards:
+    positive:
+      - Write this production Python implementation cleanly.
+      - Apply our coding standards during this implementation step.
+      - While implementing this production code, keep it readable and maintainable.
+    negative:
+      - prompt: Find the root cause of this unexpected error.
+        owner: systematic-debugging
+      - prompt: The feature is complete and needs review before merge.
+        owner: code-review
+  dispatching-parallel-agents:
+    positive:
+      - The approved plan has independent tasks in unrelated files; run them in parallel.
+      - Dispatch separate agents for these independent plan tasks.
+      - Parallelize these tasks because they share no files or state.
+    negative:
+      - prompt: Implement the approved plan's steps one after another in this workspace.
+        owner: executing-plans
+      - prompt: Continue implementing the approved plan directly in this workspace.
+        owner: executing-plans
+  executing-plans:
+    positive:
+      - Implement this approved plan now.
+      - Resume the interrupted implementation from its plan file.
+      - The plan is approved and ready for execution.
+    negative:
+      - prompt: Design a new feature before any code is written.
+        owner: brainstorming
+      - prompt: The design is approved; create the detailed plan first.
+        owner: writing-plans
+  finishing-work:
+    positive:
+      - All tasks, verification, and review are complete; finish this branch.
+      - Present the merge or pull-request options for this completed branch.
+      - Conclude this branch now that the work is reviewed.
+    negative:
+      - prompt: Roll this change out to production safely.
+        owner: releasing-safely
+      - prompt: Review this completed task before we finish the branch.
+        owner: code-review
+  releasing-safely:
+    positive:
+      - Deploy this change to production with a safe rollout.
+      - Roll out this feature flag to the shared environment.
+      - Plan the production schema migration and rollback.
+    negative:
+      - prompt: The feature appears complete; run fresh checks before claiming it works.
+        owner: verification-before-completion
+      - prompt: Implement the approved local development plan.
+        owner: executing-plans
+  security-baseline:
+    positive:
+      - I am writing authentication code that accepts untrusted user input.
+      - I am writing code that adds dependencies and needs a security check before commit.
+      - Check this infrastructure configuration for security risks.
+    negative:
+      - prompt: Turn the approved design into an implementation plan.
+        owner: writing-plans
+      - prompt: Review the completed code against its specification.
+        owner: code-review
+  systematic-debugging:
+    positive:
+      - Diagnose this unexpected failing test before proposing a fix.
+      - Find the root cause of this production error.
+      - Investigate why this behavior changed unexpectedly.
+    negative:
+      - prompt: Design a new feature before implementation.
+        owner: brainstorming
+      - prompt: Implement this approved plan with no reported failure.
+        owner: executing-plans
+  test-driven-development:
+    positive:
+      - Write production code for these features and bug fixes.
+      - Fix this bug by writing a failing regression test first.
+      - Refactor this production code using red-green-refactor.
+    negative:
+      - prompt: Diagnose why the existing test fails unexpectedly.
+        owner: systematic-debugging
+      - prompt: Review the completed implementation before merge.
+        owner: code-review
+  using-code-craft:
+    positive:
+      - Start this engineering session and choose the applicable workflow.
+      - Which code-craft skill applies to this development request?
+      - At the start of this engineering session, choose the workflow before responding about code.
+    negative:
+      - prompt: Create and validate a new skill for this suite.
+        owner: writing-skills
+      - prompt: Roll this completed change out to production.
+        owner: releasing-safely
+  using-git-worktrees:
+    positive:
+      - Start feature work without touching the current workspace.
+      - Create an isolated workspace before executing this plan.
+      - Parallel agents will edit overlapping files, so isolate their work.
+    negative:
+      - prompt: Resume implementation from the approved plan file.
+        owner: executing-plans
+      - prompt: Review the completed branch before merge.
+        owner: code-review
+  verification-before-completion:
+    positive:
+      - Prove the tests pass before saying this is done.
+      - The feature appears complete; verify it before review.
+      - Run fresh evidence before claiming the bug is fixed.
+    negative:
+      - prompt: Diagnose the root cause of this failing test.
+        owner: systematic-debugging
+      - prompt: Verification passed; review the code before merge.
+        owner: code-review
+  writing-plans:
+    positive:
+      - The design is approved; write the implementation plan.
+      - Create a detailed plan before implementation begins.
+      - Turn this approved design into executable plan steps.
+    negative:
+      - prompt: Brainstorm creative options for new projects and behavior changes.
+        owner: brainstorming
+      - prompt: The plan is approved; begin implementing it.
+        owner: executing-plans
+  writing-skills:
+    positive:
+      - Create a new skill for this suite.
+      - Edit this SKILL.md and verify that it changes agent behavior.
+      - Test whether this new skill wording shapes agent behavior.
+    negative:
+      - prompt: Implement this production feature test-first.
+        owner: test-driven-development
+      - prompt: Start the session and choose the applicable workflow skill.
+        owner: using-code-craft

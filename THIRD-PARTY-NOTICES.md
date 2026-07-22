@@ -34,3 +34,12 @@ derived material; copyright notices are preserved as required.
 - Copyright Amazon.com, Inc. or its affiliates
 - Derived: adaptive depth, plan-driven codegen, security baseline,
   state/resume patterns.
+
+## agent-skills
+
+- Source: https://github.com/addyosmani/agent-skills
+- License: MIT
+- Copyright (c) 2025 Addy Osmani
+- Derived: deterministic trigger-ranking structure and description-
+  collision categories. The minimal scorer, parsing, and CI policy are
+  independently implemented for code-craft.
