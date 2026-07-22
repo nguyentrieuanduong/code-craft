@@ -68,6 +68,78 @@ class ParseScenarioTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             runner.parse_scenario(self.write(bad))
 
+    def test_parses_folded_setup(self):
+        source = SAMPLE_SCENARIO.replace(
+            "setup: echo ready",
+            "setup: >-\n  echo ready",
+        )
+        self.assertEqual(
+            runner.parse_scenario(self.write(source))["setup"],
+            "echo ready",
+        )
+
+    def test_rejects_invalid_frontmatter(self):
+        invalid = (
+            SAMPLE_SCENARIO.replace("name: sample", "name: one\nname: two"),
+            SAMPLE_SCENARIO.replace("name: sample", "name: sample\nextra: true"),
+            SAMPLE_SCENARIO.replace(
+                "setup: echo ready", "setup: echo ready\nmax_turns: true"
+            ),
+        )
+        for source in invalid:
+            with self.subTest(source=source):
+                with self.assertRaises(ValueError):
+                    runner.parse_scenario(self.write(source))
+
+
+class ScenarioCliTest(unittest.TestCase):
+    def run_cli(self, *arguments):
+        with tempfile.TemporaryDirectory() as results_dir:
+            return subprocess.run(
+                [
+                    sys.executable,
+                    str(runner.SCENARIOS_DIR / "run.py"),
+                    *arguments,
+                    "--claude-bin",
+                    "true",
+                    "--results-dir",
+                    results_dir,
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
+    def test_model_run_requires_selector(self):
+        completed = self.run_cli()
+        self.assertEqual(completed.returncode, 2)
+        self.assertIn("require scenario paths or explicit --all", completed.stderr)
+
+    def test_allow_many_requires_numeric_budget(self):
+        completed = self.run_cli("--all", "--allow-many", "many")
+        self.assertEqual(completed.returncode, 2)
+        self.assertIn("--allow-many", completed.stderr)
+
+    def test_budget_below_planned_calls_is_rejected(self):
+        scenario = str(runner.find_scenarios()[0])
+        completed = self.run_cli(
+            scenario,
+            "--arm",
+            "both",
+            "--reps",
+            "2",
+            "--allow-many",
+            "1",
+        )
+        self.assertEqual(completed.returncode, 2)
+        self.assertIn("planned model calls: 4; budget: 1", completed.stderr)
+
+    def test_repetitions_must_be_positive(self):
+        scenario = str(runner.find_scenarios()[0])
+        completed = self.run_cli(scenario, "--reps", "0")
+        self.assertEqual(completed.returncode, 2)
+        self.assertIn("--reps must be >= 1", completed.stderr)
+
 
 class ParseTranscriptTest(unittest.TestCase):
     def test_falls_back_to_last_assistant_text_without_result(self):

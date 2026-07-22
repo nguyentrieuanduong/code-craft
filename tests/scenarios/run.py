@@ -22,9 +22,14 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from typing import Any
 
 SCENARIOS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCENARIOS_DIR.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
+from tools.frontmatter import parse_frontmatter  # noqa: E402
+
 RESULTS_DIR = SCENARIOS_DIR / "results"
 NON_SCENARIO_DIRS = {"fixtures", "results", "__pycache__"}
 ALLOWED_TOOLS = "Bash,Read,Write,Edit,Glob,Grep"
@@ -52,6 +57,15 @@ CHECK_TYPES = {
     "test_written_before_source",
     "files_untouched",
 }
+SCENARIO_SCHEMA = {
+    "name": str,
+    "skill": str,
+    "fixture": str,
+    "setup": str,
+    "max_turns": int,
+}
+SCENARIO_REQUIRED = frozenset({"name", "skill"})
+DEFAULT_CALL_CEILING = 2
 
 
 # ---------------------------------------------------------------- scenarios
@@ -75,19 +89,15 @@ def extract_section(body, name):
     return match.group(1).strip()
 
 
-def parse_scenario(path):
-    text = path.read_text()
-    if not text.startswith("---"):
-        raise ValueError(f"{path}: missing frontmatter")
-    _, frontmatter, body = text.split("---", 2)
-    meta = {}
-    for line in frontmatter.strip().splitlines():
-        key, _, value = line.partition(":")
-        if key.strip():
-            meta[key.strip()] = value.strip()
-    for required in ("name", "skill"):
-        if not meta.get(required):
-            raise ValueError(f"{path}: frontmatter needs '{required}'")
+def parse_scenario(path: Path) -> dict[str, Any]:
+    parsed = parse_frontmatter(
+        path.read_text(),
+        schema=SCENARIO_SCHEMA,
+        required=SCENARIO_REQUIRED,
+        context=str(path),
+    )
+    meta = parsed.metadata
+    body = parsed.body
     checks_block = extract_section(body, "Checks")
     match = re.search(r"```json\n(.*?)```", checks_block, re.DOTALL)
     if not match:
@@ -102,7 +112,7 @@ def parse_scenario(path):
         "skill": meta["skill"],
         "fixture": meta.get("fixture"),
         "setup": meta.get("setup"),
-        "max_turns": int(meta.get("max_turns", 30)),
+        "max_turns": meta.get("max_turns", 30),
         "prompt": extract_section(body, "Prompt"),
         "checks": checks,
     }
@@ -418,7 +428,8 @@ def run_arm(scenario, arm, args, rep=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("paths", nargs="*", help="scenario files (default: all)")
+    parser.add_argument("paths", nargs="*", help="scenario files")
+    parser.add_argument("--all", action="store_true")
     parser.add_argument(
         "--arm",
         choices=("skill", "baseline", "both"),
@@ -440,6 +451,13 @@ def main():
         help="repetitions per arm; result files get -rN suffixes",
     )
     parser.add_argument(
+        "--allow-many",
+        type=int,
+        metavar="N",
+        default=None,
+        help="explicit model-call budget for runs requiring more than 2 calls",
+    )
+    parser.add_argument(
         "--results-dir",
         help="write result files here instead of results/ (raw campaign runs)",
     )
@@ -459,6 +477,13 @@ def main():
     )
     args = parser.parse_args()
 
+    if args.paths and args.all:
+        parser.error("choose scenario paths or --all, not both")
+    if not args.dry_run and not args.paths and not args.all:
+        parser.error("model runs require scenario paths or explicit --all")
+    if args.reps < 1:
+        parser.error("--reps must be >= 1")
+
     scenarios = []
     for path in find_scenarios(args.paths):
         try:
@@ -469,6 +494,20 @@ def main():
     if not scenarios:
         print("no scenarios found")
         return 1
+    arm_count = 2 if args.arm == "both" else 1
+    planned_calls = len(scenarios) * arm_count * args.reps
+    if args.allow_many is not None and args.allow_many < 1:
+        parser.error("--allow-many N requires N >= 1")
+    call_budget = (
+        args.allow_many
+        if args.allow_many is not None
+        else DEFAULT_CALL_CEILING
+    )
+    if not args.dry_run and planned_calls > call_budget:
+        parser.error(
+            f"planned model calls: {planned_calls}; budget: {call_budget}; "
+            f"pass --allow-many {planned_calls} to authorize exactly this batch"
+        )
     if args.dry_run:
         for scenario in scenarios:
             print(
