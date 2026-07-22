@@ -72,6 +72,24 @@ class ParseFrontmatterTest(unittest.TestCase):
 
     def test_generated_frontmatter_never_leaks_parser_exceptions(self):
         randomizer = random.Random(0)
+        for _ in range(100):
+            name = f"sample-{randomizer.randrange(1_000_000)}"
+            description = f"Use when generated case {randomizer.randrange(1_000_000)} applies."
+            max_turns = randomizer.randrange(1, 100)
+            source = (
+                f"---\nname: {name}\ndescription: {description}\n"
+                f"max_turns: {max_turns}\n---\n"
+            )
+            parsed = self.parse(source)
+            self.assertEqual(
+                parsed.metadata,
+                {
+                    "name": name,
+                    "description": description,
+                    "max_turns": max_turns,
+                },
+            )
+
         alphabet = "abcdefghijklmnopqrstuvwxyz0123456789:-[]{}'\" ,\n"
         for _ in range(200):
             payload = "".join(
