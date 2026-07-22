@@ -27,6 +27,11 @@ class CatalogTest(unittest.TestCase):
         )
         return path
 
+    def save_cases(self, source):
+        (self.root / "tests" / "routing_cases.yaml").write_text(
+            yaml.safe_dump(source, sort_keys=False)
+        )
+
     def write_cases(self, skills):
         names = tuple(skills)
         cases = {}
@@ -40,9 +45,7 @@ class CatalogTest(unittest.TestCase):
                 ],
             }
         source = {"version": 1, "top_k": 3, "skills": cases}
-        (self.root / "tests" / "routing_cases.yaml").write_text(
-            yaml.safe_dump(source, sort_keys=False)
-        )
+        self.save_cases(source)
         return source
 
     def build_valid_repository(self, names=("alpha", "beta")):
@@ -72,9 +75,7 @@ class CatalogTest(unittest.TestCase):
     def test_reports_missing_routing_coverage(self):
         cases = self.build_valid_repository()
         del cases["skills"]["beta"]
-        (self.root / "tests" / "routing_cases.yaml").write_text(
-            yaml.safe_dump(cases, sort_keys=False)
-        )
+        self.save_cases(cases)
         report = catalog.validate_repository(self.root)
         self.assertIn("beta: missing routing cases", report.errors)
 
@@ -91,9 +92,7 @@ class CatalogTest(unittest.TestCase):
         cases["skills"]["alpha"]["positive"] = [
             "alpha beta banana gamma grape delta date routing"
         ] * 3
-        (self.root / "tests" / "routing_cases.yaml").write_text(
-            yaml.safe_dump(cases, sort_keys=False)
-        )
+        self.save_cases(cases)
         report = catalog.validate_repository(self.root)
         self.assertTrue(any("outside top 3" in error for error in report.errors))
 
@@ -103,9 +102,7 @@ class CatalogTest(unittest.TestCase):
             "prompt": "alpha task",
             "owner": "beta",
         }
-        (self.root / "tests" / "routing_cases.yaml").write_text(
-            yaml.safe_dump(cases, sort_keys=False)
-        )
+        self.save_cases(cases)
         report = catalog.validate_repository(self.root)
         self.assertTrue(
             any("does not outrank alpha" in error for error in report.errors)
@@ -117,9 +114,7 @@ class CatalogTest(unittest.TestCase):
             "prompt": "alpha beta task",
             "owner": "alpha",
         }
-        (self.root / "tests" / "routing_cases.yaml").write_text(
-            yaml.safe_dump(cases, sort_keys=False)
-        )
+        self.save_cases(cases)
         report = catalog.validate_repository(self.root)
         self.assertFalse(
             any("does not outrank beta" in error for error in report.errors)
@@ -162,9 +157,7 @@ class CatalogTest(unittest.TestCase):
         cases["skills"]["alpha"]["positive"] = [
             "alpha beta banana routing"
         ] * 3
-        (self.root / "tests" / "routing_cases.yaml").write_text(
-            yaml.safe_dump(cases, sort_keys=False)
-        )
+        self.save_cases(cases)
         report = catalog.validate_repository(self.root)
         self.assertEqual(report.errors, ())
         self.assertLess(report.rank_first_passed, report.rank_first_total)

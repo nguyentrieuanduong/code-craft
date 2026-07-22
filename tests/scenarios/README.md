@@ -12,7 +12,7 @@ tests/scenarios/
   <skill-name>/NN-<slug>.md   # scenarios for that skill
   fixtures/<name>/            # workspace templates (copied per run)
   results/                    # eval evidence, committed (see CONTRIBUTING.md)
-  run.py                      # headless runner (stdlib only)
+  run.py                      # headless runner
 ```
 
 ## Scenario format
