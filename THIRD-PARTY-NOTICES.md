@@ -4,7 +4,7 @@ code-craft is a synthesis. Skill content, gate patterns, and enforcement
 ideas derive from the following projects. Their license terms apply to the
 derived material; copyright notices are preserved as required.
 
-## superpowers
+## Superpowers
 
 - Source: https://github.com/obra/superpowers
 - License: MIT
@@ -20,22 +20,7 @@ derived material; copyright notices are preserved as required.
 - Derived: verification loop, TDD gates, enforcement-hook patterns,
   security checklists.
 
-## google/skills
-
-- Source: https://github.com/google/skills
-- License: Apache License 2.0
-- Copyright Google LLC
-- Derived: SKILL.md format conventions and safety-guardrail patterns.
-
-## aidlc-workflows (AI-DLC)
-
-- Source: https://github.com/awslabs/aidlc-workflows
-- License: MIT No Attribution (MIT-0)
-- Copyright Amazon.com, Inc. or its affiliates
-- Derived: adaptive depth, plan-driven codegen, security baseline,
-  state/resume patterns.
-
-## agent-skills
+## Agent Skills
 
 - Source: https://github.com/addyosmani/agent-skills
 - License: MIT
@@ -43,3 +28,18 @@ derived material; copyright notices are preserved as required.
 - Derived: deterministic trigger-ranking structure and description-
   collision categories. The minimal scorer, parsing, and CI policy are
   independently implemented for code-craft.
+
+## google/skills
+
+- Source: https://github.com/google/skills
+- License: Apache License 2.0
+- Copyright Google LLC
+- Derived: SKILL.md format conventions and safety-guardrail patterns.
+
+## AI-DLC (aidlc-workflows)
+
+- Source: https://github.com/awslabs/aidlc-workflows
+- License: MIT No Attribution (MIT-0)
+- Copyright Amazon.com, Inc. or its affiliates
+- Derived: adaptive depth, plan-driven codegen, security baseline,
+  state/resume patterns.

@@ -4,10 +4,15 @@ A skill suite for junior developers and smaller models (e.g. Claude Sonnet/Haiku
 It encodes the discipline of a top-tier engineer as explicit rules, hard gates, and
 checklists — so quality comes from process, not raw capability.
 
-Sources, in priority order: [superpowers](https://github.com/obra/superpowers),
-[ECC](https://github.com/affaan-m/ECC), [google/skills](https://github.com/google/skills),
-[AI-DLC](https://github.com/awslabs/aidlc-workflows),
-plus the maintainer's personal coding style.
+Sources, in priority order:
+
+1. [Superpowers](https://github.com/obra/superpowers) — workflow skills, hard gates, rationalization tables
+2. [ECC](https://github.com/affaan-m/ECC) — verification loop, TDD gates, enforcement hooks, security checklists
+3. [Agent Skills](https://github.com/addyosmani/agent-skills) — deterministic trigger-ranking structure and description-collision categories
+4. [google/skills](https://github.com/google/skills) — SKILL.md format conventions, safety-guardrail patterns
+5. [AI-DLC](https://github.com/awslabs/aidlc-workflows) — adaptive depth, plan-driven codegen, security baseline, state/resume
+
+Plus the maintainer's personal coding style.
 
 ## The workflow
 
