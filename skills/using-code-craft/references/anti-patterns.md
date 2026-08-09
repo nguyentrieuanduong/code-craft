@@ -99,7 +99,7 @@ Sections: [1 Framing](#1-framing--brainstorming) ·
 | Check-then-act races (TOCTOU) | `if exists: use` breaks under concurrency | Atomic operations, locks, or design out the shared resource |
 | Null-happy interfaces | Hoare's "billion-dollar mistake": every caller must remember the check (Hoare 2009) | Option types, non-null defaults, empty collections instead of null |
 | Primitive obsession | IDs, money, and time as bare strings/floats invite unit and precision bugs; a lbf·s-vs-N·s mismatch lost Mars Climate Orbiter | Domain types; decimals for money; UTC plus tz-aware libraries for time |
-| Clever code | Code at the limit of your ingenuity is past the limit of your debugging (Kernighan 1974) | Optimize for the reader |
+| Code at the limit of your ingenuity | Past the limit of your debugging (Kernighan 1974); the reader cannot reconstruct intent | Concision is fine — opacity is not: intent readable in one pass |
 | Premature optimization | Micro-tuning cold paths costs clarity for nothing, ~97% of the time (Knuth 1974) | Correct and clear first; profile before touching hot paths — but do design for the critical 3% |
 | Copy-paste divergence | Cloned logic drifts; the bug gets fixed in one of five copies | Extract when genuinely identical and stable (rule of three) — balanced against wrong-abstraction risk |
 | Dead code kept "just in case" | Dormant paths can reactivate: Knight's Power Peg lay dead for ~8 years, then fired (SEC 2013) | Delete it; git remembers |
