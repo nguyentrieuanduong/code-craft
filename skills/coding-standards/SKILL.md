@@ -9,9 +9,11 @@ description: >-
 
 ## Core principles
 
-1. **Readability over cleverness** — optimize for the reader later. Simple
-   ternaries are fine; implicit coercion tricks and dense functional pipelines
-   that obscure intent are not.
+1. **Cleverness bounded by readability** — a simple one-line or inline
+   expression is good, not a smell. Prohibited is hidden intent: implicit
+   coercion, truthiness tricks, side effects buried inside an expression,
+   dense pipelines whose steps cannot be named. Clever in *form* is fine;
+   implicit in *meaning* is not.
 2. **Stateless over stateful** — derive output from inputs. Push state to
    explicit, named stores (DB, cache, queue, object store). No hidden globals,
    no mutable module-level state.
@@ -139,6 +141,16 @@ retries += 1
 
 # ✅ provider throttles bursts >5 rps; spacing calls avoids 429 storms   (the WHY)
 time.sleep(0.2)
+```
+
+**Concise vs. implicit:**
+
+```python
+# ❌ implicit: truthiness conflates 0, "", and None — the trick hides the rule
+timeout = config.get("timeout") or DEFAULT_TIMEOUT
+
+# ✅ still one line, and the rule is readable as written
+timeout = DEFAULT_TIMEOUT if config.get("timeout") is None else config["timeout"]
 ```
 
 ## Review posture
