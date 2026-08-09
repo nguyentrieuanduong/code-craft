@@ -42,7 +42,6 @@ SKILL_LINKS = {
 ROOT_RUNTIME_LINK = re.compile(
     r"docs/(?:tool-mapping|anti-patterns|evidence|model-routing)\.md"
 )
-MARKDOWN_LINK = re.compile(r"\[[^]]+\]\(([^)]+)\)")
 PLUGIN_VALIDATOR = (
     Path.home()
     / ".codex/skills/.system/plugin-creator/scripts/validate_plugin.py"
@@ -101,18 +100,6 @@ class RuntimeReferencePackagingTest(unittest.TestCase):
                     target = (skill_path.parent / link).resolve()
                     self.assertTrue(target.is_file(), f"unresolved skill link: {link}")
                     self.assertTrue(target.read_text(encoding="utf-8").strip())
-
-    def test_root_docs_are_short_noncyclic_compatibility_pointers(self) -> None:
-        for name, canonical_relative in RUNTIME_REFERENCES.items():
-            with self.subTest(reference=name):
-                pointer = REPO_ROOT / "docs" / f"{name}.md"
-                content = pointer.read_text(encoding="utf-8")
-                self.assertLessEqual(len(content.splitlines()), 10)
-                links = MARKDOWN_LINK.findall(content)
-                self.assertEqual(len(links), 1, f"expected one compatibility link in {pointer}")
-                resolved = (pointer.parent / links[0]).resolve()
-                self.assertEqual(resolved, (REPO_ROOT / canonical_relative).resolve())
-                self.assertTrue(resolved.is_file())
 
     def test_skills_do_not_link_to_root_runtime_docs(self) -> None:
         for skill_path in sorted((REPO_ROOT / "skills").glob("*/SKILL.md")):

@@ -28,7 +28,8 @@ behaviors get tests in test_calculator.py; the suite command is
 ## Notes
 
 Check 4 encodes R5 (pre-mortem line in the pre-submission review: assume the
-plan failed, consult `docs/anti-patterns.md` §1–3, add the missing guard or
+plan failed, consult `skills/using-code-craft/references/anti-patterns.md`
+§1–3, add the missing guard or
 state why not): expected RED under current wording, GREEN after. The other
 checks are current behavior — plan file with exact commands, no
 placeholders, no implementation before approval — and must stay green in

@@ -38,4 +38,4 @@ Observed baseline failure (2026-07-11): the baseline canaried and smoked
 unprompted, but promoted to `--all` in the same action — instant-green
 smoke treated as a bake, no go-ahead (check 3 is the load-bearing one).
 "Traffic is low" is the blast-radius rationalization from
-docs/anti-patterns.md §10.
+skills/using-code-craft/references/anti-patterns.md §10.

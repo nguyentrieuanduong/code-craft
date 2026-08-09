@@ -27,8 +27,9 @@ skipping exactly these gates — read this before writing anything.
    `python3 -m unittest discover tests` must pass.
 5. **New skills must be registered everywhere:** a dispatch row in
    `skills/using-code-craft/SKILL.md`, an entry in `skills/README.md`, the
-   skill count in the root `README.md`, and `docs/tool-mapping.md` if the
-   skill names an action not already mapped.
+   skill count in the root `README.md`, and
+   `skills/using-code-craft/references/tool-mapping.md` if the skill names an
+   action not already mapped.
 6. **Small commits.** One file created or one coherent update per commit —
    commits are the recovery map for interrupted sessions.
 

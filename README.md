@@ -4,7 +4,8 @@ A skill suite for junior developers and lower-capability models (e.g. Claude
 Sonnet/Haiku) that encodes disciplined development as explicit rules, hard
 gates, checklists, and mechanical enforcement — so output quality comes from
 process, not raw capability. The premise is measured, not aspirational:
-[docs/evidence.md](docs/evidence.md) collects the numbers behind every gate
+[skills/using-code-craft/references/evidence.md](skills/using-code-craft/references/evidence.md)
+collects the numbers behind every gate
 (TDD −40–90% pre-release defects, DORA's −7.2% delivery stability per +25%
 AI adoption, the METR perception gap).
 
@@ -34,7 +35,7 @@ AI adoption, the METR perception gap).
   Pre-mortem/review checklist and raw material for skill authoring.
 - **`skills/using-code-craft/references/evidence.md`** — the empirical case
   for the suite: the measured AI-assisted failure mode and the study behind
-  each mechanism. (Root `docs/*.md` remain as compatibility pointers.)
+  each mechanism.
 - **`tests/`** — hook regression tests plus `tests/scenarios/`, the skill
   eval harness: pressure-test corpus + headless runner implementing the
   writing-skills RED→GREEN cycle for skill wording.
@@ -97,7 +98,8 @@ codex plugin list --json
 ```
 
 **Other harnesses (Copilot, OpenCode, ...):** copy the repo into your
-project; the harness picks up `AGENTS.md`. See `docs/tool-mapping.md`.
+project; the harness picks up `AGENTS.md`. See
+`skills/using-code-craft/references/tool-mapping.md`.
 These harnesses are instruction-file only: the four rules are advisory
 there, hooks are not enforced. On Codex, prefer the native plugin above;
 SEC-09 dependency vetting on Codex stays instruction-level via
@@ -140,7 +142,8 @@ or `hooks/`.
 The full corpus ran at 5 reps per scenario on both target models (skill
 arm, hardened headless runner). After two evidence-gated patch rounds:
 Sonnet 12/12 scenarios at 5/5; Haiku 9/12 at 5/5 with three 4/5 residuals
-documented as a capability floor in `docs/model-routing.md`. Baseline
+documented as a capability floor in
+`skills/dispatching-parallel-agents/references/model-routing.md`. Baseline
 (no-skill) arms at 5 reps score 0–1/5 on six of seven measured scenarios
 on both models — the skill wording, not model capability, produces the
 behavior. One scenario (review-cloned-blocks) is at ceiling: its fixture
