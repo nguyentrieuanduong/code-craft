@@ -90,11 +90,20 @@ Model-run caveats:
 
 ## Results convention
 
-`results/YYYY-MM-DD-<scenario>-<arm>[-<label>].md`, committed to the repo.
-The runner writes the check table, tool-call list, and truncated final
-response; fill in the "Rationalizations observed" section by hand after
-reading the transcript — verbatim quotes are what feed rationalization
-tables (see `writing-skills`).
+Each run writes two files, both committed to the repo:
+
+- `results/YYYY-MM-DD-<scenario>-<arm>[-<label>].md` — the check table,
+  tool-call list, and truncated final response. Fill in the
+  "Rationalizations observed" section by hand after reading the transcript
+  — verbatim quotes are what feed rationalization tables (see
+  `writing-skills`).
+- The matching `.evidence.json` — the complete final response and every
+  tool input, for comparing runs without truncation.
+
+Before writing either file, the runner replaces text matching the
+secret-scan hook's patterns (`hooks/scan-secrets.py`) with
+`[REDACTED: <kind>]`. Patterns miss unknown formats, so read both files
+before staging them.
 
 Runner internals are regression-tested in `tests/test_scenarios.py` (no API
 calls); run `python3 -m unittest discover tests`.
