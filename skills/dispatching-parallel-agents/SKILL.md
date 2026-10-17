@@ -18,8 +18,9 @@ independent tasks, review their output, and never let unreviewed work pile up.
 3. **No ordering requirement** — either could land first and the build stays green.
 
 Interface boundaries count as dependencies: if task B imports what task A
-defines, B waits for A. When in doubt, sequential — a wrong parallel guess
-costs more than the time saved.
+defines, B waits for A. When in doubt — "close enough" included — sequential:
+a wrong parallel guess (a merge conflict or broken interface later) costs more
+than the time saved.
 
 ## Dispatching
 
@@ -47,8 +48,9 @@ Concerns: <anything the orchestrator must review>
 
 ## Review between waves — never skip
 
-A subagent's report describes what it intended, not what it did. For each
-completed task, before dispatching the next wave:
+A subagent's report — even "DONE" — is a claim of what it intended, not
+evidence of what it did. For each completed task, before dispatching the next
+wave:
 
 1. Read the actual diff (`git show <commits>`) — not just the report.
 2. Check spec compliance against the plan step, then code quality
@@ -62,7 +64,5 @@ completed task, before dispatching the next wave:
 
 | Excuse | Reality |
 |--------|---------|
-| "Tasks look independent, close enough" | "Close enough" means a merge conflict or broken interface later. Apply the three-part test. |
-| "The subagent said DONE, moving on" | Reports are claims. The diff and a fresh test run are evidence. |
 | "Parallelize everything, it's faster" | Dependent tasks done in parallel are done twice. Only genuine independence wins time. |
 | "I'll review all tasks at the end" | Ten unreviewed tasks compound errors. Review each wave before the next. |
