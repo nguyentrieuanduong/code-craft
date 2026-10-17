@@ -123,7 +123,7 @@ repos is needed to use it. Credit to the sources it was merged from, in
 priority order:
 
 1. [Superpowers](https://github.com/obra/superpowers) — workflow skills, hard gates, rationalization tables
-2. [How the Claude Code team does code review](https://claude.dev/blog/solving-code-review-at-anthropic/) - for code review flow
+2. [How the Claude Code team does code review](https://claude.dev/blog/solving-code-review-at-anthropic/) — verified findings, fresh-context review, a separate security pass, risk-tiered human review, and capped re-review rounds
 3. [ECC](https://github.com/affaan-m/ECC) — verification loop, TDD gates, enforcement hooks, security checklists
 4. [Agent Skills](https://github.com/addyosmani/agent-skills) — deterministic trigger-ranking structure and description-collision categories
 5. [google/skills](https://github.com/google/skills) — SKILL.md format conventions, safety-guardrail patterns
