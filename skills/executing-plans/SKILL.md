@@ -16,8 +16,7 @@ your job is mechanical, disciplined execution — not improvisation.
 ### 1. Load state
 
 - Read the plan file. Find the first unchecked `[ ]` step. That is your next
-  action — always. This makes work resumable after any interruption or
-  session restart.
+  action — always.
 - If all steps are checked, invoke **verification-before-completion**, then
   **code-review**.
 
@@ -31,16 +30,13 @@ your job is mechanical, disciplined execution — not improvisation.
 - Brownfield: modify the existing file in place. Creating `X_modified` or
   `X_new` copies is forbidden.
 
-### 3. Record progress
+### 3. Record progress, then repeat
 
 - On completion, flip `[ ]` to `[x]` in the plan file immediately — not in
-  batches at the end.
+  batches at the end; context can vanish any time.
 - Commit when the step says to commit. Small commits are the recovery map:
   if context is lost, `git log` + plan checkboxes reconstruct the state.
-
-### 4. Repeat
-
-One step at a time until the task's steps are done, then move to the next task.
+- One step at a time until the task's steps are done, then move to the next task.
 
 ## Stop conditions — halt and consult the user
 
@@ -51,7 +47,7 @@ Stop executing and report when:
    propose a plan amendment and get approval.
 2. **A test fails unexpectedly** (not the planned RED). Invoke
    **systematic-debugging**. Never comment out, skip, or weaken a test to
-   proceed.
+   proceed — a skipped test is a lie in the codebase.
 3. **Scope appears mid-flight.** Something needed is missing from the plan.
    Add it to the plan as a new task, get approval, then continue.
 4. **Three consecutive failures** on the same step. Question the approach
@@ -63,5 +59,3 @@ Stop executing and report when:
 |--------|---------|
 | "While I'm here, I'll also improve..." | Scope creep. The plan defines the work. File it as a follow-up. |
 | "This step is close enough, I'll adapt" | Silent adaptation breaks traceability. Amend the plan explicitly. |
-| "I'll update the checkboxes at the end" | Context can vanish any time. State updates are immediate. |
-| "Skipping this failing test unblocks me" | A skipped test is a lie in the codebase. Debug it. |
