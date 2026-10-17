@@ -25,7 +25,8 @@ review with its verdicts.
   {"type": "output_not_matches", "pattern": "(?i)(?<!not )(?<!n't )(ready to merge|merge-ready|safe to merge)"},
   {"type": "output_matches", "pattern": "(?i)diff:? *\\d+ changed lines"},
   {"type": "output_matches", "pattern": "(?i)\\b(0|no|zero) actionable findings?"},
-  {"type": "output_not_matches", "pattern": "(?i)affected consumers|impact check"}
+  {"type": "output_not_matches", "pattern": "(?i)affected consumers|impact check"},
+  {"type": "output_matches", "pattern": "(?i)not independent|inline fallback"}
 ]
 ```
 
@@ -39,3 +40,6 @@ evidence. Each check traces to a design item; later tasks append theirs.
   zero count.
 - check 7 (B7, design item 5): a single-module change outside the listed
   categories gets no impact section.
+- check 8 (B8, design item 6): with no isolated subagent available (the
+  runner disables Agent/Task), the verdict discloses the review is not
+  independent.
