@@ -130,6 +130,7 @@ class GuardBashTest(unittest.TestCase):
         "git --config-env=core.hooksPath=HOOKS commit -m wip",
         "git -C repo commit -n -m wip",
         "git -C repo push -f origin main",
+        "git commit --mes wip --no-verify",
     )
     ALLOWED = (
         "git push origin main",
@@ -144,6 +145,7 @@ class GuardBashTest(unittest.TestCase):
         "git commit -mn",
         "git commit -m -n",
         "git commit --message --no-verify",
+        "git commit --mes --no-verify --allow-empty",
         "git commit -uno -m wip",
         "git commit --no-verbose -m wip",
         "git commit -m wip -- --no-verify",
