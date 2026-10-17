@@ -102,7 +102,9 @@ Each run writes two files, both committed to the repo:
 
 Before writing either file, the runner replaces text matching the
 secret-scan hook's patterns (`hooks/scan-secrets.py`) with
-`[REDACTED: <kind>]`. Patterns miss unknown formats, so read both files
+`[REDACTED: <kind>]`, removing a private key block through its END line.
+Patterns miss unknown formats and some known ones (for example
+`db_password = "..."` or an unquoted `PASSWORD=...`), so read both files
 before staging them.
 
 Runner internals are regression-tested in `tests/test_scenarios.py` (no API
