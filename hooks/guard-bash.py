@@ -11,9 +11,12 @@ values (`-m '--no-verify'`, `-mn`), and unambiguous long-option prefixes
 (`--no-veri`).
 Exit 2 denies the command and feeds stderr back to the model.
 """
+from __future__ import annotations
+
 import json
 import shlex
 import sys
+from typing import Iterator, Optional, Sequence
 
 from hook_payload import command as payload_command
 
@@ -63,11 +66,11 @@ FORCE_PUSH_MSG = (
 )
 
 
-def split_commands(command):
+def split_commands(command: str) -> Iterator[list[str]]:
     """Yield the token list of each simple command in a compound line."""
     lex = shlex.shlex(command, posix=True, punctuation_chars=True)
     lex.whitespace_split = True
-    segment = []
+    segment: list[str] = []
     for token in lex:
         if token and all(ch in ";&|" for ch in token):
             if segment:
@@ -79,20 +82,20 @@ def split_commands(command):
         yield segment
 
 
-def targets_protected_branch(token):
+def targets_protected_branch(token: str) -> bool:
     destination = token.lstrip("+").split(":")[-1]
     return destination in PROTECTED_BRANCHES or destination.endswith(
         tuple(f"/{branch}" for branch in PROTECTED_BRANCHES)
     )
 
 
-def overrides_hooks_path(setting):
+def overrides_hooks_path(setting: str) -> bool:
     return setting.split("=", 1)[0].strip().lower() == "core.hookspath"
 
 
-def parse_invocation(args):
+def parse_invocation(args: Sequence[str]) -> tuple[list[str], Optional[str], Sequence[str]]:
     """Split git's arguments into (config settings, subcommand, its args)."""
-    settings = []
+    settings: list[str] = []
     index = 0
     while index < len(args) and args[index].startswith("-"):
         option = args[index]
@@ -111,7 +114,7 @@ def parse_invocation(args):
     return settings, args[index], args[index + 1:]
 
 
-def short_cluster_has_no_verify(subcommand, cluster):
+def short_cluster_has_no_verify(subcommand: str, cluster: str) -> tuple[bool, bool]:
     """Scan `-anm`-style clusters; `-n` means --no-verify on commit only."""
     value_options = SHORT_VALUE_OPTIONS.get(subcommand, frozenset())
     stuck_options = SHORT_STUCK_OPTIONS.get(subcommand, frozenset())
@@ -123,8 +126,17 @@ def short_cluster_has_no_verify(subcommand, cluster):
     return False, False
 
 
-def has_no_verify(subcommand, args):
-    long_values = LONG_VALUE_OPTIONS.get(subcommand, frozenset())
+def takes_separate_value(subcommand: str, name: str) -> bool:
+    """True when `name`, or the one listed option it abbreviates, takes a value.
+
+    Git accepts any unambiguous long-option prefix (`--mes` is `--message`).
+    A prefix matching several listed options is ambiguous, which git rejects.
+    """
+    options = LONG_VALUE_OPTIONS.get(subcommand, frozenset())
+    return name in options or sum(option.startswith(name) for option in options) == 1
+
+
+def has_no_verify(subcommand: str, args: Sequence[str]) -> bool:
     skip_next = False
     for arg in args:
         if skip_next:
@@ -136,7 +148,7 @@ def has_no_verify(subcommand, args):
             name = arg.split("=", 1)[0]
             if len(name) >= len(NO_VERIFY_MIN_PREFIX) and NO_VERIFY_FLAG.startswith(name):
                 return True
-            skip_next = name in long_values and "=" not in arg
+            skip_next = "=" not in arg and takes_separate_value(subcommand, name)
         elif arg.startswith("-") and len(arg) > 1:
             found, skip_next = short_cluster_has_no_verify(subcommand, arg[1:])
             if found:
@@ -144,7 +156,7 @@ def has_no_verify(subcommand, args):
     return False
 
 
-def force_pushes_protected_branch(args):
+def force_pushes_protected_branch(args: Sequence[str]) -> bool:
     forced = any(arg == "-f" or arg.startswith("--force") for arg in args)
     for arg in args:
         if arg.startswith("-"):
@@ -154,7 +166,7 @@ def force_pushes_protected_branch(args):
     return False
 
 
-def violation(tokens):
+def violation(tokens: Sequence[str]) -> Optional[str]:
     if "git" not in tokens:
         return None
     settings, subcommand, args = parse_invocation(tokens[tokens.index("git") + 1:])
