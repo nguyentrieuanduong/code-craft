@@ -11,27 +11,25 @@ description: >-
 Turn a vague request into a design the user has explicitly approved.
 
 **HARD GATE: You may not write production code, scaffold files, or "just
-prototype" until the user says the design is approved. There are no exceptions.**
+prototype" until the user says the design is approved — prototypes anchor
+decisions and become production code. There are no exceptions.**
 
 ## Process
 
 ### 1. Assess the request (silently, first)
-
-Classify before doing anything:
 
 - **Clarity**: clear / vague / incomplete
 - **Type**: new feature / enhancement / refactor / migration / new project
 - **Scope**: single file / single module / cross-module / cross-system
 - **Complexity**: trivial / standard / complex
 
-This assessment sets the depth of everything below. Trivial + clear =
-one-paragraph design and a single confirming question. Complex or vague =
-full process.
+This sets the depth of everything below: trivial + clear = one-paragraph
+design and a single confirming question; complex or vague = full process.
 
 ### 2. Explore context
 
-Read before asking. Check relevant files, existing patterns, docs, and recent
-commits. Never ask the user something the codebase already answers.
+Read before asking: relevant files, existing patterns, docs, recent commits.
+Never ask the user something the codebase already answers.
 
 ### 3. Ask clarifying questions
 
@@ -58,24 +56,22 @@ commits. Never ask the user something the codebase already answers.
 
 ### 6. Self-review before presenting
 
-Scan your own design for:
+Scan your design for:
 
 - [ ] Placeholders ("TBD", "figure out later", "somehow")
 - [ ] Internal contradictions
 - [ ] Scope creep beyond the request
 - [ ] Ambiguity a junior developer could misread
-- [ ] Missing acceptance criteria
 
 ### 7. Get approval
 
-Present the design and ask for explicit approval. Silence is not approval.
-Then — and only then — invoke **writing-plans**. Never jump straight to code.
+Present the design and ask for explicit approval; silence is not approval.
+Only then invoke **writing-plans**.
 
 ## Forbidden rationalizations
 
 | Excuse | Reality |
 |--------|---------|
 | "The request is obvious, I'll just build it" | Obvious requests hide ambiguous edges. Confirm intent in one sentence, then proceed. |
-| "I'll prototype while we discuss" | Prototypes anchor decisions and become production code. Gate stands. |
 | "Asking questions looks incompetent" | Wrong assumptions look worse and cost more. |
 | "The user already said what they want" | They said WHAT. The design captures HOW and confirms edges. |
