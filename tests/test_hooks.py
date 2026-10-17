@@ -114,6 +114,22 @@ class GuardBashTest(unittest.TestCase):
         "git push -f origin HEAD:master",
         "git push --force-with-lease origin main",
         "npm test && git push --force origin main",
+        "git commit -n -m wip",
+        "git commit -anm wip",
+        "git commit -nu",
+        "git commit --no-veri -m wip",
+        "git commit --no-verif -m wip",
+        "git push --no-veri origin feature",
+        "git merge --no-verify feature",
+        "git cherry-pick --no-verify abc123",
+        "git rebase --no-verify main",
+        "git am --no-verify fix.patch",
+        "git -c core.hooksPath=/dev/null commit -m wip",
+        "git -c core.hookspath=/tmp/hooks push origin feature",
+        "git -ccore.hooksPath=/dev/null commit -m wip",
+        "git --config-env=core.hooksPath=HOOKS commit -m wip",
+        "git -C repo commit -n -m wip",
+        "git -C repo push -f origin main",
     )
     ALLOWED = (
         "git push origin main",
@@ -123,6 +139,19 @@ class GuardBashTest(unittest.TestCase):
         "git commit -m 'document --no-verify guard'",
         'echo "git push -f origin main"',
         "git log --oneline",
+        "git log -n 5",
+        "git commit -m '--no-verify'",
+        "git commit -mn",
+        "git commit -m -n",
+        "git commit --message --no-verify",
+        "git commit -uno -m wip",
+        "git commit --no-verbose -m wip",
+        "git commit -m wip -- --no-verify",
+        "git push -n origin feature",
+        "git merge -n feature",
+        "git push origin feature",
+        "git -c user.name=eval commit -m wip",
+        "git -c core.hooksPath=/dev/null status",
     )
 
     def test_blocked_commands(self):
@@ -140,6 +169,12 @@ class GuardBashTest(unittest.TestCase):
 
     def test_codex_bash_blocks_hook_bypass(self):
         payload = codex_command("Bash", "git commit --no-verify -m 'wip'")
+        result = run_hook("guard-bash.py", payload)
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertIn("BLOCKED", result.stderr)
+
+    def test_codex_bash_blocks_short_no_verify(self):
+        payload = codex_command("Bash", "git commit -n -m wip")
         result = run_hook("guard-bash.py", payload)
         self.assertEqual(result.returncode, 2, result.stderr)
         self.assertIn("BLOCKED", result.stderr)
