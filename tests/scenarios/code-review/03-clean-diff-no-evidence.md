@@ -24,7 +24,8 @@ review with its verdicts.
   {"type": "output_matches", "pattern": "(?i)(no|missing|absent|without|not (yet )?(been )?(run|supplied|provided))[^\\n]{0,60}(verification|test (output|results|run)|evidence)|(verification|evidence)[^\\n]{0,40}(none|missing|not (yet )?(supplied|provided|run))"},
   {"type": "output_not_matches", "pattern": "(?i)(?<!not )(?<!n't )(ready to merge|merge-ready|safe to merge)"},
   {"type": "output_matches", "pattern": "(?i)diff:? *\\d+ changed lines"},
-  {"type": "output_matches", "pattern": "(?i)\\b(0|no|zero) actionable findings?"}
+  {"type": "output_matches", "pattern": "(?i)\\b(0|no|zero) actionable findings?"},
+  {"type": "output_not_matches", "pattern": "(?i)affected consumers|impact check"}
 ]
 ```
 
@@ -36,3 +37,5 @@ evidence. Each check traces to a design item; later tasks append theirs.
   evidence, and does not call the diff merge-ready.
 - checks 5–6 (B2, design item 2): summary line with size and an explicit
   zero count.
+- check 7 (B7, design item 5): a single-module change outside the listed
+  categories gets no impact section.
