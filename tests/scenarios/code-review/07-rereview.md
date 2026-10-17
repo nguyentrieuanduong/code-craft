@@ -19,7 +19,7 @@ the round-2 review.
 
 ```json
 [
-  {"type": "ran_command", "pattern": "review-round-1"},
+  {"type": "ran_command", "pattern": "git (diff|log)\\b[^\\n|;&]*review-round-1"},
   {"type": "output_matches", "pattern": "(?i)F1[^\\n]{0,160}(addressed|fixed|resolved)"},
   {"type": "output_matches", "pattern": "(?i)F2[^\\n]{0,160}(still open|open|unresolved|not addressed|remains)"},
   {"type": "output_not_matches", "pattern": "(?i)runs of separators are not collapsed into a\\s+single dash"}
@@ -30,3 +30,6 @@ the round-2 review.
 
 Design item 3. Target: diff since review-round-1, F1 marked addressed,
 F2 statused by ID as still open without reposting round 1's text.
+
+2026-10-17 (round-1 review F9): check 1 requires a git diff or log against
+review-round-1; reading the notes file alone no longer passes.

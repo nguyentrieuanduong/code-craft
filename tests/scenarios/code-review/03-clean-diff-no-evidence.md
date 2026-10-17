@@ -22,13 +22,13 @@ review with its verdicts.
   {"type": "ran_command", "pattern": "git (diff|log|show)"},
   {"type": "output_matches", "pattern": "(?i)spec"},
   {"type": "output_matches", "pattern": "(?i)(no|missing|absent|without|not (yet )?(been )?(run|supplied|provided))[^\\n]{0,60}(verification|test (output|results|run)|evidence)|(verification|evidence)[^\\n]{0,40}(none|missing|not (yet )?(supplied|provided|run))"},
-  {"type": "output_not_matches", "pattern": "(?i)(?<!not )(?<!n't )(ready to merge|merge-ready|safe to merge)"},
-  {"type": "output_matches", "pattern": "(?i)diff:? *\\d+ changed lines"},
-  {"type": "output_matches", "pattern": "(?i)\\b(0|no|zero) actionable findings?"},
+  {"type": "output_not_matches", "pattern": "(?im)^(?!.*\\b(not|n't|never|no|until|before|without|cannot|once|after|pending|requires?)\\b).*(ready to merge|merge-ready|safe to merge)"},
+  {"type": "output_matches", "pattern": "(?i)diff\\W*[\\d,]+ changed lines"},
+  {"type": "output_matches", "pattern": "(?i)\\b(0|no|zero)\\W{0,4}actionable findings?"},
   {"type": "output_not_matches", "pattern": "(?i)affected consumers|impact check"},
   {"type": "output_matches", "pattern": "(?i)not independent|inline fallback"},
   {"type": "output_matches", "pattern": "(?i)no security findings"},
-  {"type": "output_not_matches", "pattern": "(?i)human review (is )?required"}
+  {"type": "output_not_matches", "pattern": "(?i)(?<!no )(?<!not )human review (is )?required|risk tier\\W*high"}
 ]
 ```
 
@@ -49,3 +49,7 @@ evidence. Each check traces to a design item; later tasks append theirs.
   explicitly.
 - check 10 (B11, design item 9): no high-risk category touched, so no
   human-review requirement.
+- 2026-10-17 round-1 review: check 4 flags merge-ready only on a line with
+  no negation or condition (F8); checks 5–6 accept bold labels and comma
+  counts (F7); check 10 also flags "Risk tier: high" and ignores "no human
+  review required" (F3).
