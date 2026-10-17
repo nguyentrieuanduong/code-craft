@@ -38,15 +38,26 @@ def _load_secret_patterns():
 
     hooks_dir = REPO_ROOT / "hooks"
     sys.path.insert(0, str(hooks_dir))
-    spec = importlib.util.spec_from_file_location(
-        "scan_secrets", hooks_dir / "scan-secrets.py"
-    )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    try:
+        spec = importlib.util.spec_from_file_location(
+            "scan_secrets", hooks_dir / "scan-secrets.py"
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+    finally:
+        sys.path.remove(str(hooks_dir))
     return module.SECRET_PATTERNS
 
 
-SECRET_PATTERNS = _load_secret_patterns()
+# The hook's private-key pattern matches only the header, which is enough to
+# block a write but not to redact one: this span also removes the key body
+# (through the END line, or to the end of an unterminated block).
+REDACTION_PATTERNS = (
+    ("Private key block", re.compile(
+        r"(?s)-----BEGIN [A-Z ]*PRIVATE KEY-----"
+        r".*?(?:-----END [A-Z ]*PRIVATE KEY-----|\Z)"
+    )),
+) + _load_secret_patterns()
 
 RESULTS_DIR = SCENARIOS_DIR / "results"
 NON_SCENARIO_DIRS = {"fixtures", "results", "__pycache__"}
@@ -451,7 +462,7 @@ def run_claude(scenario, workspace, skill_text, args):
 def redact_secrets(value):
     """Return a copy of a transcript value with secret-shaped strings masked."""
     if isinstance(value, str):
-        for label, pattern in SECRET_PATTERNS:
+        for label, pattern in REDACTION_PATTERNS:
             value = pattern.sub(f"[REDACTED: {label}]", value)
         return value
     if isinstance(value, dict):
