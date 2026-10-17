@@ -72,7 +72,8 @@ Ask for THREE separate verdicts (they fail independently):
   taste. Where the design is silent, judge by what a reasonable user
   would expect; when intent cannot be established, list the question
   under **Declined to judge** instead of any Blocking or Should-fix
-  finding on that behavior.
+  finding on that behavior. Any test you request asserts only what the
+  design states, so it holds whichever way the question is answered.
 - Check what is NOT there: missing worst-case tests, missing boundary
   validation, silently dropped requirements.
 - **Search the diff for cloned blocks.** Repeated or near-identical code is
