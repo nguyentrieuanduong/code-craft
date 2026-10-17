@@ -26,7 +26,8 @@ review with its verdicts.
   {"type": "output_matches", "pattern": "(?i)diff:? *\\d+ changed lines"},
   {"type": "output_matches", "pattern": "(?i)\\b(0|no|zero) actionable findings?"},
   {"type": "output_not_matches", "pattern": "(?i)affected consumers|impact check"},
-  {"type": "output_matches", "pattern": "(?i)not independent|inline fallback"}
+  {"type": "output_matches", "pattern": "(?i)not independent|inline fallback"},
+  {"type": "output_matches", "pattern": "(?i)no security findings"}
 ]
 ```
 
@@ -43,3 +44,5 @@ evidence. Each check traces to a design item; later tasks append theirs.
 - check 8 (B8, design item 6): with no isolated subagent available (the
   runner disables Agent/Task), the verdict discloses the review is not
   independent.
+- check 9 (B9, design item 7): the security pass states its clean result
+  explicitly.
