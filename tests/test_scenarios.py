@@ -5,6 +5,7 @@ Covers scenario parsing, transcript parsing, every check type, and the
 shipped corpus + fixtures. Run: python3 -m unittest discover tests
 """
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -417,6 +418,64 @@ class FixtureTest(unittest.TestCase):
             )
         )
         self.assertGreater(insertions, 400)
+
+
+class ReviewCasesFixtureTest(unittest.TestCase):
+    VARIANTS = (
+        "clean", "offbyone", "preexisting", "ambiguous", "rereview",
+        "roundcap", "consumer", "sqli", "symptomfix", "highrisk", "reviewmd",
+    )
+
+    def build(self, variant):
+        workspace = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, workspace, ignore_errors=True)
+        setup = runner.SCENARIOS_DIR / "fixtures" / "review-cases" / "setup.sh"
+        subprocess.run(
+            ["bash", str(setup), variant],
+            cwd=workspace,
+            check=True,
+            capture_output=True,
+        )
+        return workspace
+
+    def run_in(self, workspace, *command):
+        return subprocess.run(
+            command, cwd=workspace, capture_output=True, text=True
+        )
+
+    def test_every_variant_is_green_and_ahead_of_main(self):
+        for variant in self.VARIANTS:
+            with self.subTest(variant=variant):
+                workspace = self.build(variant)
+                suite = self.run_in(
+                    workspace, sys.executable, "-m", "unittest", "discover", "tests"
+                )
+                self.assertEqual(suite.returncode, 0, suite.stderr)
+                ahead = self.run_in(workspace, "git", "rev-list", "--count", "main..HEAD")
+                self.assertGreater(int(ahead.stdout), 0)
+
+    def test_offbyone_drops_last_item_of_page(self):
+        workspace = self.build("offbyone")
+        result = self.run_in(
+            workspace, sys.executable, "-c",
+            "import sys; sys.path.insert(0, 'src'); from paginate import page; "
+            "print(len(page(list(range(10)), 1, 5)))",
+        )
+        self.assertEqual(result.stdout.strip(), "4")
+
+    def test_consumer_variant_breaks_unchanged_caller(self):
+        workspace = self.build("consumer")
+        result = self.run_in(
+            workspace, sys.executable, "-c",
+            "import sys; sys.path.insert(0, 'src'); from invoice import invoice_line; "
+            "invoice_line('pen', 2)",
+        )
+        self.assertIn("TypeError", result.stderr)
+
+    def test_roundcap_has_three_reviewed_rounds(self):
+        workspace = self.build("roundcap")
+        tags = self.run_in(workspace, "git", "tag", "--list", "review-round-*")
+        self.assertEqual(tags.stdout.split(), ["review-round-1", "review-round-2", "review-round-3"])
 
 
 if __name__ == "__main__":
