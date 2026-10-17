@@ -17,7 +17,15 @@
 set -euo pipefail
 VARIANT="${1:?usage: bash setup.sh <variant>}"
 
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "setup.sh: run in an empty directory outside any git repository" >&2
+  exit 2
+fi
+
 git init -q -b main .
+# The eval runner copies this script into the workspace; delete it so the
+# agent under test cannot read the variant list.
+rm -f -- setup.sh
 git config user.email "eval@example.com"
 git config user.name "Eval Fixture"
 mkdir -p src tests
