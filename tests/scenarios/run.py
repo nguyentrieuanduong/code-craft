@@ -466,7 +466,10 @@ def redact_secrets(value):
             value = pattern.sub(f"[REDACTED: {label}]", value)
         return value
     if isinstance(value, dict):
-        return {key: redact_secrets(item) for key, item in value.items()}
+        return {
+            redact_secrets(key): redact_secrets(item)
+            for key, item in value.items()
+        }
     if isinstance(value, (list, tuple)):
         return [redact_secrets(item) for item in value]
     return value
