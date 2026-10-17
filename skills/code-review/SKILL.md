@@ -75,6 +75,9 @@ Ask for TWO separate verdicts (they fail independently):
 - Classify findings: **Blocking** (spec violation, security, broken
   tests) and **Should-fix** (standards violation) are actionable and
   counted; **Nit** is optional, one line each, not counted.
+  **Pre-existing** is a problem the diff did not introduce and its
+  approved scope does not cover: report it in its own section; never
+  count it or block on it.
 - No filler praise. A short "spec-compliant, 0 actionable findings" beats
   a paragraph of compliments.
 
@@ -99,3 +102,4 @@ Ask for TWO separate verdicts (they fail independently):
 | "The diff is big, but I can review it all" | Nobody can — detection rates collapse past ~400 changed lines. State the size verdict first, recommend the split, then do your best. |
 | "No test output, so I can't review yet" | Review what exists and name the missing evidence. Calling it merge-ready without evidence is the failure, not reviewing early. |
 | "I'm fairly sure this is a bug" | Unverified is a guess. Name the line and the concrete effect, or list it under Declined to judge. |
+| "This old bug is right there, I'll block on it" | The diff didn't introduce it. Label it Pre-existing so it gets tracked without blaming this change. |
