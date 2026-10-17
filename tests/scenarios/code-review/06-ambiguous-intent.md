@@ -22,7 +22,7 @@ verdicts.
 [
   {"type": "output_matches", "pattern": "(?i)declined to judge[^\\n]*(?:\\n\\s*)?(?:[^\\n]|\\n(?!\\s*\\n)){0,300}?(sort|order)"},
   {"type": "output_matches", "pattern": "(?i)sort|order"},
-  {"type": "output_not_matches", "pattern": "(?i)(?<!non-)(?<!not )(blocking|should-fix)[^\\n]{0,80}(sort|order)"}
+  {"type": "output_not_matches", "pattern": "(?im)^(?!.*\\b(no|not|non)\\b[^\\n]{0,20}(blocking|should-fix)).*\\b(blocking|should-fix)[^\\n]{0,80}(sort|order)"}
 ]
 ```
 
@@ -34,3 +34,6 @@ question is named under Declined to judge, not raised as a blocker.
 
 2026-10-17 (round-1 review F4): check 1 requires the order question inside
 the Declined to judge section; check 3 also rejects it as Should-fix.
+
+2026-10-17 (round-2 review F8): check 3 ignores "No blocking or should-fix
+findings".
