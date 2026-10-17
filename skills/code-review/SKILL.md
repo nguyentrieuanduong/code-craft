@@ -39,9 +39,13 @@ Ask for TWO separate verdicts (they fail independently):
 ## Performing review (when you are the reviewer)
 
 - **Step 0 — diff size verdict, before any code comment.** Run
-  `git diff main...HEAD --stat` and OPEN the review with the number and its
-  verdict: "Diff: N changed lines — within/over the ~400-line review
-  threshold." Past ~400 changed lines, reviewer defect detection collapses
+  `git diff main...HEAD --stat` and OPEN the review with one summary
+  line: "Diff: {changed_lines} changed lines — within/over the ~400-line
+  review threshold. {count} actionable {finding_or_findings}." Use the
+  measured line count; write "finding" for 1 and "findings" otherwise.
+  Actionable means Blocking or
+  Should-fix; write 0 when there are none and say plainly that nothing
+  needs fixing. Past ~400 changed lines, reviewer defect detection collapses
   (see `../using-code-craft/references/evidence.md`): if over, the review's
   FIRST finding is that the
   diff is too large and should be split into independently reviewable
@@ -61,12 +65,18 @@ Ask for TWO separate verdicts (they fail independently):
   already existing elsewhere in the repo — cite the existing utility's
   path and propose importing it (promote it if private) instead of
   keeping the copy.
-- Cite evidence for every finding: file, line, and the rule or spec clause it
-  violates. No vague "this could be better".
-- Classify findings: **Blocking** (spec violation, security, broken tests) /
-  **Should-fix** (standards violation) / **Nit** (optional).
-- No filler praise. A short "spec-compliant, no blocking findings" beats a
-  paragraph of compliments.
+- **Verify every finding before presenting it.** Re-read the cited lines
+  and check the claim against the diff and the repository. Each
+  actionable finding states the responsible file and line (or the exact
+  omitted requirement when no line exists), the observed or reproducible
+  effect (input → wrong result), and its severity. A candidate you cannot
+  make concrete is not a finding: drop it, or list it under **Declined to
+  judge** without a fix request. No vague "this could be better".
+- Classify findings: **Blocking** (spec violation, security, broken
+  tests) and **Should-fix** (standards violation) are actionable and
+  counted; **Nit** is optional, one line each, not counted.
+- No filler praise. A short "spec-compliant, 0 actionable findings" beats
+  a paragraph of compliments.
 
 ## Receiving review
 
@@ -88,3 +98,4 @@ Ask for TWO separate verdicts (they fail independently):
 | "Review will catch what I missed" | Review is a safety net, not a substitute for verification. Arrive clean. |
 | "The diff is big, but I can review it all" | Nobody can — detection rates collapse past ~400 changed lines. State the size verdict first, recommend the split, then do your best. |
 | "No test output, so I can't review yet" | Review what exists and name the missing evidence. Calling it merge-ready without evidence is the failure, not reviewing early. |
+| "I'm fairly sure this is a bug" | Unverified is a guess. Name the line and the concrete effect, or list it under Declined to judge. |
