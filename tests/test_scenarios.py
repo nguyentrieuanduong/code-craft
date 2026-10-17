@@ -504,6 +504,22 @@ class WriteResultTest(unittest.TestCase):
             )
             self.assertEqual(evidence["final_text"], "response " * 600 + key)
 
+    def test_redacts_the_whole_private_key_block(self):
+        # Built at runtime so this file holds no secret-shaped literal.
+        marker = "PRIVATE " + "KEY-----"
+        body = "MIIEowIBAAKCAQEA" + "b" * 40
+        pem = f"-----BEGIN RSA {marker}\n{body}\n-----END RSA {marker}\n"
+        redacted = runner.redact_secrets(
+            [("Write", {"file_path": "id_rsa", "content": "before\n" + pem + "after"})]
+        )
+        content = redacted[0][1]["content"]
+        self.assertNotIn(body, content)
+        self.assertEqual(content, "before\n[REDACTED: Private key block]\nafter")
+        self.assertEqual(
+            runner.redact_secrets(f"-----BEGIN {marker}\n{body}"),
+            "[REDACTED: Private key block]",
+        )
+
 
 class DisallowedToolsTest(unittest.TestCase):
     def test_both_plan_mode_tools_blocked(self):
