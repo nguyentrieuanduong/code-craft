@@ -449,6 +449,31 @@ class RepLabelTest(unittest.TestCase):
         self.assertEqual(runner.rep_label(None, 3), "r3")
 
 
+class WriteResultTest(unittest.TestCase):
+    def test_preserves_full_response_and_tool_input(self):
+        from types import SimpleNamespace
+
+        with tempfile.TemporaryDirectory() as directory:
+            scenario = {
+                "name": "sample",
+                "path": runner.REPO_ROOT / "tests/scenarios/writing-skills/01-lean-evaluation.md",
+            }
+            evidence = transcript(
+                tool_uses=[("Bash", {"command": "x" * 200})],
+                final_text="response " * 600,
+            )
+            result = runner.write_result(
+                scenario, "skill", "bench1", [], evidence,
+                SimpleNamespace(results_dir=directory, model="sonnet"),
+                "skills/writing-skills/SKILL.md",
+            )
+            saved = json.loads(result.with_suffix(".evidence.json").read_text())
+            # JSON stores tool_uses tuples as lists; 5,400 and 200 characters
+            # exceed the Markdown excerpt limits (4,000 and 160).
+            self.assertEqual(saved["final_text"], "response " * 600)
+            self.assertEqual(saved["tool_uses"], [["Bash", {"command": "x" * 200}]])
+
+
 class DisallowedToolsTest(unittest.TestCase):
     def test_both_plan_mode_tools_blocked(self):
         # EnterPlanMode alone is enough to leak plan drafts into

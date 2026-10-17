@@ -471,6 +471,9 @@ def write_result(scenario, arm, label, results, transcript, args, skill_file):
         "",
     ]
     out.write_text("\n".join(lines))
+    out.with_suffix(".evidence.json").write_text(
+        json.dumps(transcript, indent=2) + "\n"
+    )
     return out
 
 
