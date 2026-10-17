@@ -116,6 +116,9 @@ Ask for THREE separate verdicts (they fail independently):
 - Classify findings: **Blocking** (spec violation, security, broken
   tests) and **Should-fix** (standards violation) are actionable and
   counted; **Nit** is optional, one line each, not counted.
+  A missing test is actionable when no test would fail if the changed
+  behavior broke, or when the untested case gives a wrong result today;
+  an extra case for behavior that is already tested and correct is a Nit.
   **Pre-existing** is a problem the diff did not introduce and its
   approved scope does not cover: report it in its own section; never
   count it or block on it.
