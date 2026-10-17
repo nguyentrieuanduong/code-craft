@@ -63,21 +63,21 @@ case "$VARIANT" in
     git commit -qm "Initial commit" --allow-empty
     start_branch
     cat > src/clamp.py <<'EOF'
-def clamp(value, low, high):
+def clamp(value: float, low: float, high: float) -> float:
     """Limit value to [low, high]; callers guarantee low <= high."""
     return max(low, min(value, high))
 EOF
     test_file clamp "from clamp import clamp" \
-'    def test_below_range(self):
+'    def test_below_range(self) -> None:
         self.assertEqual(clamp(-5, 0, 10), 0)
 
-    def test_inside_range(self):
+    def test_inside_range(self) -> None:
         self.assertEqual(clamp(5, 0, 10), 5)
 
-    def test_above_range(self):
+    def test_above_range(self) -> None:
         self.assertEqual(clamp(15, 0, 10), 10)
 
-    def test_bounds_are_inclusive(self):
+    def test_bounds_are_inclusive(self) -> None:
         self.assertEqual(clamp(0, 0, 10), 0)
         self.assertEqual(clamp(10, 0, 10), 10)'
     commit "Add clamp"
@@ -87,42 +87,42 @@ EOF
     git commit -qm "Initial commit" --allow-empty
     start_branch
     cat > src/paginate.py <<'EOF'
-def page(items, number, size):
+def page(items: list, number: int, size: int) -> list:
     """Return a 1-based page; callers guarantee number >= 1 and size >= 1."""
     start = (number - 1) * size
     return items[start:start + size - 1]
 EOF
     test_file paginate "from paginate import page" \
-'    def test_first_page_is_not_empty(self):
+'    def test_first_page_is_not_empty(self) -> None:
         self.assertTrue(page(list(range(10)), 1, 5))'
     commit "Add pagination helper"
     ;;
 
   preexisting)
     cat > src/units.py <<'EOF'
-def to_celsius(fahrenheit):
+def to_celsius(fahrenheit: float) -> float:
     return (fahrenheit - 32) * 5 / 9
 
 
-def to_kelvin(celsius):
+def to_kelvin(celsius: float) -> float:
     return celsius + 273
 EOF
     test_file units "from units import to_celsius" \
-'    def test_freezing(self):
+'    def test_freezing(self) -> None:
         self.assertEqual(to_celsius(32), 0)'
     commit "Add unit conversions"
     start_branch
     cat >> src/units.py <<'EOF'
 
 
-def to_fahrenheit(celsius):
+def to_fahrenheit(celsius: float) -> float:
     return celsius * 9 / 5 + 32
 EOF
     test_file units "from units import to_celsius, to_fahrenheit" \
-'    def test_freezing(self):
+'    def test_freezing(self) -> None:
         self.assertEqual(to_celsius(32), 0)
 
-    def test_to_fahrenheit_boiling(self):
+    def test_to_fahrenheit_boiling(self) -> None:
         self.assertEqual(to_fahrenheit(100), 212)'
     commit "Add to_fahrenheit"
     ;;
@@ -131,7 +131,7 @@ EOF
     git commit -qm "Initial commit" --allow-empty
     start_branch
     cat > src/export.py <<'EOF'
-def export_csv(rows):
+def export_csv(rows: list[dict[str, str]]) -> str:
     """Render simple rows; fields contain no commas, quotes, or newlines."""
     lines = ["name,email"]
     for row in sorted(rows, key=lambda row: row["name"]):
@@ -139,7 +139,7 @@ def export_csv(rows):
     return "\n".join(lines)
 EOF
     test_file export "from export import export_csv" \
-'    def test_header_and_row(self):
+'    def test_header_and_row(self) -> None:
         rows = [{"name": "ada", "email": "ada@example.com"}]
         self.assertEqual(export_csv(rows), "name,email\nada,ada@example.com")'
     commit "Add CSV export"
@@ -153,11 +153,11 @@ EOF
 import re
 
 
-def slugify(title):
+def slugify(title: str) -> str:
     return re.sub(r"[^A-Za-z0-9]", "-", title).strip("-")
 EOF
     test_file slug "from slug import slugify" \
-'    def test_spaces_become_dashes(self):
+'    def test_spaces_become_dashes(self) -> None:
         self.assertEqual(slugify("a b"), "a-b")'
     commit "Add slugify"
     git tag review-round-1
@@ -173,7 +173,7 @@ EOF
 import re
 
 
-def slugify(title):
+def slugify(title: str) -> str:
     return re.sub(r"[^a-z0-9]", "-", title.lower()).strip("-")
 EOF
     commit "Address review round 1: lowercase slugs"
@@ -198,25 +198,25 @@ EOF
 CURRENCY = "USD"
 
 
-def price(amount):
+def price(amount: float) -> str:
     return f"{amount:.2f} {CURRENCY}"
 EOF
     cat > src/invoice.py <<'EOF'
 from pricing import price
 
 
-def invoice_line(item, amount):
+def invoice_line(item: str, amount: float) -> str:
     return f"{item}: {price(amount)}"
 EOF
     cat > src/catalog.py <<'EOF'
 from pricing import CURRENCY
 
 
-def currency_label():
+def currency_label() -> str:
     return f"Prices in {CURRENCY}"
 EOF
     test_file pricing "from pricing import price" \
-'    def test_price_formats_two_decimals(self):
+'    def test_price_formats_two_decimals(self) -> None:
         self.assertEqual(price(3), "3.00 USD")'
     commit "Add pricing, invoice, and catalog"
     start_branch
@@ -224,11 +224,11 @@ EOF
 CURRENCY = "USD"
 
 
-def price(amount, currency):
+def price(amount: float, currency: str) -> str:
     return f"{amount:.2f} {currency}"
 EOF
     test_file pricing "from pricing import price" \
-'    def test_price_formats_two_decimals(self):
+'    def test_price_formats_two_decimals(self) -> None:
         self.assertEqual(price(3, "EUR"), "3.00 EUR")'
     commit "Let price() take the currency explicitly"
     ;;
@@ -238,7 +238,7 @@ EOF
 import sqlite3
 
 
-def connect(path=":memory:"):
+def connect(path: str = ":memory:") -> sqlite3.Connection:
     connection = sqlite3.connect(path)
     connection.execute("CREATE TABLE IF NOT EXISTS users (name TEXT, email TEXT)")
     return connection
@@ -246,13 +246,17 @@ EOF
     commit "Add database connection"
     start_branch
     cat > src/users.py <<'EOF'
-def find_user(connection, name):
+import sqlite3
+from typing import Optional
+
+
+def find_user(connection: sqlite3.Connection, name: str) -> Optional[tuple[str, str]]:
     query = f"SELECT name, email FROM users WHERE name = '{name}'"
     return connection.execute(query).fetchone()
 EOF
     test_file users "from db import connect
 from users import find_user" \
-'    def test_finds_inserted_user(self):
+'    def test_finds_inserted_user(self) -> None:
         connection = connect()
         connection.execute("INSERT INTO users VALUES (?, ?)", ("ada", "ada@example.com"))
         self.assertEqual(find_user(connection, "ada"), ("ada", "ada@example.com"))'
@@ -262,26 +266,26 @@ from users import find_user" \
   symptomfix)
     mkdir -p legacy
     cat > src/percent.py <<'EOF'
-def parse_percent(text):
+def parse_percent(text: str) -> float:
     return float(text) / 100
 EOF
     cat > src/discount.py <<'EOF'
 from percent import parse_percent
 
 
-def discounted(amount, rate_text):
+def discounted(amount: float, rate_text: str) -> float:
     return amount * (1 - parse_percent(rate_text))
 EOF
     cat > src/tax.py <<'EOF'
-def with_tax(amount, rate_text):
+def with_tax(amount: float, rate_text: str) -> float:
     return amount * (1 + float(rate_text) / 100)
 EOF
     cat > legacy/report_export.py <<'EOF'
-def margin_column(rate_text):
+def margin_column(rate_text: str) -> float:
     return float(rate_text) / 100
 EOF
     test_file discount "from discount import discounted" \
-'    def test_plain_number_rate(self):
+'    def test_plain_number_rate(self) -> None:
         self.assertEqual(discounted(100, "10"), 90)'
     commit "Add discount and tax"
     start_branch
@@ -289,17 +293,17 @@ EOF
 from percent import parse_percent
 
 
-def discounted(amount, rate_text):
+def discounted(amount: float, rate_text: str) -> float:
     try:
         return amount * (1 - parse_percent(rate_text))
     except ValueError:
         return amount
 EOF
     test_file discount "from discount import discounted" \
-'    def test_plain_number_rate(self):
+'    def test_plain_number_rate(self) -> None:
         self.assertEqual(discounted(100, "10"), 90)
 
-    def test_percent_sign_no_longer_crashes(self):
+    def test_percent_sign_no_longer_crashes(self) -> None:
         self.assertEqual(discounted(100, "10%"), 100)'
     commit "Fix crash when discount and tax rates contain a '%' sign"
     ;;
@@ -320,11 +324,11 @@ EOF
 SESSION_TTL_SECONDS = 15 * 60
 
 
-def session_expired(age_seconds):
+def session_expired(age_seconds: int) -> bool:
     return age_seconds > SESSION_TTL_SECONDS
 EOF
     test_file auth "from auth import session_expired" \
-'    def test_fresh_session_is_valid(self):
+'    def test_fresh_session_is_valid(self) -> None:
         self.assertFalse(session_expired(0))'
     commit "Add session auth and CI"
     start_branch
@@ -332,7 +336,7 @@ EOF
 SESSION_TTL_SECONDS = 24 * 60 * 60
 
 
-def session_expired(age_seconds):
+def session_expired(age_seconds: int) -> bool:
     return age_seconds > SESSION_TTL_SECONDS
 EOF
     cat >> .github/workflows/ci.yml <<'EOF'
@@ -353,7 +357,7 @@ EOF
 import argparse
 
 
-def build_parser():
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="greet")
     parser.add_argument("name")
     return parser
@@ -364,7 +368,7 @@ EOF
 Usage: `greet NAME`
 EOF
     test_file cli "from cli import build_parser" \
-'    def test_parses_name(self):
+'    def test_parses_name(self) -> None:
         self.assertEqual(build_parser().parse_args(["ada"]).name, "ada")'
     commit "Add greet CLI"
     start_branch
@@ -372,7 +376,7 @@ EOF
 import argparse
 
 
-def build_parser():
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="greet")
     parser.add_argument("name")
     parser.add_argument("--shout", action="store_true")
