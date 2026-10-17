@@ -21,14 +21,16 @@ Package
 Follow the code-review skill's "Performing review" rules. Report in this
 format:
 
-Diff: <N> changed lines — <A> actionable findings.
+Diff: <N> changed lines — <A> actionable finding(s).
 Review independence: <isolated subagent | not independent: inline fallback>
 Risk tier: <standard | high — human review required>
+Verification evidence: <as supplied | none supplied>
 
 Verdicts
 - Spec compliance: <PASS | FAIL> — <one line>
 - Code quality: <PASS | FAIL> — <one line>
 - Security: <PASS — no security findings | BLOCKING — <finding> | NOT VERIFIED — <what could not be checked>>
+- Security pass: <isolated | inline fallback>
 
 Findings
 <ID. Severity — file:line (or omitted requirement) — effect — fix; "None">
