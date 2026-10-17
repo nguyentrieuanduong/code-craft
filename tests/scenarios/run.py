@@ -30,6 +30,24 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from tools.frontmatter import parse_frontmatter  # noqa: E402
 
+
+def _load_secret_patterns():
+    # Reuse the write-time secret hook's patterns so committed results meet
+    # the same bar as every file the agent writes (security-baseline SEC-02).
+    import importlib.util
+
+    hooks_dir = REPO_ROOT / "hooks"
+    sys.path.insert(0, str(hooks_dir))
+    spec = importlib.util.spec_from_file_location(
+        "scan_secrets", hooks_dir / "scan-secrets.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.SECRET_PATTERNS
+
+
+SECRET_PATTERNS = _load_secret_patterns()
+
 RESULTS_DIR = SCENARIOS_DIR / "results"
 NON_SCENARIO_DIRS = {"fixtures", "results", "__pycache__"}
 ALLOWED_TOOLS = "Bash,Read,Write,Edit,Glob,Grep"
@@ -430,7 +448,22 @@ def run_claude(scenario, workspace, skill_text, args):
 
 # ------------------------------------------------------------------- results
 
+def redact_secrets(value):
+    """Return a copy of a transcript value with secret-shaped strings masked."""
+    if isinstance(value, str):
+        for label, pattern in SECRET_PATTERNS:
+            value = pattern.sub(f"[REDACTED: {label}]", value)
+        return value
+    if isinstance(value, dict):
+        return {key: redact_secrets(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [redact_secrets(item) for item in value]
+    return value
+
+
 def write_result(scenario, arm, label, results, transcript, args, skill_file):
+    # Results are committed: mask secrets before either artifact is written.
+    transcript = redact_secrets(transcript)
     results_dir = Path(args.results_dir) if args.results_dir else RESULTS_DIR
     results_dir.mkdir(parents=True, exist_ok=True)
     date = datetime.date.today().isoformat()
