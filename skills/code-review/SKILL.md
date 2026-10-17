@@ -51,6 +51,10 @@ Ask for THREE separate verdicts (they fail independently):
 
 - Report in the format of `references/reviewer-prompt.md`, whether
   dispatched or inline.
+- Read the project's review guidance first: `REVIEW.md`, then
+  `AGENTS.md` or `CLAUDE.md`, when present. A change that breaks a
+  convention there is a finding; so is a change that makes a line there
+  out of date.
 - **Step 0 — size signal, before any code comment.** Run
   `git diff main...HEAD --stat` and OPEN the review with one summary
   line: "Diff: {changed_lines} changed lines — {count} actionable
@@ -155,6 +159,9 @@ evidence.
   Blind compliance introduces as many bugs as blind refusal.
 - Ambiguous finding → ask a clarifying question rather than guessing intent.
 - Never mark a finding resolved without the fix verified (fresh test run).
+- A finding that recurs across reviews belongs in the project's rules:
+  propose a `REVIEW.md` entry, lint rule, or skill change to the user —
+  never edit linter configs or rules silently.
 
 ## Forbidden rationalizations
 
