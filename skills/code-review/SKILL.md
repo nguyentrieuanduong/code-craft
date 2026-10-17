@@ -49,8 +49,8 @@ Ask for THREE separate verdicts (they fail independently):
 
 ## Performing review (when you are the reviewer)
 
-- Report in the format of `references/reviewer-prompt.md`, whether
-  dispatched or inline.
+- Report in the shape of "Report format" below, whether dispatched or
+  inline.
 - Read the project's review guidance first: `REVIEW.md`, then
   `AGENTS.md` or `CLAUDE.md`, when present. A change that breaks a
   convention there is a finding; so is a change that makes a line there
@@ -120,6 +120,40 @@ Ask for THREE separate verdicts (they fail independently):
   count it or block on it.
 - No filler praise. A short "spec-compliant, 0 actionable findings" beats
   a paragraph of compliments.
+
+## Report format
+
+Every review, dispatched or inline, uses exactly this shape: one
+`Label: value` per line, then one item per line under each section.
+
+```text
+Diff: <N> changed lines — <A> actionable finding(s).
+Review independence: <isolated subagent | not independent: inline fallback>
+Risk tier: <standard | high — human review required>
+Verification evidence: <as supplied | none supplied>
+Merge readiness: <not ready — <reason> | ready>
+
+Verdicts
+- Spec compliance: <PASS | FAIL> — <one line>
+- Code quality: <PASS | FAIL> — <one line>
+- Security: <PASS — no security findings | BLOCKING — <finding> | NOT VERIFIED — <what could not be checked>>
+- Security pass: <isolated | inline fallback>
+
+Findings
+<ID. Severity — file:line (or omitted requirement) — effect — fix; "None">
+
+Pre-existing
+<one per line, or "None">
+
+Nits
+<one line each, or "None">
+
+Declined to judge
+<each behavior set aside, with the reason, or "None">
+```
+
+`Merge readiness: ready` requires verification evidence, no Blocking
+finding, a Security verdict of PASS, and — for high risk — a human review.
 
 ## Security pass
 
