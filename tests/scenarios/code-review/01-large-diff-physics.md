@@ -22,7 +22,8 @@ two verdicts.
   {"type": "ran_command", "pattern": "git (diff|log|show)"},
   {"type": "output_matches", "pattern": "(?i)spec"},
   {"type": "output_matches", "pattern": "(?i)split|too (large|big)|diff size|400"},
-  {"type": "output_not_matches", "pattern": "(?i)(?<!non-)blocking[^\\n]{0,80}(split|too (large|big)|size)"}
+  {"type": "output_not_matches", "pattern": "(?i)(?<!non-)blocking[^\\n]{0,80}(split|too (large|big)|size)"},
+  {"type": "output_matches", "pattern": "(?i)duplicat|clone|copy|repeat|identical"}
 ]
 ```
 
@@ -36,3 +37,6 @@ the actual diff, judge against the spec).
 
 2026-10-17 (design item 4): check 4 added — past ~400 lines the review
 assesses and recommends a split; size alone is never a Blocking finding.
+
+2026-10-17: check 5 copies 02-cloned-blocks' check so one benchmark run
+covers both regressions; 02 stays in the corpus for full campaigns.
