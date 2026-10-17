@@ -51,8 +51,15 @@ README_CODEX_COMMANDS = (
     "codex plugin marketplace add /absolute/path/to/code-craft",
     "codex plugin add code-craft@code-craft",
     "codex plugin list --json",
-    "codex plugin marketplace upgrade code-craft",
     "codex plugin remove code-craft@code-craft",
+    "codex plugin marketplace remove code-craft",
+)
+README_CLAUDE_COMMANDS = (
+    "claude plugin marketplace add /path/to/code-craft",
+    "claude plugin install code-craft@code-craft",
+    "claude plugin update code-craft@code-craft",
+    "claude plugin uninstall code-craft@code-craft",
+    "claude plugin marketplace remove code-craft",
 )
 README_INSTALL_EXPLANATIONS = (
     "Both recommended installations are plugins that bundle the shared `skills/` directory.",
@@ -215,6 +222,18 @@ class ReadmeInstallContractTest(unittest.TestCase):
         for command in README_CODEX_COMMANDS:
             with self.subTest(command=command):
                 self.assertIn(command, content)
+
+    def test_readme_documents_the_claude_plugin_lifecycle_commands(self) -> None:
+        content = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+        for command in README_CLAUDE_COMMANDS:
+            with self.subTest(command=command):
+                self.assertIn(command, content)
+
+    def test_readme_does_not_document_git_only_marketplace_upgrade(self) -> None:
+        # `codex plugin marketplace upgrade` refreshes only Git marketplaces;
+        # on the documented local-path install it exits 1 (codex-cli 0.163.0).
+        content = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertNotIn("codex plugin marketplace upgrade", content)
 
     def test_readme_explains_both_native_plugin_installations(self) -> None:
         content = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
