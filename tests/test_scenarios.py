@@ -520,6 +520,13 @@ class WriteResultTest(unittest.TestCase):
             "[REDACTED: Private key block]",
         )
 
+    def test_redacts_secret_shaped_dict_keys(self):
+        key = "sk-" + "c" * 24
+        redacted = runner.redact_secrets({"env": {key: "value"}})
+        self.assertEqual(
+            redacted, {"env": {"[REDACTED: Anthropic/OpenAI-style key]": "value"}}
+        )
+
 
 class DisallowedToolsTest(unittest.TestCase):
     def test_both_plan_mode_tools_blocked(self):
