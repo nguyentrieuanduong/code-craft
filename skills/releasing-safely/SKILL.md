@@ -8,9 +8,8 @@ description: >-
 
 # Releasing Safely
 
-A release is an experiment on real users. Run it like one: smallest real
-exposure first, evidence before expansion, rollback rehearsed before stage
-one. Deploy and config mechanics — not exotic logic bugs — sank Knight
+Run a release as an experiment on real users: smallest real exposure first,
+evidence before expansion, rollback rehearsed before stage one. Deploy and config mechanics — not exotic logic bugs — sank Knight
 ($440M in 45 minutes), CrowdStrike (~8.5M machines), Cloudflare, and
 Facebook (`../using-code-craft/references/anti-patterns.md` §10–11).
 
@@ -33,18 +32,17 @@ Facebook (`../using-code-craft/references/anti-patterns.md` §10–11).
 
 1. Deploy to the smallest real slice first (canary: one instance or ≤5%).
    The canary needs no separate permission — the hard gate above is its only
-   precondition. Once rollback is rehearsed and smoke checks are named,
-   deploy the canary and run the checks; asking "may I canary?" only delays
-   the evidence everyone is waiting for.
+   precondition, so deploy it and run the checks. The canary IS the ask:
+   asking "may I canary?" only delays the evidence the go/no-go decision
+   needs.
 2. Verify with evidence: run the named smoke checks, compare error rates
    against baseline, report the numbers.
 3. **Stop after the canary, before promotion.** An instant-green smoke check
-   is a snapshot, not a bake. Promotion to the next ring — and to the
-   fleet — happens only after the canary has baked under real traffic AND
-   the user gives an explicit go-ahead. Never expand exposure in the same
-   action as the canary: report the canary evidence, state the rollback
-   command, and ask. The approval gate sits between rings — never before
-   ring one.
+   is a snapshot, not a bake: real traffic needs time to hit the paths that
+   hurt. Promotion to the next ring — and to the fleet — happens only after
+   the canary has baked under real traffic AND the user gives an explicit
+   go-ahead. Never expand exposure in the same action as the canary: report
+   the canary evidence, state the rollback command, and ask.
 4. Any regression at any stage: **roll back first, debug after.** The fleet
    is not a debugging environment.
 
@@ -62,7 +60,5 @@ one fired eight-year-dead code at Knight
 |--------|---------|
 | "Traffic is low, push it everywhere" | Low traffic shrinks the sample, not the blast radius. The canary costs minutes either way. |
 | "QA signed off, it's safe" | QA validated the artifact, not production. Only the canary validates production. |
-| "Canary smoke is green — promote now" | A snapshot is not a bake. Real traffic needs time to hit the paths that hurt; get the go-ahead first. |
 | "Rollback is easy, we'll figure it out if needed" | Unrehearsed rollback fails exactly when needed — Knight's improvised revert spread the defect to all 8 servers. |
-| "I should ask before deploying the canary" | The hard gate is the only precondition. The canary IS the ask — it exists to gather the evidence the go/no-go decision needs. Pausing before it just delays signal. |
-| "It's just a config/flag change" | Config took Facebook down for ~6h; a repurposed flag ended Knight in 45 minutes. Same ladder. |
+| "It's just a config/flag change" | Config took Facebook down for ~6h; a repurposed flag ended Knight. Same ladder. |
