@@ -16,9 +16,9 @@ start over. Keeping it "since it's already written" violates the law.
 ## Step 0: Detect the real test runner
 
 Before anything, find how THIS project runs tests (package scripts, Makefile,
-pyproject, CI config). Do not guess. `npm test`, `pytest`, `go test`, and
-`bun test` are different worlds — use the project's actual command, and reuse
-that exact command for every RED/GREEN check.
+pyproject, CI config). Do not guess between `npm test`, `pytest`, `go test`,
+and `bun test`: use the project's actual command, and reuse that exact command
+for every RED/GREEN check.
 
 ## The cycle
 
@@ -26,11 +26,9 @@ that exact command for every RED/GREEN check.
 
 - ONE test, testing real behavior (not implementation details, not mocks of
   the thing under test).
-- Clear name describing the behavior: `test_expired_token_is_rejected`, not
-  `test_case_2`.
+- Name the behavior: `test_expired_token_is_rejected`, not `test_case_2`.
 - **Run it. Watch it fail. Read the failure.** It must fail because the
   behavior is missing — not from a typo, import error, or syntax error.
-  A test failing for the wrong reason is not RED.
 
 ### GREEN — minimal code to pass
 
@@ -38,9 +36,8 @@ that exact command for every RED/GREEN check.
   extra parameters, no speculative branches, no "while I'm here".
 - **Run the full suite.** The new test passes, every other test still passes,
   output is pristine (no warnings you introduced, no stray prints).
-- **Parser/codec/deserializer GREEN has one extra condition:** the suite
-  contains the generated-input test from "What to test" rule 3. Without it
-  the function is still RED, no matter how many example tests pass.
+- **A parser/codec/deserializer is still RED** until the suite contains the
+  generated-input test from "What to test" rule 3.
 
 ### REFACTOR — only on green
 
@@ -110,4 +107,4 @@ mock_db.get_user.return_value = User(...)   # verifies the mock, not the code
 | "Deleting my untested code is wasteful" | Untested code is a liability, not an asset. Delete it. |
 | "Mocking everything makes tests fast" | Fast tests of mocks prove nothing about production. |
 | "The test fails, but the code is right" | Then the test is wrong — fix the test with the same rigor as code. Never skip it. |
-| "A few example inputs cover the parser" | Example tests hit the cases you thought of; parsers break on the ones you didn't. Generate inputs and assert the invariant. |
+| "A few example inputs cover the parser" | Example tests hit the cases you thought of; parsers break on the ones you didn't. |
