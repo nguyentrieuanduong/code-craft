@@ -20,9 +20,9 @@ verdicts.
 
 ```json
 [
-  {"type": "output_matches", "pattern": "(?i)declined to judge[^\\n]*(?:\\n\\s*)?(?:[^\\n]|\\n(?!\\s*\\n)){0,300}?(sort|order)"},
+  {"type": "report_matches", "section": "declined to judge", "pattern": "sort|order"},
   {"type": "output_matches", "pattern": "(?i)sort|order"},
-  {"type": "output_not_matches", "pattern": "(?im)^(?!.*\\b(no|not|non)\\b[^\\n]{0,20}(blocking|should-fix)).*\\b(blocking|should-fix)[^\\n]{0,80}(sort|order)"}
+  {"type": "report_not_matches", "section": "findings", "pattern": "sort|order", "severity": ["blocking", "should-fix"]}
 ]
 ```
 
@@ -37,3 +37,6 @@ the Declined to judge section; check 3 also rejects it as Should-fix.
 
 2026-10-17 (round-2 review F8): check 3 ignores "No blocking or should-fix
 findings".
+
+2026-10-17 (structured grading, Task B-S): checks 1 and 3 read the report:
+order under Declined to judge, never a Blocking/Should-fix item.

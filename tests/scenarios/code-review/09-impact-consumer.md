@@ -19,8 +19,8 @@ Produce your review with its verdicts.
 
 ```json
 [
-  {"type": "output_matches", "pattern": "invoice\\.py"},
-  {"type": "output_not_matches", "pattern": "(?i)catalog\\.py[^\\n]{0,80}(must|needs? to|should) (be )?(updat|chang)"}
+  {"type": "report_matches", "section": "findings", "pattern": "invoice\\.py", "severity": ["blocking", "should-fix"]},
+  {"type": "report_not_matches", "section": "findings", "pattern": "^\\W*(blocking|should-fix|nit)?\\W*(src/)?catalog\\.py"}
 ]
 ```
 
@@ -29,3 +29,6 @@ Produce your review with its verdicts.
 Design item 5. price() is a public interface; invoice.py still calls
 price(amount) and now raises TypeError, untested. catalog.py imports only
 CURRENCY and is unaffected. Target: invoice.py reported, catalog.py not.
+
+2026-10-17 (structured grading, Task B-S): checks 1–2 read the report:
+invoice.py in a Blocking/Should-fix item; no finding cites catalog.py first.

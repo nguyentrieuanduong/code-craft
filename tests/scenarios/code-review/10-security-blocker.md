@@ -19,7 +19,7 @@ verdicts.
 
 ```json
 [
-  {"type": "output_matches", "pattern": "(?i)security( pass| verdict)?\\W{0,6}(blocking|fail)"},
+  {"type": "report_matches", "field": "security", "pattern": "^(blocking|fail)"},
   {"type": "output_matches", "pattern": "(?i)inject|parameteri|placeholder"}
 ]
 ```
@@ -32,3 +32,6 @@ blocks.
 
 2026-10-17 (round-1 review nit): check 1 anchors on the Security verdict, so
 "Security: PASS — nothing blocking" no longer passes.
+
+2026-10-17 (structured grading, Task B-S): check 1 reads the Security
+verdict field.

@@ -22,7 +22,7 @@ verdicts.
   {"type": "ran_command", "pattern": "git (diff|log|show)"},
   {"type": "output_matches", "pattern": "(?i)spec"},
   {"type": "output_matches", "pattern": "(?i)split|too (large|big)|diff size|400"},
-  {"type": "output_not_matches", "pattern": "(?im)^(?!.*\\b(no|not|non)\\b[^\\n]{0,20}blocking).*\\bblocking[^\\n]{0,80}(split|too (large|big)|size)"},
+  {"type": "report_not_matches", "section": "findings", "pattern": "split|too (large|big)|\\bsize\\b|400", "severity": ["blocking"]},
   {"type": "output_matches", "pattern": "(?i)duplicat|clone|copy|repeat|identical"}
 ]
 ```
@@ -45,3 +45,6 @@ covers both regressions; 02 stays in the corpus for full campaigns.
 
 2026-10-17 (round-2 review F8): check 4 ignores a line that negates "blocking"
 ("No blocking findings…", "not a blocking finding").
+
+2026-10-17 (structured grading, Task B-S): check 4 is a report check: no
+Blocking finding cites size or a split.

@@ -19,12 +19,16 @@ would use to PR_BODY.md and stop.
 
 ```json
 [
-  {"type": "file_matches", "glob": "PR_BODY.md", "pattern": "(?i)\\btesting\\b"},
-  {"type": "file_matches", "glob": "PR_BODY.md", "pattern": "(?i)\\brisk\\b"},
-  {"type": "file_matches", "glob": "PR_BODY.md", "pattern": "(?i)how to revert"}
+  {"type": "file_matches", "glob": "PR_BODY.md", "pattern": "(?im)^(?:#+\\s*|\\*\\*)?testing\\b(?:(?!\\n#)[\\s\\S]){0,600}?(unittest|pytest|python3? -m|make test|npm test)"},
+  {"type": "file_matches", "glob": "PR_BODY.md", "pattern": "(?im)^(?:#+\\s*|\\*\\*)?risk\\b(?:(?!\\n#)[\\s\\S]){0,600}?\\b(standard|low|medium|high)\\b"},
+  {"type": "file_matches", "glob": "PR_BODY.md", "pattern": "(?im)^(?:#+\\s*|\\*\\*)?how to revert\\b(?:(?!\\n#)[\\s\\S]){0,600}?(git revert|git reset|revert (the|this|commit|merge)|delete the branch|close the pr)"}
 ]
 ```
 
 ## Notes
 
 Design item 9, PR body fields.
+
+2026-10-17 (structured grading, Task B-S): each check needs its heading
+followed by content — Testing a command, Risk a tier, How to revert an
+action (Codex F3).

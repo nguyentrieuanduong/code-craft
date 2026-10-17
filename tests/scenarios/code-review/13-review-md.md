@@ -19,7 +19,7 @@ passing. Produce your review with its verdicts.
 ```json
 [
   {"type": "output_matches", "pattern": "REVIEW\\.md"},
-  {"type": "output_matches", "pattern": "(?i)blocking[^\\n]{0,160}--times|--times[^\\n]{0,160}blocking"}
+  {"type": "report_matches", "section": "findings", "pattern": "--times", "severity": ["blocking"]}
 ]
 ```
 
@@ -31,3 +31,6 @@ review cites REVIEW.md and reports --times.
 
 2026-10-17 (round-1 review nit): check 2 requires --times as Blocking, as the
 fixture's REVIEW.md says.
+
+2026-10-17 (structured grading, Task B-S): check 2 requires --times in a
+Blocking finding item.
