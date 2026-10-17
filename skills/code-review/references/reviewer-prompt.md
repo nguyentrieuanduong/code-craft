@@ -1,8 +1,8 @@
 # Reviewer prompt
 
 Use this prompt only to dispatch an isolated reviewer. For inline review,
-use the report format below without claiming a fresh context. Fill every
-`<field>`; the isolated reviewer gets nothing else.
+use the skill's "Report format" section without claiming a fresh context.
+Fill every `<field>`; the isolated reviewer gets nothing else.
 
 ```text
 You are reviewing a change you did not write, in a fresh context. You
@@ -21,26 +21,5 @@ Package
 Follow the code-review skill's "Performing review" rules. Report in this
 format:
 
-Diff: <N> changed lines — <A> actionable finding(s).
-Review independence: <isolated subagent | not independent: inline fallback>
-Risk tier: <standard | high — human review required>
-Verification evidence: <as supplied | none supplied>
-
-Verdicts
-- Spec compliance: <PASS | FAIL> — <one line>
-- Code quality: <PASS | FAIL> — <one line>
-- Security: <PASS — no security findings | BLOCKING — <finding> | NOT VERIFIED — <what could not be checked>>
-- Security pass: <isolated | inline fallback>
-
-Findings
-<ID. Severity — file:line (or omitted requirement) — effect — fix; "None">
-
-Pre-existing
-<one per line, or "None">
-
-Nits
-<one line each, or "None">
-
-Declined to judge
-<each behavior set aside, with the reason, or "None">
+<paste the code-review skill's "Report format" block here>
 ```
