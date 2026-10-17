@@ -473,6 +473,37 @@ class WriteResultTest(unittest.TestCase):
             self.assertEqual(saved["final_text"], "response " * 600)
             self.assertEqual(saved["tool_uses"], [["Bash", {"command": "x" * 200}]])
 
+    def test_redacts_secret_shaped_text_in_both_artifacts(self):
+        from types import SimpleNamespace
+
+        # Built at runtime so this file holds no secret-shaped literal.
+        key = "sk-" + "a" * 24
+        with tempfile.TemporaryDirectory() as directory:
+            scenario = {
+                "name": "sample",
+                "path": runner.REPO_ROOT / "tests/scenarios/writing-skills/01-lean-evaluation.md",
+            }
+            evidence = transcript(
+                tool_uses=[("Bash", {"command": f"export KEY={key}", "nested": [key]})],
+                # Past the 4,000-character excerpt, so only the sidecar would hold it.
+                final_text="response " * 600 + key,
+            )
+            result = runner.write_result(
+                scenario, "skill", "bench1", [], evidence,
+                SimpleNamespace(results_dir=directory, model="sonnet"),
+                "skills/writing-skills/SKILL.md",
+            )
+            sidecar = result.with_suffix(".evidence.json").read_text()
+            self.assertNotIn(key, result.read_text())
+            self.assertNotIn(key, sidecar)
+            saved = json.loads(sidecar)
+            self.assertTrue(saved["final_text"].endswith("[REDACTED: Anthropic/OpenAI-style key]"))
+            self.assertEqual(
+                saved["tool_uses"][0][1]["command"],
+                "export KEY=[REDACTED: Anthropic/OpenAI-style key]",
+            )
+            self.assertEqual(evidence["final_text"], "response " * 600 + key)
+
 
 class DisallowedToolsTest(unittest.TestCase):
     def test_both_plan_mode_tools_blocked(self):
