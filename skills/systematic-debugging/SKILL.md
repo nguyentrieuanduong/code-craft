@@ -10,8 +10,8 @@ description: >-
 
 **IRON LAW: NO FIXES BEFORE PHASE 1 IS COMPLETE.**
 
-A fix proposed before the root cause is understood is a guess. Guesses that
-happen to work hide the real defect until it returns, worse.
+A fix proposed before the root cause is understood is a guess; a guess that
+happens to work hides the real defect until it returns, worse.
 
 ## Phase 1 — Root cause investigation
 
@@ -49,9 +49,8 @@ happen to work hide the real defect until it returns, worse.
 
 ## The 3-failure circuit breaker
 
-If three fixes have failed: **stop fixing.** Three failed fixes mean the mental
-model is wrong — question the architecture and your assumptions before attempt
-four. State plainly to the user what you know, what you've ruled out, and what
+If three fixes have failed: **stop fixing.** The mental model is wrong —
+question the architecture and your assumptions before attempt four. State plainly to the user what you know, what you've ruled out, and what
 you now suspect.
 
 ## Forbidden rationalizations
