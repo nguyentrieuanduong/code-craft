@@ -8,9 +8,9 @@ description: >-
 
 # Using code-craft
 
-**Before ANY action or response, check this table. If a skill applies, read it
-and follow it — before clarifying questions, before exploring files, before
-writing code.** User instructions override skills; nothing else does.
+**Before ANY action or response, check this table. If a skill applies, read
+and follow it — before clarifying questions, exploring files, or writing
+code.** User instructions override skills; nothing else does.
 
 | Situation | Skill |
 |-----------|-------|
@@ -35,6 +35,6 @@ one-sentence design and a 3-step plan — but still TDD, still verified).
 No production code during brainstorming or planning. Process skills
 (brainstorming, systematic-debugging) come before implementation skills.
 
-If you are thinking "too simple for this", "overkill", "the user is in a
-hurry", or "I need context first" — that is rationalization, not judgment.
+If you think "too simple for this", "overkill", "the user is in a hurry", or
+"I need context first", that is rationalization, not judgment.
 Check the table first; the skill tells you what context to gather.
