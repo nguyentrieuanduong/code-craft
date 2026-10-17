@@ -13,8 +13,10 @@ description: >-
 ## The gate (before ANY success claim)
 
 1. **Identify** the command that would prove the claim.
-2. **Run it fresh** — complete, not partial, not from memory of an earlier run.
-3. **Read the full output** — not just the exit code, not just the last line.
+2. **Run it fresh** — complete, not partial (cross-module breakage is what full
+   suites catch), not from memory of an earlier run (code changed since).
+3. **Read the full output** — not just the exit code (suites can pass with 0
+   tests collected; read the counts), not just the last line.
 4. **Confirm output matches the claim.**
 5. Only then, make the claim — and show the evidence.
 
@@ -59,7 +61,4 @@ warnings count), not adjectives.
 
 | Excuse | Reality |
 |--------|---------|
-| "I ran the tests earlier" | Code changed since. Earlier runs prove nothing about now. |
-| "Only this file changed, partial test run is enough" | Cross-module breakage is exactly what full suites catch. |
 | "The change is trivial, verification is overkill" | Trivial changes cause outages precisely because nobody verifies them. |
-| "Exit code 0 means it passed" | Suites can pass with 0 tests collected. Read the counts. |
