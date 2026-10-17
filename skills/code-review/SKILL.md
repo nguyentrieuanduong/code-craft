@@ -29,6 +29,15 @@ Provide the reviewer a structured package:
 - Known concerns: <anything you are unsure about — hiding doubts wastes the review>
 ```
 
+**Fresh context.** The reviewer must not share the author's
+conversation. When the harness can start an isolated subagent (see
+`../using-code-craft/references/tool-mapping.md`), start one explicitly
+without this conversation and give it only the package filled into
+`references/reviewer-prompt.md`; it may read the repository to verify
+findings. Do not assume an ordinary subagent starts clean. Without
+isolation, review inline: re-read the design and the diff from disk, and
+state in the verdict "Review not independent: inline fallback."
+
 Ask for TWO separate verdicts (they fail independently):
 
 1. **Spec compliance** — does the code do what the approved design says?
@@ -38,6 +47,8 @@ Ask for TWO separate verdicts (they fail independently):
 
 ## Performing review (when you are the reviewer)
 
+- Report in the format of `references/reviewer-prompt.md`, whether
+  dispatched or inline.
 - **Step 0 — size signal, before any code comment.** Run
   `git diff main...HEAD --stat` and OPEN the review with one summary
   line: "Diff: {changed_lines} changed lines — {count} actionable
