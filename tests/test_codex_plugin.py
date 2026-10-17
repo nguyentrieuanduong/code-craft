@@ -181,7 +181,7 @@ class CodexPluginManifestTest(unittest.TestCase):
 
     def test_suite_version_and_skill_count_are_release_ready(self) -> None:
         claude_manifest = _read_json(".claude-plugin/plugin.json")
-        self.assertEqual(claude_manifest.get("version"), "0.3.0")
+        self.assertEqual(claude_manifest.get("version"), "0.4.0")
         skill_files = sorted((REPO_ROOT / "skills").glob("*/SKILL.md"))
         self.assertEqual(len(skill_files), 15)
 
@@ -263,7 +263,7 @@ class CodexPluginInstallTest(unittest.TestCase):
                 if isinstance(plugin, dict) and plugin.get("name") == "code-craft"
             ]
             self.assertEqual(len(installed), 1)
-            self.assertEqual(installed[0].get("version"), "0.3.0")
+            self.assertEqual(installed[0].get("version"), "0.4.0")
 
             removed = self._run(codex_home, "remove", "code-craft@code-craft")
             self.assertIn("code-craft", json.dumps(removed))
