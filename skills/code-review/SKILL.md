@@ -68,6 +68,13 @@ Ask for TWO separate verdicts (they fail independently):
   already existing elsewhere in the repo — cite the existing utility's
   path and propose importing it (promote it if private) instead of
   keeping the copy.
+- **Impact check — only for cross-module, public-interface, security,
+  migration, or release changes.** List the affected consumers (search
+  for callers and importers of what changed), compare them with the
+  approved scope and the diff, and report each consumer that needed an
+  update and did not get one as a finding. Consumers the change does not
+  affect produce no finding. Skip this step — and its section — for every
+  other change.
 - **Verify every finding before presenting it.** Re-read the cited lines
   and check the claim against the diff and the repository. Each
   actionable finding states the responsible file and line (or the exact
