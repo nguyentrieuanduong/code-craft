@@ -7,11 +7,8 @@ description: >-
 
 # Code Review
 
-Review happens before merge. It has two sides: requesting it well, and
-receiving it well.
-
-An explicitly requested review runs even when verification evidence is
-missing: review the diff, and name the missing evidence in the verdict
+An explicitly requested review runs even when verification evidence (test
+output) is missing: review the diff, and name the missing evidence in the verdict
 ("Verification evidence: none supplied"). Merge readiness still requires
 verification-before-completion — never call a diff ready to merge without
 it.
@@ -62,12 +59,12 @@ Ask for THREE separate verdicts (they fail independently):
   for 1 and "findings" otherwise.
   Actionable means Blocking or Should-fix; write 0 when there are none and say plainly
   that nothing needs fixing. Past ~400 changed lines reviewer defect
-  detection collapses (see `../using-code-craft/references/evidence.md`):
-  say whether the change splits into independently reviewable slices and
-  recommend the split when it does — a recommendation, not a Blocking
-  finding. Generated, deleted, or mechanical bulk counts by its actual
-  risk and reviewability, not its line count. A review that never states
-  the size is incomplete.
+  detection collapses — nobody can review it all (see
+  `../using-code-craft/references/evidence.md`): say whether the change
+  splits into independently reviewable slices and recommend the split when
+  it does — a recommendation, not a Blocking finding — then review by risk.
+  Generated, deleted, or mechanical bulk counts by its actual risk and
+  reviewability, not its line count.
 - Read the design first, then the diff. Judge against the spec, not
   taste. Where the design is silent, judge by what a reasonable user
   would expect; when intent cannot be established, list the question
@@ -105,15 +102,16 @@ Ask for THREE separate verdicts (they fail independently):
   assessment.** High risk: auth, billing, secrets handling, CI
   workflows, installers or hooks, migrations, release. For high risk,
   the verdict states "Human review required"; an agent's approval —
-  including this review — never counts as that review. Otherwise state
-  "Risk tier: standard".
+  including this review — never counts as that review, and a human reviews
+  the current diff. Otherwise state "Risk tier: standard".
 - **Verify every finding before presenting it.** Re-read the cited lines
   and check the claim against the diff and the repository. Each
   actionable finding states the responsible file and line (or the exact
   omitted requirement when no line exists), the observed or reproducible
   effect (input → wrong result), and its severity. A candidate you cannot
-  make concrete is not a finding: drop it, or list it under **Declined to
-  judge** without a fix request. No vague "this could be better".
+  make concrete — however sure you are — is not a finding: drop it, or list
+  it under **Declined to judge** without a fix request. No vague "this could
+  be better".
 - Classify findings: **Blocking** (spec violation, security, broken
   tests) and **Should-fix** (standards violation) are actionable and
   counted; **Nit** is optional, one line each, not counted.
@@ -121,8 +119,8 @@ Ask for THREE separate verdicts (they fail independently):
   behavior broke, or when the untested case gives a wrong result today;
   an extra case for behavior that is already tested and correct is a Nit.
   **Pre-existing** is a problem the diff did not introduce and its
-  approved scope does not cover: report it in its own section; never
-  count it or block on it.
+  approved scope does not cover: report it in its own section so it gets
+  tracked; never count it or block on it, however close it sits.
 - No filler praise. A short "spec-compliant, 0 actionable findings" beats
   a paragraph of compliments.
 
@@ -184,14 +182,15 @@ evidence.
 - Status each open finding by its ID: **addressed** (with the line that
   fixes it) or **still open**. Do not repost an unchanged finding as new,
   and do not reword or regrade a decided one.
-- After three rounds without convergence, stop cycling: say the approach
-  needs reassessment and propose discussing it with the author before
-  another round.
+- After three rounds without convergence, stop cycling — more rounds repeat
+  themselves: say the approach needs reassessment and propose discussing it
+  with the author before another round.
 
 ## Receiving review
 
-- **Evaluate technically before implementing.** A reviewer's comment is a
-  claim, not a command. Verify it against the code and the spec.
+- **Evaluate technically before implementing.** A reviewer's comment —
+  even a senior's — is a claim, not a command. Verify it against the code
+  and the spec.
 - Justified finding → fix it via the normal cycle (failing test where
   applicable, then fix).
 - Unjustified finding → push back with evidence, respectfully and concretely.
@@ -206,13 +205,5 @@ evidence.
 
 | Excuse | Reality |
 |--------|---------|
-| "The reviewer is senior, just do what they say" | Seniors are wrong sometimes. Verify, then act. |
 | "It's a nit, I'll skip responding" | Unaddressed comments erode trust. Respond to every one, even with 'declined because X'. |
 | "Review will catch what I missed" | Review is a safety net, not a substitute for verification. Arrive clean. |
-| "The diff is big, but I can review it all" | Nobody can — detection collapses past ~400 changed lines. State the size, recommend a split where one exists, then review by risk. |
-| "No test output, so I can't review yet" | Review what exists and name the missing evidence. Calling it merge-ready without evidence is the failure, not reviewing early. |
-| "I'm fairly sure this is a bug" | Unverified is a guess. Name the line and the concrete effect, or list it under Declined to judge. |
-| "This old bug is right there, I'll block on it" | The diff didn't introduce it. Label it Pre-existing so it gets tracked without blaming this change. |
-| "One more round will catch the rest" | Rounds past three repeat themselves. Stop and reassess the approach with the author. |
-| "Spec and quality pass, so it's ready" | Security is its own verdict. One verified baseline violation blocks readiness. |
-| "I reviewed it, so it's approved" | On high-risk changes an agent's review is input, not approval. A human reviews the current diff. |
