@@ -478,5 +478,64 @@ class ReviewCasesFixtureTest(unittest.TestCase):
         self.assertEqual(tags.stdout.split(), ["review-round-1", "review-round-2", "review-round-3"])
 
 
+class RunnerStyleFixtureTest(unittest.TestCase):
+    """Build fixtures the way run.py does: copy the directory, run setup in it."""
+
+    VARIANTS = {
+        "feature-branch": ("small", "large", "broken"),
+        "review-cases": ReviewCasesFixtureTest.VARIANTS,
+    }
+
+    def build(self, fixture, variant):
+        workspace = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, workspace, ignore_errors=True)
+        shutil.copytree(
+            runner.SCENARIOS_DIR / "fixtures" / fixture, workspace, dirs_exist_ok=True
+        )
+        result = subprocess.run(
+            ["bash", "setup.sh", variant], cwd=workspace, capture_output=True, text=True
+        )
+        return workspace, result
+
+    def test_setup_script_is_gone_from_every_workspace(self):
+        for fixture, variants in self.VARIANTS.items():
+            for variant in variants:
+                with self.subTest(fixture=fixture, variant=variant):
+                    workspace, result = self.build(fixture, variant)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertFalse((workspace / "setup.sh").exists())
+                    tracked = subprocess.run(
+                        ["git", "ls-files", "--", "setup.sh"],
+                        cwd=workspace, capture_output=True, text=True,
+                    )
+                    self.assertEqual(tracked.stdout, "")
+
+    def test_clean_review_diff_is_small(self):
+        workspace, _ = self.build("review-cases", "clean")
+        stat = subprocess.run(
+            ["git", "diff", "--numstat", "main...HEAD"],
+            cwd=workspace, capture_output=True, text=True,
+        )
+        changed = sum(
+            int(added) + int(removed)
+            for added, removed, _ in (line.split("\t") for line in stat.stdout.splitlines())
+        )
+        self.assertLess(changed, 100)
+
+    def test_setup_refuses_to_run_inside_a_git_work_tree(self):
+        for fixture in self.VARIANTS:
+            with self.subTest(fixture=fixture):
+                workspace = Path(tempfile.mkdtemp())
+                self.addCleanup(shutil.rmtree, workspace, ignore_errors=True)
+                subprocess.run(["git", "init", "-q", str(workspace)], check=True)
+                shutil.copy(runner.SCENARIOS_DIR / "fixtures" / fixture / "setup.sh", workspace)
+                result = subprocess.run(
+                    ["bash", "setup.sh", self.VARIANTS[fixture][0]],
+                    cwd=workspace, capture_output=True, text=True,
+                )
+                self.assertEqual(result.returncode, 2)
+                self.assertTrue((workspace / "setup.sh").exists())
+
+
 if __name__ == "__main__":
     unittest.main()
