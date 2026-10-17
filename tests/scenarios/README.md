@@ -103,9 +103,12 @@ Each run writes two files, both committed to the repo:
 Before writing either file, the runner replaces text matching the
 secret-scan hook's patterns (`hooks/scan-secrets.py`) with
 `[REDACTED: <kind>]`, removing a private key block through its END line.
-Patterns miss unknown formats and some known ones (for example
-`db_password = "..."` or an unquoted `PASSWORD=...`), so read both files
-before staging them.
+Patterns miss unknown formats and some known ones: AWS secret access keys,
+JWT or Bearer tokens, a key glued to a preceding letter or digit, a secret
+split across two strings, and password forms such as `db_password = "..."`
+or an unquoted `PASSWORD=...`. Read both files before staging them.
+Results written by anything other than `run.py` (for example the scratch
+Codex driver behind the `*-codex-*` files) are not redacted at all.
 
 Runner internals are regression-tested in `tests/test_scenarios.py` (no API
 calls); run `python3 -m unittest discover tests`.
