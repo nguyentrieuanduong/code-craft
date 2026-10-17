@@ -84,6 +84,18 @@ Ask for TWO separate verdicts (they fail independently):
 - No filler praise. A short "spec-compliant, 0 actionable findings" beats
   a paragraph of compliments.
 
+## Re-review (follow-up rounds)
+
+- Review the diff since the last reviewed commit
+  (`git diff <last-reviewed>..HEAD`) plus the previously open findings —
+  not the whole branch again.
+- Status each open finding by its ID: **addressed** (with the line that
+  fixes it) or **still open**. Do not repost an unchanged finding as new,
+  and do not reword or regrade a decided one.
+- After three rounds without convergence, stop cycling: say the approach
+  needs reassessment and propose discussing it with the author before
+  another round.
+
 ## Receiving review
 
 - **Evaluate technically before implementing.** A reviewer's comment is a
@@ -106,3 +118,4 @@ Ask for TWO separate verdicts (they fail independently):
 | "No test output, so I can't review yet" | Review what exists and name the missing evidence. Calling it merge-ready without evidence is the failure, not reviewing early. |
 | "I'm fairly sure this is a bug" | Unverified is a guess. Name the line and the concrete effect, or list it under Declined to judge. |
 | "This old bug is right there, I'll block on it" | The diff didn't introduce it. Label it Pre-existing so it gets tracked without blaming this change. |
+| "One more round will catch the rest" | Rounds past three repeat themselves. Stop and reassess the approach with the author. |
