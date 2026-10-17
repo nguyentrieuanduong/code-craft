@@ -1,0 +1,41 @@
+{
+  "tool_uses": [
+    [
+      "Glob",
+      {
+        "pattern": "**/*"
+      }
+    ],
+    [
+      "Read",
+      {
+        "file_path": "/Users/apollo/projects/code-craft/skills/code-review/SKILL.md"
+      }
+    ],
+    [
+      "Read",
+      {
+        "file_path": "/private/var/folders/s0/95bxcn355151vd97d8tg79nm0000gn/T/eval-standards-inline-vs-implicit-l9usa_pi/settings.py"
+      }
+    ],
+    [
+      "Read",
+      {
+        "file_path": "/private/var/folders/s0/95bxcn355151vd97d8tg79nm0000gn/T/eval-standards-inline-vs-implicit-l9usa_pi/test_settings.py"
+      }
+    ],
+    [
+      "Bash",
+      {
+        "command": "python3 -I -c \"\nfrom settings import *\nprint(resolve_retries({'retries':0}), resolve_timeout({'timeout':0}), resolve_timeout({'timeout':None}), resolve_timeout({'timeout':''}))\nprint(selected_stages({'stages':'test'}), selected_stages({'stages':'build,deploy'}))\nprint(selected_stages({'stages':[]}), describe({'stages':[]}))\ntry: selected_stages({'stages':None})\nexcept Exception as e: print(type(e).__name__, e)\n\" ; python3 -m unittest 2>&1 | tail -3; wc -l settings.py test_settings.py"
+      }
+    ],
+    [
+      "Bash",
+      {
+        "command": "PYTHONPATH=. python3 -c \"\nfrom settings import *\nprint(resolve_retries({'retries':0}), resolve_timeout({'timeout':0}), resolve_timeout({'timeout':None}), resolve_timeout({'timeout':''}))\nprint(selected_stages({'stages':'test'}), selected_stages({'stages':'build,deploy'}))\nprint(selected_stages({'stages':[]}), describe({'stages':[]}))\ntry: selected_stages({'stages':None})\nexcept Exception as e: print(type(e).__name__, e)\n\""
+      }
+    ]
+  ],
+  "final_text": "Diff: 22 changed lines in `settings.py` (46 with tests; no git repo, so counted with `wc -l`) \u2014 2 actionable findings.\nReview independence: not independent: inline fallback\nRisk tier: standard\nVerification evidence: I ran `python3 -m unittest` myself: 5 tests, OK. The author supplied none.\nMerge readiness: not ready \u2014 F1 is Blocking\n\nVerdicts\n- Spec compliance: FAIL. No design was supplied. By reasonable expectation, an explicit `0` should not be silently replaced.\n- Code quality: FAIL. `or` is a truthiness trick, which the standards prohibit. The tests have no worst cases.\n- Security: PASS \u2014 no security findings. The module does no I/O, parsing or secrets handling.\n- Security pass: inline fallback\n\nFindings\nF1. Blocking \u2014 `settings.py:9` and `settings.py:13` \u2014 `config.get(...) or DEFAULT` treats `0`, `\"\"` and `None` as \"unset\". Run against the file: `resolve_retries({\"retries\": 0})` returned `3`, so retries cannot be disabled. `resolve_timeout({\"timeout\": 0})` returned `30`, and `\"\"` also returned `30`. Fix: use `DEFAULT_RETRIES if config.get(\"retries\") is None else config[\"retries\"]`, and the same for timeout. Add tests for `retries=0` and `timeout=0`. The existing tests only cover the absent and positive cases, which is why the suite stays green.\n\nF2. Should-fix \u2014 `settings.py:17` \u2014 `stage in config.get(\"stages\", ...)` does substring matching when `stages` is a string. `selected_stages({\"stages\": \"build,deploy\"})` returned `('build', 'deploy')`. `{\"stages\": \"test\"}` happens to work only by accident. Accepting a string is a boundary-validation gap. Fix: reject non-list/tuple `stages` once, where the config is parsed. Do not wrap the call in `try/except`.\n\nPre-existing\nNone\n\nNits\n- Defaults are applied in three separate functions and `describe` re-derives them. Once F1 is fixed, consider a single frozen `Settings` dataclass built by one `parse(config)` function, per the single-resolution-point standard. That is a suggestion, not a blocker at this size.\n- None of the functions have type hints, which the standards require.\n\nDeclined to judge\n- `selected_stages({\"stages\": None})` raises `TypeError: argument of type 'NoneType' is not iterable`. That is a natural library failure and the standards say to let it raise. Whether `None` should mean \"all stages\" is a design question for the author.\n\n**Must not change in this PR:**\n- Don't add `try/except` or `None` guards around library-native failures.\n- Don't swap `or` for another truthiness idiom. Use an explicit `is None` check.\n- Keep `selected_stages` returning a `tuple` in `KNOWN_STAGES` order. That keeps it immutable and deterministic, and the existing test relies on it.\n- Keep `KNOWN_STAGES` as the single source of truth, and keep the existing 5 tests as they are."
+}

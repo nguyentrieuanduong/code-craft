@@ -192,6 +192,21 @@ is blatant enough that bare models pass; it stays as a regression check.
 Campaign summaries with verbatim failure quotes live in
 `tests/scenarios/results/` (`*-campaign-*-summary.md`).
 
+## Eval status (2026-10 review upgrade)
+
+The 2026-10 code-review upgrade added 11 focused review scenarios
+(code-review 03–13) and 2 finishing-work scenarios (04–05), and updated
+code-review 01. By maintainer decision each ran once on the updated
+plugin (Claude, `--model sonnet`), after-only with no before sample; the
+two that failed (code-review 03 and 06) were rerun after wording fixes:
+13 of 14 pass all checks on their final run (failing:
+review-ambiguous-intent). On manual reading, its final failure is a
+pattern false positive: the flagged finding asks for an
+order-independent test.
+Without before samples this records how the new wording behaves, not
+that the wording caused it. The isolated-reviewer path was not exercised;
+its dispatch instructions were inspected (the runner disables subagents).
+
 ## Validation
 
 Install the pinned authoring dependency, then run the deterministic check:

@@ -1,0 +1,17 @@
+{
+  "tool_uses": [
+    [
+      "Bash",
+      {
+        "command": "git diff main...HEAD --stat; git diff main...HEAD; ls; cat REVIEW.md AGENTS.md CLAUDE.md 2>/dev/null"
+      }
+    ],
+    [
+      "Bash",
+      {
+        "command": "python3 -m unittest discover -s tests 2>&1 | tail -4; git grep -n \"export_csv\" main -- . | head"
+      }
+    ]
+  ],
+  "final_text": "Diff: 21 changed lines \u2014 2 actionable findings.\nReview independence: not independent: inline fallback\nRisk tier: standard\nVerification evidence: as supplied (suite green, 1 test). I re-ran it: `Ran 1 test \u2026 OK`.\nMerge readiness: not ready \u2014 F1 is a spec deviation, and no test covers the behavior it affects.\n\nVerdicts\n- Spec compliance: FAIL \u2014 `src/export.py:4` sorts rows by name, which the design does not specify.\n- Code quality: FAIL \u2014 the single test covers one row only, so multi-row output, ordering and empty input are all untested.\n- Security: PASS \u2014 no security findings\n- Security pass: inline fallback\n\nFindings\nF1. Should-fix \u2014 src/export.py:4 \u2014 The design says \"one line per user\" and says nothing about order. `sorted(rows, key=...)` reorders the output, so input `[{\"name\":\"bob\",\u2026},{\"name\":\"ada\",\u2026}]` returns ada before bob. A caller that expects input order (for example, rows already ordered by signup date) gets a different order with no warning. This is extra, untested behavior, and the sort also raises `KeyError` on a missing `name` before the formatting line does. Fix: iterate `rows` directly. If sorting is wanted, add it to the design and add a test for it.\nF2. Should-fix \u2014 tests/test_export.py:10 \u2014 The only test uses one row. Nothing checks multiple rows, row order, or `rows=[]` (which should return just `\"name,email\"`). F1 would be caught by a two-row test. Fix: add a two-row test in non-sorted input order and an empty-input test.\n\nPre-existing\nNone\n\nNits\n- tests/test_export.py:9 \u2014 the class name `CaseTest` is unrelated to what it tests; `ExportCsvTest` would match.\n- No trailing newline in the output. The design is silent on this, so I am not asking for a change.\n\nDeclined to judge\n- Whether sorting was intended: the design is silent and I could not establish intent. If the author confirms it is intended, F1 becomes \"update the design and add a test\" rather than \"remove the sort\".\n- Quoting or escaping of fields: the design excludes commas, quotes and newlines from the input. The function does not validate this, and I am not requesting validation because the design does not ask for it."
+}

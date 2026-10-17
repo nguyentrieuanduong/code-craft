@@ -1,0 +1,4 @@
+{
+  "final_text": "Wrote the PR draft to [PR_BODY.md](/var/folders/s0/95bxcn355151vd97d8tg79nm0000gn/T/codex-finishing-pr-body-fields-huauza_6/PR_BODY.md). It is untracked; no push or PR was created because this repository has no remote.\n\n`feature/review` is 1 commit ahead of `main` (`81f639d`). The diff covers 2 files and 27 added lines. Review risk: standard. Final verification: `python3 -m unittest discover tests` passed all 4 tests. No design or plan links are present in the repository.",
+  "tool_uses": []
+}

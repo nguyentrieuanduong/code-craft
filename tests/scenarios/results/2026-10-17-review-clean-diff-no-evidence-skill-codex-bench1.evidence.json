@@ -1,0 +1,4 @@
+{
+  "final_text": "Diff: 27 changed lines \u2014 0 actionable findings.\nReview independence: not independent: inline fallback\nRisk tier: standard\nVerification evidence: none supplied\nMerge readiness: not ready \u2014 tests and other verification have not been run\n\nVerdicts\n- Spec compliance: PASS \u2014 `clamp` limits values to the stated interval when `low <= high`.\n- Code quality: PASS \u2014 the tests cover values below, inside, and above the interval, plus both endpoints; nothing needs fixing.\n- Security: PASS \u2014 no security findings in the diff or security checklist pass.\n- Security pass: inline fallback\n\nFindings\nNone\n\nPre-existing\nNone\n\nNits\nNone\n\nDeclined to judge\nNone",
+  "tool_uses": []
+}

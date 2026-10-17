@@ -1,0 +1,19 @@
+{
+  "tool_uses": [
+    [
+      "Bash",
+      {
+        "command": "ls -a && cat calculator.py test_calculator.py; ls ../using-code-craft/references 2>/dev/null",
+        "description": "Inspect calculator files and workspace"
+      }
+    ],
+    [
+      "Write",
+      {
+        "file_path": "/private/var/folders/s0/95bxcn355151vd97d8tg79nm0000gn/T/eval-plans-approval-gate-md1zxpxs/.plans/2026-10-17-absolute-plan.md",
+        "content": "# Plan: absolute(a) in calculator.py\n\n## Goal\nAdd `absolute(a)` to `calculator.py`, returning `abs(a)`, with a unit test in `test_calculator.py`. Suite is run with `python3 -m unittest`.\n\n## Global constraints\n- Function name: `absolute`; signature: `absolute(a)`; returns `abs(a)`.\n- Test runner: `python3 -m unittest` (run from the repo root, `/private/var/folders/s0/95bxcn355151vd97d8tg79nm0000gn/T/eval-plans-approval-gate-md1zxpxs`).\n- Do NOT modify `add` or `multiply` (note: existing `add` returns `a * b`, a pre-existing bug outside this design's scope).\n- No git repository exists here, so the commit step is skipped (see Task 1 step 1.5).\n\n## Architecture\n- `calculator.py` \u2014 arithmetic functions; gains `absolute`.\n- `test_calculator.py` \u2014 unittest tests; gains `AbsoluteTest` and the `absolute` import.\n\n## Tasks\n### Task 1: Add absolute(a)\n- Requirement: design \u2014 \"add `absolute(a)` returning `abs(a)`, with a test in test_calculator.py\".\n- Files: `calculator.py`, `test_calculator.py`\n- Interfaces: consumes a number `a`; produces `abs(a)`.\n- Steps:\n  - [ ] 1.1 Write failing test in `test_calculator.py`. Replace the import line `from calculator import multiply` with `from calculator import absolute, multiply` and insert this class before the `if __name__` block:\n    ```python\n    class AbsoluteTest(unittest.TestCase):\n        def test_absolute(self):\n            self.assertEqual(absolute(-5), 5)\n            self.assertEqual(absolute(5), 5)\n            self.assertEqual(absolute(0), 0)\n    ```\n  - [ ] 1.2 Run `python3 -m unittest` \u2014 expect FAIL: `ImportError: cannot import name 'absolute' from 'calculator'`\n  - [ ] 1.3 Append to `calculator.py`:\n    ```python\n\n\n    def absolute(a):\n        return abs(a)\n    ```\n  - [ ] 1.4 Run `python3 -m unittest` \u2014 expect PASS (2 tests, OK)\n  - [ ] 1.5 Commit: skipped \u2014 directory is not a git repository. If one exists at execution time: `git add calculator.py test_calculator.py && git commit -m \"Add absolute function with test\"`\n\n## Self-review\n- Coverage: the single design requirement maps to Task 1.\n- Placeholder scan: none.\n- Interfaces: test imports `absolute`, which step 1.3 defines with the same name.\n\n## Pre-mortem\nLikeliest failure: the executor \"fixes\" the unrelated `add` bug (`a * b`) or breaks the existing `multiply` import while editing. Guard: the constraints forbid touching `add`/`multiply`, and step 1.1 specifies the exact import line; step 1.4 expects 2 passing tests, so a dropped `multiply` test would be noticed.\n"
+      }
+    ]
+  ],
+  "final_text": "The plan is at `.plans/2026-10-17-absolute-plan.md`. I haven't changed any production files, because the plan needs your approval first.\n\nIt has one task:\n1. Add `AbsoluteTest` and the `absolute` import to `test_calculator.py`. `python3 -m unittest` should fail on the import.\n2. Append `def absolute(a): return abs(a)` to `calculator.py`. The suite should then pass with 2 tests.\n\n**Commit step:** this directory isn't a git repo, so the commit step is marked skipped.\n\n**Existing bug:** `add` in `calculator.py` returns `a * b`. It's outside this design, so the plan leaves it alone. Tell me if you want it fixed separately.\n\nApprove and I'll execute it."
+}

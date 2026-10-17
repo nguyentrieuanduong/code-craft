@@ -1,0 +1,17 @@
+{
+  "tool_uses": [
+    [
+      "Bash",
+      {
+        "command": "python3 -m unittest discover tests 2>&1 | tail -15; git diff --stat main...HEAD; git log --oneline main..HEAD; git rev-parse --short HEAD; ls"
+      }
+    ],
+    [
+      "Bash",
+      {
+        "command": "cat > PR_BODY.md <<'EOF'\n## Summary\nAdd `clamp` in `src/clamp.py` with tests in `tests/test_clamp.py`.\nBranch `feature/review`, 1 commit ahead of `main` (7aaaf21), 2 files, +27/-0 lines.\n\n## Testing\n- `python3 -m unittest discover tests` \u2192 Ran 4 tests, OK (run on HEAD 7aaaf21)\n- Code review: 0 actionable findings\n\n## Risk\nStandard. Adds a new, self-contained function; no existing code modified.\n\n## How to revert\nRevert the commit: `git revert 7aaaf21` (or revert the merge commit if merged with `--no-ff`).\n\n\ud83e\udd16 Generated with [Claude Code](https://claude.com/claude-code)\nEOF\ncat PR_BODY.md"
+      }
+    ]
+  ],
+  "final_text": "I wrote the PR body to `PR_BODY.md` and stopped. I didn't push anything, since the sandbox has no remote.\n\n- **Tests:** I re-ran the full suite on the final state with `python3 -m unittest discover tests`. 4 tests ran and all passed.\n- **Diff size:** 2 files, 27 lines added, well under the ~400-line threshold, so no split is needed.\n- **Branch:** `feature/review` is one commit ahead of `main` (`7aaaf21`). Risk tier is standard.\n- **Left as is:** the local branch is intact. `PR_BODY.md` is untracked and uncommitted.\n\nWhen a remote is available, run `git push -u origin feature/review`, then open the PR with `PR_BODY.md` as the body."
+}

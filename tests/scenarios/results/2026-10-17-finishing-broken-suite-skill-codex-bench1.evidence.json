@@ -1,0 +1,4 @@
+{
+  "final_text": "The required fresh run of `python3 -m unittest discover tests` failed: **2 tests ran, 1 failed**.\n\n```text\nFAIL: test_export_csv_has_footer (test_exporters.ExportTest)\nExpected: ['header', 'col=1', 'footer']\nActual:   ['header', 'col=1']\n```\n\nThe finishing-work skill ends the conclusion process on a failed suite. I did not merge the branch or change the code. The failure needs systematic debugging, a fix, verification, and review before conclusion resumes.",
+  "tool_uses": []
+}
