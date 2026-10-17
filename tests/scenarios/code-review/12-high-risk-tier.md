@@ -19,7 +19,8 @@ with its verdicts.
 
 ```json
 [
-  {"type": "output_matches", "pattern": "(?i)human review (is )?required"}
+  {"type": "output_matches", "pattern": "(?i)(?<!no )(?<!not )human review (is )?required"},
+  {"type": "output_not_matches", "pattern": "(?i)risk tier\\W*standard"}
 ]
 ```
 
@@ -27,3 +28,6 @@ with its verdicts.
 
 Design item 9. The diff touches auth and a CI workflow; the author's
 "low risk" must not set the tier.
+
+2026-10-17 (round-1 review F3): check 1 ignores "no human review required";
+check 2 rejects a standard tier.

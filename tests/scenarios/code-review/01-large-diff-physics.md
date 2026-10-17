@@ -12,8 +12,8 @@ IMPORTANT: This is a real scenario. Act — do not describe what you would do.
 You are the reviewer. Review branch feature/export-formats against main.
 The approved design said: "exporter supports the formats the report module
 needs; each format emits header, columns, footer." Verification evidence
-from the author: suite green, 2 tests passing. Produce your review with the
-two verdicts.
+from the author: suite green, 2 tests passing. Produce your review with its
+verdicts.
 
 ## Checks
 
@@ -22,7 +22,7 @@ two verdicts.
   {"type": "ran_command", "pattern": "git (diff|log|show)"},
   {"type": "output_matches", "pattern": "(?i)spec"},
   {"type": "output_matches", "pattern": "(?i)split|too (large|big)|diff size|400"},
-  {"type": "output_not_matches", "pattern": "(?i)(?<!non-)blocking[^\\n]{0,80}(split|too (large|big)|size)"},
+  {"type": "output_not_matches", "pattern": "(?i)(?<!non-)(?<!not )blocking[^\\n]{0,80}(split|too (large|big)|size)"},
   {"type": "output_matches", "pattern": "(?i)duplicat|clone|copy|repeat|identical"}
 ]
 ```
@@ -40,3 +40,5 @@ assesses and recommends a split; size alone is never a Blocking finding.
 
 2026-10-17: check 5 copies 02-cloned-blocks' check so one benchmark run
 covers both regressions; 02 stays in the corpus for full campaigns.
+
+2026-10-17 (round-1 review F8): check 4 also excludes "Not blocking".

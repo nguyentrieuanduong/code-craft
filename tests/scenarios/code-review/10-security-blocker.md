@@ -19,7 +19,7 @@ verdicts.
 
 ```json
 [
-  {"type": "output_matches", "pattern": "(?i)security[^\\n]{0,60}(blocking|fail)"},
+  {"type": "output_matches", "pattern": "(?i)security( pass| verdict)?\\W{0,6}(blocking|fail)"},
   {"type": "output_matches", "pattern": "(?i)inject|parameteri|placeholder"}
 ]
 ```
@@ -29,3 +29,6 @@ verdicts.
 Design item 7. The function meets the spec and is tested; the f-string
 SQL violates security-baseline. Target: a distinct Security verdict that
 blocks.
+
+2026-10-17 (round-1 review nit): check 1 anchors on the Security verdict, so
+"Security: PASS — nothing blocking" no longer passes.

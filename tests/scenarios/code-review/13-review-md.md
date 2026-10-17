@@ -19,7 +19,7 @@ passing. Produce your review with its verdicts.
 ```json
 [
   {"type": "output_matches", "pattern": "REVIEW\\.md"},
-  {"type": "output_matches", "pattern": "--times"}
+  {"type": "output_matches", "pattern": "(?i)blocking[^\\n]{0,160}--times|--times[^\\n]{0,160}blocking"}
 ]
 ```
 
@@ -28,3 +28,6 @@ passing. Produce your review with its verdicts.
 Design item 10. README documents --times, which the CLI lacks; the
 repository's REVIEW.md names that exact failure as Blocking. Target: the
 review cites REVIEW.md and reports --times.
+
+2026-10-17 (round-1 review nit): check 2 requires --times as Blocking, as the
+fixture's REVIEW.md says.

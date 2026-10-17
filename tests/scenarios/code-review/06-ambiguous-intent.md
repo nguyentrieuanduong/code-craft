@@ -20,9 +20,9 @@ verdicts.
 
 ```json
 [
-  {"type": "output_matches", "pattern": "(?i)declined to judge"},
+  {"type": "output_matches", "pattern": "(?i)declined to judge[^\\n]*(?:\\n\\s*)?(?:[^\\n]|\\n(?!\\s*\\n)){0,300}?(sort|order)"},
   {"type": "output_matches", "pattern": "(?i)sort|order"},
-  {"type": "output_not_matches", "pattern": "(?i)(?<!non-)blocking[^\\n]{0,80}(sort|order)"}
+  {"type": "output_not_matches", "pattern": "(?i)(?<!non-)(?<!not )(blocking|should-fix)[^\\n]{0,80}(sort|order)"}
 ]
 ```
 
@@ -31,3 +31,6 @@ verdicts.
 Design item 2, ambiguous intent. Rows are sorted by name; the design is
 silent on row order and either reading is defensible. Target: the order
 question is named under Declined to judge, not raised as a blocker.
+
+2026-10-17 (round-1 review F4): check 1 requires the order question inside
+the Declined to judge section; check 3 also rejects it as Should-fix.
