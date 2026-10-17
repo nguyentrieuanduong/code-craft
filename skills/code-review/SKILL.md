@@ -2,14 +2,19 @@
 name: code-review
 description: >-
   Use when a task or feature is complete and needs review before merge, when
-  asked to review code, and when handling review feedback. Don't use before
-  verification-before-completion has passed.
+  asked to review code, and when handling review feedback.
 ---
 
 # Code Review
 
-Review happens after verification passes and before merge. It has two sides:
-requesting it well, and receiving it well.
+Review happens before merge. It has two sides: requesting it well, and
+receiving it well.
+
+An explicitly requested review runs even when verification evidence is
+missing: review the diff, and name the missing evidence in the verdict
+("Verification evidence: none supplied"). Merge readiness still requires
+verification-before-completion — never call a diff ready to merge without
+it.
 
 ## Requesting review
 
@@ -20,7 +25,7 @@ Provide the reviewer a structured package:
 - Spec/design: <link or path to the approved design>
 - Plan tasks covered: <task numbers>
 - Diff: <branch, plus files/lines changed from `git diff main...HEAD --stat`>
-- Verification evidence: <test counts, build/lint results — actual numbers>
+- Verification evidence: <test counts, build/lint results — actual numbers, or "none yet">
 - Known concerns: <anything you are unsure about — hiding doubts wastes the review>
 ```
 
@@ -82,3 +87,4 @@ Ask for TWO separate verdicts (they fail independently):
 | "It's a nit, I'll skip responding" | Unaddressed comments erode trust. Respond to every one, even with 'declined because X'. |
 | "Review will catch what I missed" | Review is a safety net, not a substitute for verification. Arrive clean. |
 | "The diff is big, but I can review it all" | Nobody can — detection rates collapse past ~400 changed lines. State the size verdict first, recommend the split, then do your best. |
+| "No test output, so I can't review yet" | Review what exists and name the missing evidence. Calling it merge-ready without evidence is the failure, not reviewing early. |
