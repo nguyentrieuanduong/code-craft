@@ -38,12 +38,14 @@ findings. Do not assume an ordinary subagent starts clean. Without
 isolation, review inline: re-read the design and the diff from disk, and
 state in the verdict "Review not independent: inline fallback."
 
-Ask for TWO separate verdicts (they fail independently):
+Ask for THREE separate verdicts (they fail independently):
 
 1. **Spec compliance** — does the code do what the approved design says?
    Nothing missing, nothing extra?
-2. **Code quality** — coding-standards followed, security-baseline held,
-   tests meaningful (worst cases, real integrations), abstractions justified?
+2. **Code quality** — coding-standards followed, tests meaningful (worst
+   cases, real integrations), abstractions justified?
+3. **Security** — a distinct pass against security-baseline (see
+   "Security pass").
 
 ## Performing review (when you are the reviewer)
 
@@ -102,6 +104,22 @@ Ask for TWO separate verdicts (they fail independently):
 - No filler praise. A short "spec-compliant, 0 actionable findings" beats
   a paragraph of compliments.
 
+## Security pass
+
+Run it after the code review, with its own **Security** verdict and
+evidence.
+
+- With isolated subagents available, dispatch a separate security
+  reviewer with the same package and security-baseline; otherwise run a
+  separately labeled checklist pass and state "Security pass: inline
+  fallback."
+- A verified security-baseline violation introduced by the diff makes
+  the Security verdict BLOCKING and blocks readiness regardless of the
+  other verdicts. Resolve a disputed finding with evidence before
+  clearing it.
+- A clean pass says "no security findings" explicitly. A check you could
+  not run is named as unverified — never reported as a pass.
+
 ## Re-review (follow-up rounds)
 
 - Review the diff since the last reviewed commit
@@ -137,3 +155,4 @@ Ask for TWO separate verdicts (they fail independently):
 | "I'm fairly sure this is a bug" | Unverified is a guess. Name the line and the concrete effect, or list it under Declined to judge. |
 | "This old bug is right there, I'll block on it" | The diff didn't introduce it. Label it Pre-existing so it gets tracked without blaming this change. |
 | "One more round will catch the rest" | Rounds past three repeat themselves. Stop and reassess the approach with the author. |
+| "Spec and quality pass, so it's ready" | Security is its own verdict. One verified baseline violation blocks readiness. |
