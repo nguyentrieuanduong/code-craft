@@ -72,4 +72,4 @@ why the dependency is needed.
 | "I'll rotate the hardcoded key later" | Committed secrets live in git history forever. Never commit one. |
 | "This input comes from our own frontend" | Attackers do not use your frontend. Validate server-side. |
 | "Wildcard permissions unblock me now" | Scoping later never happens. Scope now. |
-| "The model suggested this package, so it exists" | ~20% of LLM package suggestions are hallucinated; attackers pre-register the recurring ones. Check the registry first. |
+| "The model suggested this package, so it exists" | A suggestion is not evidence (see SEC-09). Check the registry first. |
