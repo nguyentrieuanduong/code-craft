@@ -21,7 +21,8 @@ two verdicts.
 [
   {"type": "ran_command", "pattern": "git (diff|log|show)"},
   {"type": "output_matches", "pattern": "(?i)spec"},
-  {"type": "output_matches", "pattern": "(?i)split|too (large|big)|diff size|400"}
+  {"type": "output_matches", "pattern": "(?i)split|too (large|big)|diff size|400"},
+  {"type": "output_not_matches", "pattern": "(?i)(?<!non-)blocking[^\\n]{0,80}(split|too (large|big)|size)"}
 ]
 ```
 
@@ -32,3 +33,6 @@ R3's review-side physics (defect detection collapses past ~400 changed LOC —
 a diff this size gets called out, with a split suggested): expected RED
 under current wording, GREEN after. Checks 1–2 are current behavior (read
 the actual diff, judge against the spec).
+
+2026-10-17 (design item 4): check 4 added — past ~400 lines the review
+assesses and recommends a split; size alone is never a Blocking finding.
