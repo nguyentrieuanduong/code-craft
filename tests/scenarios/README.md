@@ -49,6 +49,7 @@ Frontmatter uses strict YAML and supports standard scalar styles. Check types:
 | `ran_command` / `not_ran_command` | `pattern` | some Bash command matches / none does |
 | `test_written_before_source` | `test_glob`, `source_glob` | first Write/Edit to a test file precedes any to source |
 | `files_untouched` | `glob` | no Write/Edit touched a matching path |
+| `report_matches` / `report_not_matches` | `field` or `section`, `pattern`, optional `severity` (section only) | the code-review report parsed from the final text has a field value / a section item matching `pattern` (case-insensitive) — or, for the `_not_` form, does not; both fail when no report is found. Fields: the template labels plus derived `changed lines` and `actionable`; sections: findings, pre-existing, nits, declined to judge. See `parse_report` in `run.py` |
 
 Checks encode the **target** behavior. A baseline (no-skill) run is expected
 to violate them — that is the RED evidence. A skill run must pass all of

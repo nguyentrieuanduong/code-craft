@@ -335,6 +335,110 @@ class EvaluateCheckTest(unittest.TestCase):
         self.assertFalse(self.check(spec, touched))
 
 
+SAMPLE_REPORT = """## Review
+
+**Diff:** 1,111 changed lines — 2 actionable finding(s).
+**Review independence:** not independent: inline fallback
+Risk tier: standard
+Verification evidence: none supplied
+Merge readiness: not ready — verification evidence missing
+
+### Verdicts
+- **Spec compliance:** FAIL — tax.py still crashes
+- Code quality: PASS — fine
+- Security: PASS — no security findings
+- Security pass: inline fallback
+
+### Findings
+F1. **Blocking** — `src/discount.py:6` — swallows ValueError;
+  "10%" silently gives no discount — strip the sign in parse_percent.
+2. Should-fix — src/tax.py:2 — same unstripped '%' parse.
+
+### Pre-existing
+- `legacy/report_export.py:2` — same class as tax.py, out of scope.
+
+Nits
+None
+
+Declined to judge: None
+"""
+
+
+class ParseReportTest(unittest.TestCase):
+    def test_reads_fields_and_derived_counts(self):
+        report = runner.parse_report(SAMPLE_REPORT)
+        fields = report["fields"]
+        self.assertEqual(fields["changed lines"], "1111")
+        self.assertEqual(fields["actionable"], "2")
+        self.assertEqual(fields["review independence"], "not independent: inline fallback")
+        self.assertEqual(fields["verification evidence"], "none supplied")
+        self.assertTrue(fields["merge readiness"].startswith("not ready"))
+        self.assertTrue(fields["spec compliance"].startswith("fail"))
+        self.assertEqual(fields["security pass"], "inline fallback")
+
+    def test_splits_sections_into_items_with_severity(self):
+        sections = runner.parse_report(SAMPLE_REPORT)["sections"]
+        findings = sections["findings"]
+        self.assertEqual([item["severity"] for item in findings], ["blocking", "should-fix"])
+        self.assertIn("parse_percent", findings[0]["text"])
+        self.assertTrue(findings[1]["text"].startswith("should-fix — src/tax.py:2"))
+        self.assertTrue(sections["pre-existing"][0]["text"].startswith("legacy/report_export.py:2"))
+        self.assertEqual(sections["nits"], [])
+        self.assertEqual(sections["declined to judge"], [])
+
+    def test_heading_style_findings_are_items(self):
+        text = "Diff: 5 changed lines — 1 actionable finding.\n\n## Findings\n\n### F1. Blocking — src/a.py:2 — wrong\n\nRecommendation: fix it.\n\n## Nits\n\nNone\n"
+        findings = runner.parse_report(text)["sections"]["findings"]
+        self.assertEqual(findings[0]["severity"], "blocking")
+        self.assertTrue(findings[0]["text"].startswith("blocking — src/a.py:2"))
+
+    def test_zero_words_count_as_zero(self):
+        report = runner.parse_report("Diff: 27 changed lines — no actionable findings.\n")
+        self.assertEqual(report["fields"]["actionable"], "0")
+
+    def test_text_without_report_has_no_fields_or_sections(self):
+        report = runner.parse_report("Looks good to me, ready to merge.")
+        self.assertEqual(report, {"fields": {}, "sections": {}})
+
+
+class ReportCheckTest(unittest.TestCase):
+    def check(self, spec, text=SAMPLE_REPORT):
+        return runner.evaluate_check(spec, transcript(final_text=text), Path("/tmp"))
+
+    def test_field_checks(self):
+        self.assertTrue(self.check({"type": "report_matches", "field": "actionable", "pattern": "^[12]$"}))
+        self.assertFalse(self.check({"type": "report_matches", "field": "merge readiness", "pattern": "^ready"}))
+        self.assertTrue(self.check({"type": "report_not_matches", "field": "risk tier", "pattern": "high"}))
+        self.assertFalse(self.check({"type": "report_matches", "field": "absent", "pattern": "."}))
+
+    def test_section_checks_with_severity(self):
+        tax = {"type": "report_matches", "section": "findings", "pattern": "tax\\.py"}
+        self.assertTrue(self.check(tax))
+        self.assertTrue(self.check(dict(tax, severity=["should-fix"])))
+        self.assertFalse(self.check(dict(tax, severity=["nit"])))
+        leading = {"type": "report_not_matches", "section": "pre-existing", "pattern": "^(src/)?tax\\.py"}
+        self.assertTrue(self.check(leading))
+
+    def test_missing_report_fails_both_types(self):
+        text = "Looks good to me, ready to merge."
+        for kind in ("report_matches", "report_not_matches"):
+            with self.subTest(kind=kind):
+                self.assertFalse(self.check({"type": kind, "field": "merge readiness", "pattern": "^ready"}, text))
+                self.assertFalse(self.check({"type": kind, "section": "findings", "pattern": "x"}, text))
+
+    def test_scenario_rejects_report_check_without_one_target(self):
+        for extra in ({}, {"field": "risk tier", "section": "findings"}):
+            with self.subTest(extra=extra):
+                checks = json.dumps([dict({"type": "report_matches", "pattern": "x"}, **extra)])
+                text = SAMPLE_SCENARIO.split("```json")[0] + "```json\n" + checks + "\n```\n"
+                handle = tempfile.NamedTemporaryFile("w", suffix=".md", delete=False)
+                handle.write(text)
+                handle.close()
+                self.addCleanup(Path(handle.name).unlink)
+                with self.assertRaises(ValueError):
+                    runner.parse_scenario(Path(handle.name))
+
+
 class RepLabelTest(unittest.TestCase):
     def test_no_rep_keeps_base_label(self):
         self.assertEqual(runner.rep_label("haiku", None), "haiku")

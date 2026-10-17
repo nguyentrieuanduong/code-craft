@@ -56,7 +56,24 @@ CHECK_TYPES = {
     "not_ran_command",
     "test_written_before_source",
     "files_untouched",
+    "report_matches",
+    "report_not_matches",
 }
+REPORT_CHECK_TYPES = frozenset({"report_matches", "report_not_matches"})
+REPORT_FIELDS = frozenset({
+    "diff",
+    "review independence",
+    "risk tier",
+    "verification evidence",
+    "merge readiness",
+    "spec compliance",
+    "code quality",
+    "security",
+    "security pass",
+})
+REPORT_SECTIONS = frozenset({
+    "verdicts", "findings", "pre-existing", "nits", "declined to judge",
+})
 SCENARIO_SCHEMA = {
     "name": str,
     "skill": str,
@@ -106,6 +123,8 @@ def parse_scenario(path: Path) -> dict[str, Any]:
     for check in checks:
         if check.get("type") not in CHECK_TYPES:
             raise ValueError(f"{path}: unknown check type {check.get('type')}")
+        if check["type"] in REPORT_CHECK_TYPES:
+            _validate_report_check(check, path)
     return {
         "path": path,
         "name": meta["name"],
@@ -116,6 +135,15 @@ def parse_scenario(path: Path) -> dict[str, Any]:
         "prompt": extract_section(body, "Prompt"),
         "checks": checks,
     }
+
+
+def _validate_report_check(check, path):
+    if ("field" in check) == ("section" in check):
+        raise ValueError(f"{path}: report check needs exactly one of field/section")
+    if not isinstance(check.get("pattern"), str):
+        raise ValueError(f"{path}: report check needs a pattern")
+    if "severity" in check and "section" not in check:
+        raise ValueError(f"{path}: severity applies only to section checks")
 
 
 # --------------------------------------------------------------- transcript
@@ -187,6 +215,103 @@ def _glob_files(workspace, pattern):
     ]
 
 
+_DECORATION = re.compile(r"\*\*|__|`")
+_LEAD_MARKERS = re.compile(r"^\s*(?:(?:#+|>+|[-*+])\s+)*")
+_ITEM_START = re.compile(r"^(?:[-*+]\s+|\d+[.)]\s+|[a-z]{1,3}\d+(?:-\d+)?[.):]\s+)")
+_LABEL = re.compile(r"^([a-z][a-z -]*?)\s*:\s*(.*)$")
+_SEVERITY = re.compile(r"(?<![\w-])(blocking|should[- ]fix|nit)\b")
+_NONE_ITEM = re.compile(r"^none\b")
+
+
+def _report_item(text):
+    severity = _SEVERITY.search(text)
+    return {
+        "text": text,
+        "severity": severity.group(1).replace(" ", "-") if severity else None,
+    }
+
+
+def _add_item(items, text, new):
+    if new or not items:
+        items.append(text)
+    else:
+        items[-1] += " " + text
+
+
+def parse_report(text):
+    """Read the code-review report template out of free-form final text.
+
+    Returns {"fields": {label: value}, "sections": {name: [item, ...]}}, all
+    lowercased, with derived fields "changed lines" and "actionable".
+    """
+    fields = {}
+    raw_sections = {}
+    current = None
+    previous_blank = True
+    for raw in text.splitlines():
+        line = _DECORATION.sub("", raw).strip().lower()
+        if not line:
+            previous_blank = True
+            continue
+        body = _LEAD_MARKERS.sub("", line)
+        label = _LABEL.match(body)
+        header = body.rstrip(":").strip()
+        if header in REPORT_SECTIONS or (label and label.group(1) in REPORT_SECTIONS):
+            current = header if header in REPORT_SECTIONS else label.group(1)
+            raw_sections.setdefault(current, [])
+            inline = label.group(2).strip() if label and current == label.group(1) else ""
+            if inline:
+                raw_sections[current].append(inline)
+            previous_blank = True
+            continue
+        if label and label.group(1) in REPORT_FIELDS:
+            fields.setdefault(label.group(1), label.group(2).strip())
+            if current != "verdicts":
+                current = None
+            previous_blank = False
+            continue
+        heading = line.startswith("#")
+        if heading and not (current and _ITEM_START.match(body)):
+            current = None
+        elif current:
+            starts_item = heading or bool(_ITEM_START.match(line))
+            # Strip a bullet, then an ID such as "F1." that may follow it.
+            item = _ITEM_START.sub("", _ITEM_START.sub("", body if heading else line))
+            _add_item(raw_sections[current], item, starts_item or previous_blank)
+        previous_blank = False
+    diff = fields.get("diff", "")
+    changed = re.search(r"([\d,]+)\s+changed lines", diff)
+    if changed:
+        fields["changed lines"] = changed.group(1).replace(",", "")
+    actionable = re.search(r"\b(\d+|no|zero|none)\s+actionable", diff)
+    if actionable:
+        count = actionable.group(1)
+        fields["actionable"] = count if count.isdigit() else "0"
+    sections = {
+        name: [_report_item(item) for item in items if not _NONE_ITEM.match(item)]
+        for name, items in raw_sections.items()
+    }
+    return {"fields": fields, "sections": sections}
+
+
+def _report_check(check, text):
+    report = parse_report(text)
+    if "diff" not in report["fields"] and "findings" not in report["sections"]:
+        return False
+    negate = check["type"] == "report_not_matches"
+    if "field" in check:
+        value = report["fields"].get(check["field"])
+        if value is None:
+            return False
+        return bool(re.search(check["pattern"], value, re.IGNORECASE)) != negate
+    items = report["sections"].get(check["section"], [])
+    severities = check.get("severity")
+    if severities:
+        items = [item for item in items if item["severity"] in severities]
+    found = any(re.search(check["pattern"], item["text"], re.IGNORECASE) for item in items)
+    return found != negate
+
+
 def _commands(transcript):
     return [
         tool_input.get("command", "")
@@ -211,6 +336,8 @@ def evaluate_check(check, transcript, workspace):
     text = transcript["final_text"]
     if kind == "output_matches":
         return re.search(pattern, text) is not None
+    if kind in REPORT_CHECK_TYPES:
+        return _report_check(check, text)
     if kind == "output_not_matches":
         return re.search(pattern, text) is None
     if kind == "file_exists":
@@ -257,7 +384,7 @@ def evaluate_check(check, transcript, workspace):
 
 def describe_check(check):
     parts = [check["type"]]
-    for key in ("pattern", "glob", "test_glob", "source_glob"):
+    for key in ("field", "section", "severity", "pattern", "glob", "test_glob", "source_glob"):
         if key in check:
             parts.append(f"{key}={check[key]!r}")
     return " ".join(parts)
