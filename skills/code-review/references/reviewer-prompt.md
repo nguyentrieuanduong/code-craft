@@ -27,6 +27,7 @@ Review independence: <isolated subagent | not independent: inline fallback>
 Verdicts
 - Spec compliance: <PASS | FAIL> — <one line>
 - Code quality: <PASS | FAIL> — <one line>
+- Security: <PASS — no security findings | BLOCKING — <finding> | NOT VERIFIED — <what could not be checked>>
 
 Findings
 <ID. Severity — file:line (or omitted requirement) — effect — fix; "None">
