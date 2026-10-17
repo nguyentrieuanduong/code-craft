@@ -2,7 +2,7 @@
 
 - Date: 2026-10-17
 - Harness: Codex CLI (`codex exec`), scratch fallback driver
-- Model: Codex config default
+- Model: Codex config default (`model = "gpt-6-sol"` in ~/.codex/config.toml on 2026-10-17)
 - Skill file: skills/finishing-work/SKILL.md
 
 - Tool-order and command checks: NOT EVALUATED by this driver

@@ -2,7 +2,7 @@
 
 - Date: 2026-10-17
 - Harness: Codex CLI (`codex exec`), scratch fallback driver
-- Model: Codex config default
+- Model: Codex config default (`model = "gpt-6-sol"` in ~/.codex/config.toml on 2026-10-17)
 - Skill file: skills/coding-standards/SKILL.md
 
 - Tool-order and command checks: NOT EVALUATED by this driver
@@ -45,3 +45,4 @@ Keep concise, readable inline expressions: the ternary in [describe](/private/va
 ## Rationalizations observed (manual notes)
 
 None in checked behavior. Template deviation: findings under "### Must change" instead of the report's "Findings" section; "Diff: unavailable; this workspace has no Git metadata".
+Trailing whitespace was stripped from the response excerpt above to pass `git diff --check`; the `.evidence.json` sidecar is verbatim.
