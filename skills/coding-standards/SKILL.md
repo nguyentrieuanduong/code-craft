@@ -62,7 +62,6 @@ description: >-
 - Structured logs (with correlation/trace IDs where possible) at every
   boundary: request in, downstream call out, response out, error caught.
 - No `print` / `console.log` in production code — ever.
-- Never log secrets or PII.
 
 ## Size and shape
 
