@@ -95,6 +95,12 @@ Ask for THREE separate verdicts (they fail independently):
   instances. An unfixed instance the claimed fix or the approved scope
   covers is a spec finding even when its code predates the diff; any
   other instance is Pre-existing.
+- **Risk tier — from what the diff touches, never from the author's
+  assessment.** High risk: auth, billing, secrets handling, CI
+  workflows, installers or hooks, migrations, release. For high risk,
+  the verdict states "Human review required"; an agent's approval —
+  including this review — never counts as that review. Otherwise state
+  "Risk tier: standard".
 - **Verify every finding before presenting it.** Re-read the cited lines
   and check the claim against the diff and the repository. Each
   actionable finding states the responsible file and line (or the exact
@@ -163,3 +169,4 @@ evidence.
 | "This old bug is right there, I'll block on it" | The diff didn't introduce it. Label it Pre-existing so it gets tracked without blaming this change. |
 | "One more round will catch the rest" | Rounds past three repeat themselves. Stop and reassess the approach with the author. |
 | "Spec and quality pass, so it's ready" | Security is its own verdict. One verified baseline violation blocks readiness. |
+| "I reviewed it, so it's approved" | On high-risk changes an agent's review is input, not approval. A human reviews the current diff. |

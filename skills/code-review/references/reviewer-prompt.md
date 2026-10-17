@@ -23,6 +23,7 @@ format:
 
 Diff: <N> changed lines — <A> actionable findings.
 Review independence: <isolated subagent | not independent: inline fallback>
+Risk tier: <standard | high — human review required>
 
 Verdicts
 - Spec compliance: <PASS | FAIL> — <one line>

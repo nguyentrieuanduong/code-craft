@@ -35,7 +35,8 @@ thresholds or splitting.
 ## Step 2 — Report state
 
 Summarize in a few lines: branch name, commits ahead of main, diff size
-(files / lines changed), design/plan links, verification evidence (numbers).
+(files / lines changed), risk tier from the code review (standard /
+high), design/plan links, verification evidence (numbers).
 
 ## Step 3 — Present exactly four options
 
@@ -52,11 +53,19 @@ answers.
 ## Executing the choice
 
 **Option 1 — merge locally**
+- **High risk:** do not merge until a human has reviewed the current
+  diff (name the HEAD commit) and recorded a decision in this
+  conversation. Approval of the design, the plan, or this option is not
+  that review. Say what is needed and stop.
 - Merge into main, run the full suite ON THE MERGE RESULT, verify green.
 - Only then delete the feature branch (and its worktree if one was used).
 
 **Option 2 — push + PR**
-- `git push -u origin <branch>`, create the PR with summary + test plan.
+- `git push -u origin <branch>`, create the PR with sections
+  **Summary**, **Testing** (commands run and their results), **Risk**
+  (tier and why), and **How to revert**.
+- **High risk:** state "Human review required before merge" in the PR
+  body; never describe the PR as merge-ready before that review.
 - Keep the local branch/worktree intact.
 
 **Option 3 — keep as-is**
@@ -68,6 +77,8 @@ answers.
 - Only force-delete branches/worktrees created for this work — never
   pre-existing ones.
 
+A code change after a human review needs a renewed review before merge.
+
 ## Forbidden rationalizations
 
 | Excuse | Reality |
@@ -76,3 +87,4 @@ answers.
 | "Tests passed an hour ago" | The final run is on the final state. Run it again. |
 | "It's a one-line fix, I'll just patch it here" | An unreviewed fix at conclusion time skips every quality gate the branch just passed. Route it through systematic-debugging like any other defect. |
 | "The branch is stale, I'll clean it up" | Unfamiliar branches may hold someone's in-progress work. Never delete unasked. |
+| "The user picked merge — that's approval" | Choosing an option is not reviewing the diff. A high-risk merge waits for a human review of the current HEAD. |
