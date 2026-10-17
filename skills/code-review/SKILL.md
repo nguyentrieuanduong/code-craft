@@ -38,19 +38,19 @@ Ask for TWO separate verdicts (they fail independently):
 
 ## Performing review (when you are the reviewer)
 
-- **Step 0 — diff size verdict, before any code comment.** Run
+- **Step 0 — size signal, before any code comment.** Run
   `git diff main...HEAD --stat` and OPEN the review with one summary
-  line: "Diff: {changed_lines} changed lines — within/over the ~400-line
-  review threshold. {count} actionable {finding_or_findings}." Use the
-  measured line count; write "finding" for 1 and "findings" otherwise.
-  Actionable means Blocking or
-  Should-fix; write 0 when there are none and say plainly that nothing
-  needs fixing. Past ~400 changed lines, reviewer defect detection collapses
-  (see `../using-code-craft/references/evidence.md`): if over, the review's
-  FIRST finding is that the
-  diff is too large and should be split into independently reviewable
-  slices. Then review as thoroughly as the size allows anyway. A review
-  that never states the size verdict is incomplete.
+  line: "Diff: {changed_lines} changed lines — {count} actionable
+  {finding_or_findings}." Use the measured line count; write "finding"
+  for 1 and "findings" otherwise.
+  Actionable means Blocking or Should-fix; write 0 when there are none and say plainly
+  that nothing needs fixing. Past ~400 changed lines reviewer defect
+  detection collapses (see `../using-code-craft/references/evidence.md`):
+  say whether the change splits into independently reviewable slices and
+  recommend the split when it does — a recommendation, not a Blocking
+  finding. Generated, deleted, or mechanical bulk counts by its actual
+  risk and reviewability, not its line count. A review that never states
+  the size is incomplete.
 - Read the design first, then the diff. Judge against the spec, not
   taste. Where the design is silent, judge by what a reasonable user
   would expect; when intent cannot be established, list the question
@@ -114,7 +114,7 @@ Ask for TWO separate verdicts (they fail independently):
 | "The reviewer is senior, just do what they say" | Seniors are wrong sometimes. Verify, then act. |
 | "It's a nit, I'll skip responding" | Unaddressed comments erode trust. Respond to every one, even with 'declined because X'. |
 | "Review will catch what I missed" | Review is a safety net, not a substitute for verification. Arrive clean. |
-| "The diff is big, but I can review it all" | Nobody can — detection rates collapse past ~400 changed lines. State the size verdict first, recommend the split, then do your best. |
+| "The diff is big, but I can review it all" | Nobody can — detection collapses past ~400 changed lines. State the size, recommend a split where one exists, then review by risk. |
 | "No test output, so I can't review yet" | Review what exists and name the missing evidence. Calling it merge-ready without evidence is the failure, not reviewing early. |
 | "I'm fairly sure this is a bug" | Unverified is a guess. Name the line and the concrete effect, or list it under Declined to judge. |
 | "This old bug is right there, I'll block on it" | The diff didn't introduce it. Label it Pre-existing so it gets tracked without blaming this change. |
