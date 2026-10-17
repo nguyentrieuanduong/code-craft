@@ -30,16 +30,16 @@ description: >-
 7. **Smallest sufficient abstraction** — inline simple one-off logic local to
    one call site. Add helpers only when reused, domain-significant,
    independently tested, or clearly better for readability. Three similar
-   lines beat a premature abstraction. Need a helper anyway? Grep the
-   repo first — an equivalent may already exist; import it (promote it
-   if private) rather than writing a copy.
+   lines beat a premature abstraction. Before writing a helper, grep the repo
+   for an equivalent; import it (promote it if private) rather than writing
+   a copy.
 8. **Single resolution point for configuration** — apply ALL defaults,
    fallbacks, derivations, and validation in one parse step — nowhere else —
    producing a fully-resolved immutable config; log the raw input unchanged
    and the resolved result. Execution reads only the resolved config: no
    reinterpretation, defaulting, or hidden decisions later. The resolved-config
-   log is the contract — reading it tells exactly what will happen. For
-   jobs/pipelines, structure this as four explicit phases:
+   log is the contract: it tells exactly what will happen. For jobs/pipelines,
+   structure this as four explicit phases:
    read → parse → execute → cleanup (cleanup releases resources — sessions,
    connections, temp files — on success and failure alike).
 
@@ -48,9 +48,9 @@ description: >-
 - Do NOT guard library-native failures. Let missing keys, invalid indexes,
   bad types, and provider errors raise naturally unless handling adds
   project-specific context.
-- Catch and log ONCE at a high layer (workflow/job/request boundary) where
-  full context exists. Catch earlier only to recover, translate to a domain
-  error, or add context the boundary cannot know.
+- Catch and log ONCE at a high layer (workflow/job/request boundary) with
+  full context. Catch earlier only to recover, translate to a domain error, or
+  add context the boundary cannot know.
 - Never add error handling for scenarios that cannot happen. Validate at
   system boundaries (user input, external APIs); trust internal code.
 - **Resilient attribute collection**: when gathering best-effort attributes,
