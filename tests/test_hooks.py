@@ -268,6 +268,47 @@ class ScanSecretsTest(unittest.TestCase):
 
 
 class ProtectConfigsTest(unittest.TestCase):
+    NEWLY_PROTECTED = (
+        ".eslintignore",
+        ".prettierignore",
+        ".stylelintignore",
+        ".markdownlintignore",
+        ".stylelintrc.json",
+        "stylelint.config.mjs",
+        ".markdownlint.yaml",
+        ".markdownlint-cli2.jsonc",
+        ".biome.json",
+        ".biome.jsonc",
+        ".ESLintrc.json",
+    )
+
+    def test_blocks_existing_ignore_files_and_configs(self):
+        for name in self.NEWLY_PROTECTED:
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as tmp:
+                config = Path(tmp) / name
+                config.write_text("x\n")
+                result = run_hook(
+                    "protect-configs.py", {"tool_input": {"file_path": str(config)}}
+                )
+                self.assertEqual(result.returncode, 2, result.stderr)
+                self.assertIn("BLOCKED", result.stderr)
+
+    def test_allows_creating_missing_ignore_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ignore = Path(tmp) / ".eslintignore"
+            result = run_hook(
+                "protect-configs.py", {"tool_input": {"file_path": str(ignore)}}
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_codex_patch_blocks_existing_ignore_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ignore = Path(tmp) / ".prettierignore"
+            ignore.write_text("dist/\n")
+            result = run_hook("protect-configs.py", codex_patch(ignore, "src/"))
+            self.assertEqual(result.returncode, 2, result.stderr)
+            self.assertIn("BLOCKED", result.stderr)
+
     def test_blocks_existing_linter_config(self):
         with tempfile.TemporaryDirectory() as tmp:
             config = Path(tmp) / ".eslintrc.json"
