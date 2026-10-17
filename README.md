@@ -94,9 +94,6 @@ codex plugin add code-craft@code-craft
 codex plugin list --json
 # trust the five commands once:
 #   /hooks
-# upgrade / remove:
-#   codex plugin marketplace upgrade code-craft
-#   codex plugin remove code-craft@code-craft
 ```
 
 **Other harnesses (Copilot, OpenCode, ...):** copy the repo into your
@@ -106,6 +103,47 @@ These harnesses are instruction-file only: the four rules are advisory
 there, hooks are not enforced. On Codex, prefer the native plugin above;
 SEC-09 dependency vetting on Codex stays instruction-level via
 `security-baseline`.
+
+### Upgrade and uninstall
+
+Upgrading starts with updating your checkout (`git pull` in
+`/path/to/code-craft`); the commands below then refresh the installed copy.
+
+**Claude Code plugin:**
+
+```bash
+# upgrade: picks up a new plugin.json version, then restart Claude Code
+claude plugin update code-craft@code-craft
+
+# uninstall
+claude plugin uninstall code-craft@code-craft
+claude plugin marketplace remove code-craft
+```
+
+A plugin installed from a local folder is read from that folder, so edits
+there take effect at the next session start or after `/reload-plugins`; no
+update command is needed for them. Uninstalling leaves the cached copies in
+`~/.claude/plugins/cache/code-craft/`; delete that directory to reclaim the
+space.
+
+**Codex native plugin:**
+
+```bash
+# upgrade: re-adding copies the checkout into the plugin cache, then restart Codex
+codex plugin add code-craft@code-craft
+
+# uninstall (also removes the plugin cache)
+codex plugin remove code-craft@code-craft
+codex plugin marketplace remove code-craft
+```
+
+Codex installs a copy, so run `codex plugin add` again after every change
+to the checkout, including changes without a version bump.
+
+**Skills-only and copied installs:** to upgrade, replace the copied
+directories with fresh copies from the checkout; to uninstall, delete them
+(`~/.claude/skills/code-craft/`, or the `skills/*` directories copied into
+`~/.claude/skills/` or `$HOME/.agents/skills/`).
 
 ### Surface support
 
