@@ -51,7 +51,10 @@ Ask for TWO separate verdicts (they fail independently):
   diff is too large and should be split into independently reviewable
   slices. Then review as thoroughly as the size allows anyway. A review
   that never states the size verdict is incomplete.
-- Read the design first, then the diff. Judge against the spec, not taste.
+- Read the design first, then the diff. Judge against the spec, not
+  taste. Where the design is silent, judge by what a reasonable user
+  would expect; when intent cannot be established, list the question
+  under **Declined to judge** instead of inventing a blocker.
 - Check what is NOT there: missing worst-case tests, missing boundary
   validation, silently dropped requirements.
 - **Search the diff for cloned blocks.** Repeated or near-identical code is
