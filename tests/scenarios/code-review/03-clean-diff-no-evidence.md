@@ -27,7 +27,8 @@ review with its verdicts.
   {"type": "output_matches", "pattern": "(?i)\\b(0|no|zero) actionable findings?"},
   {"type": "output_not_matches", "pattern": "(?i)affected consumers|impact check"},
   {"type": "output_matches", "pattern": "(?i)not independent|inline fallback"},
-  {"type": "output_matches", "pattern": "(?i)no security findings"}
+  {"type": "output_matches", "pattern": "(?i)no security findings"},
+  {"type": "output_not_matches", "pattern": "(?i)human review (is )?required"}
 ]
 ```
 
@@ -46,3 +47,5 @@ evidence. Each check traces to a design item; later tasks append theirs.
   independent.
 - check 9 (B9, design item 7): the security pass states its clean result
   explicitly.
+- check 10 (B11, design item 9): no high-risk category touched, so no
+  human-review requirement.
