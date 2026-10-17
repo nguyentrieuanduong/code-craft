@@ -71,7 +71,8 @@ Ask for THREE separate verdicts (they fail independently):
 - Read the design first, then the diff. Judge against the spec, not
   taste. Where the design is silent, judge by what a reasonable user
   would expect; when intent cannot be established, list the question
-  under **Declined to judge** instead of inventing a blocker.
+  under **Declined to judge** instead of any Blocking or Should-fix
+  finding on that behavior.
 - Check what is NOT there: missing worst-case tests, missing boundary
   validation, silently dropped requirements.
 - **Search the diff for cloned blocks.** Repeated or near-identical code is
