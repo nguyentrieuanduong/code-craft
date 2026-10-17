@@ -88,6 +88,13 @@ Ask for THREE separate verdicts (they fail independently):
   update and did not get one as a finding. Consumers the change does not
   affect produce no finding. Skip this step — and its section — for every
   other change.
+- **Bug fixes: root cause, then bug class.** When the diff claims to fix
+  a bug, check that it removes the root cause rather than the symptom (as
+  systematic-debugging defines it); a symptom-only fix is a Blocking
+  finding. Name the bug class and search the repository for other
+  instances. An unfixed instance the claimed fix or the approved scope
+  covers is a spec finding even when its code predates the diff; any
+  other instance is Pre-existing.
 - **Verify every finding before presenting it.** Re-read the cited lines
   and check the claim against the diff and the repository. Each
   actionable finding states the responsible file and line (or the exact
