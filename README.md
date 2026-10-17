@@ -121,10 +121,11 @@ repos is needed to use it. Credit to the sources it was merged from, in
 priority order:
 
 1. [Superpowers](https://github.com/obra/superpowers) — workflow skills, hard gates, rationalization tables
-2. [ECC](https://github.com/affaan-m/ECC) — verification loop, TDD gates, enforcement hooks, security checklists
-3. [Agent Skills](https://github.com/addyosmani/agent-skills) — deterministic trigger-ranking structure and description-collision categories
-4. [google/skills](https://github.com/google/skills) — SKILL.md format conventions, safety-guardrail patterns
-5. [AI-DLC](https://github.com/awslabs/aidlc-workflows) — adaptive depth, plan-driven codegen, security baseline, state/resume
+2. [How the Claude Code team does code review](https://claude.dev/blog/solving-code-review-at-anthropic/) - for code review flow
+3. [ECC](https://github.com/affaan-m/ECC) — verification loop, TDD gates, enforcement hooks, security checklists
+4. [Agent Skills](https://github.com/addyosmani/agent-skills) — deterministic trigger-ranking structure and description-collision categories
+5. [google/skills](https://github.com/google/skills) — SKILL.md format conventions, safety-guardrail patterns
+6. [AI-DLC](https://github.com/awslabs/aidlc-workflows) — adaptive depth, plan-driven codegen, security baseline, state/resume
 
 Plus the maintainer's personal coding style, folded into
 `skills/coding-standards`.
