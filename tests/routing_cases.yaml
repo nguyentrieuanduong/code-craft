@@ -16,8 +16,8 @@ skills:
   code-review:
     positive:
       - Review this completed feature before it is merged.
-      - Check this code diff for correctness and quality.
       - Evaluate this review feedback before I apply it.
+      - Review this diff now; the author has not run the tests yet.
     negative:
       - prompt: Prove the finished feature passes its verification commands.
         owner: verification-before-completion
