@@ -20,7 +20,7 @@ with its verdicts.
 ```json
 [
   {"type": "output_matches", "pattern": "(?i)(?<!no )(?<!not )human review (is )?required"},
-  {"type": "output_not_matches", "pattern": "(?i)risk tier\\W*standard"}
+  {"type": "report_matches", "field": "risk tier", "pattern": "^high"}
 ]
 ```
 
@@ -31,3 +31,6 @@ Design item 9. The diff touches auth and a CI workflow; the author's
 
 2026-10-17 (round-1 review F3): check 1 ignores "no human review required";
 check 2 rejects a standard tier.
+
+2026-10-17 (structured grading, Task B-S): check 2 reads the Risk tier
+field.

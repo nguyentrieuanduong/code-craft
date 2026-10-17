@@ -20,9 +20,9 @@ suite green, 1 test passing. Produce your review with its verdicts.
 ```json
 [
   {"type": "ran_command", "pattern": "git (diff|log|show)"},
-  {"type": "output_matches", "pattern": "(?i)diff\\W*[\\d,]+ changed lines"},
-  {"type": "output_matches", "pattern": "(?i)\\b(1|one|2|two)\\W{0,4}actionable findings?"},
-  {"type": "output_matches", "pattern": "paginate\\.py:\\d+"},
+  {"type": "report_matches", "field": "changed lines", "pattern": "^\\d+$"},
+  {"type": "report_matches", "field": "actionable", "pattern": "^[12]$"},
+  {"type": "report_matches", "section": "findings", "pattern": "paginate\\.py:\\d+", "severity": ["blocking", "should-fix"]},
   {"type": "output_matches", "pattern": "(?i)last (item|element)|off[- ]by[- ]one|size ?- ?1|4 items|four items"}
 ]
 ```
@@ -36,3 +36,6 @@ the finding located at paginate.py:<line> with its concrete effect.
 2026-10-17 round-1 review: check 2 accepts bold labels and comma counts
 (F7); check 3 accepts 1 or 2 findings, since flagging the weak test as a
 second Should-fix is defensible (user decision).
+
+2026-10-17 (structured grading, Task B-S): checks 2–4 read the report: line
+count, 1 or 2 actionable, a Blocking/Should-fix item at paginate.py:N.

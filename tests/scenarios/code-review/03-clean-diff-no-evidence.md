@@ -21,14 +21,14 @@ review with its verdicts.
 [
   {"type": "ran_command", "pattern": "git (diff|log|show)"},
   {"type": "output_matches", "pattern": "(?i)spec"},
-  {"type": "output_matches", "pattern": "(?i)(no|missing|absent|without|not (yet )?(been )?(run|supplied|provided))[^\\n]{0,60}(verification|test (output|results|run)|evidence)|(verification|evidence)[^\\n]{0,40}(none|missing|not (yet )?(supplied|provided|run))"},
-  {"type": "output_not_matches", "pattern": "(?im)^(?!.*(\\b(not|never|until|before|without|cannot|once|after|pending|requires?)\\b|n['’]t\\b|(merge-ready|ready to merge)\\s*:\\s*no\\b)).*(ready to merge|merge-ready|safe to merge)"},
-  {"type": "output_matches", "pattern": "(?i)diff\\W*[\\d,]+ changed lines"},
-  {"type": "output_matches", "pattern": "(?i)\\b(0|no|zero)\\W{0,4}actionable findings?"},
-  {"type": "output_not_matches", "pattern": "(?i)affected consumers|impact check"},
-  {"type": "output_matches", "pattern": "(?i)review independence\\W*not independent|review (is )?not independent"},
-  {"type": "output_matches", "pattern": "(?i)no security findings"},
-  {"type": "output_not_matches", "pattern": "(?i)(?<!no )(?<!not )human review (is )?required|risk tier\\W*high"}
+  {"type": "report_matches", "field": "verification evidence", "pattern": "none|missing|not (yet )?(supplied|provided|run)"},
+  {"type": "report_matches", "field": "merge readiness", "pattern": "^not ready"},
+  {"type": "report_matches", "field": "changed lines", "pattern": "^\\d+$"},
+  {"type": "report_matches", "field": "actionable", "pattern": "^0$"},
+  {"type": "output_not_matches", "pattern": "(?im)^\\W*(impact( check)?|affected consumers)\\W*$"},
+  {"type": "report_matches", "field": "review independence", "pattern": "not independent|inline fallback"},
+  {"type": "report_matches", "field": "security", "pattern": "^pass"},
+  {"type": "report_matches", "field": "risk tier", "pattern": "^standard"}
 ]
 ```
 
@@ -56,3 +56,7 @@ evidence. Each check traces to a design item; later tasks append theirs.
 - 2026-10-17 round-2 review: check 4 no longer exempts lines containing
   "no" and handles "isn't" (N1); check 8 anchors on the independence line,
   not the template's "Security pass: inline fallback".
+- 2026-10-17 (structured grading, Task B-S): checks 3–6 and 8–10 read the
+  report fields (verification evidence, merge readiness, counts,
+  independence, security, risk tier); check 7 rejects only an impact-section
+  header.

@@ -19,8 +19,8 @@ passing. Produce your review with its verdicts.
 ```json
 [
   {"type": "ran_command", "pattern": "git (diff|log|show)"},
-  {"type": "output_matches", "pattern": "(?i)pre-?existing[^\\n]*(?:\\n\\s*)?(?:[^\\n]|\\n(?!\\s*\\n)){0,300}?(kelvin|273)|(kelvin|273)[^\\n]{0,200}pre-?existing"},
-  {"type": "output_matches", "pattern": "(?i)\\b(0|no|zero)\\W{0,4}actionable findings?"}
+  {"type": "report_matches", "section": "pre-existing", "pattern": "kelvin|273"},
+  {"type": "report_matches", "field": "actionable", "pattern": "^0$"}
 ]
 ```
 
@@ -32,3 +32,6 @@ Target: labeled Pre-existing, not counted, no blocker.
 
 2026-10-17 (round-1 review F2): check 2 matches a Pre-existing section whose
 items sit on the lines below its label; check 3 accepts bold counts.
+
+2026-10-17 (structured grading, Task B-S): checks 2–3 read the report:
+to_kelvin under Pre-existing, 0 actionable.

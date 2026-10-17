@@ -20,9 +20,9 @@ verdicts.
 ```json
 [
   {"type": "output_matches", "pattern": "(?i)root cause|symptom"},
-  {"type": "output_matches", "pattern": "(?im)^[#*>\\s-]*(\\**F?\\d+\\.?\\**\\s*)?\\W*(blocking|should-fix)\\b[^\\n]{0,160}tax\\.py|spec compliance\\W*fail[^\\n]{0,160}tax\\.py"},
-  {"type": "output_matches", "pattern": "(?i)pre-?existing[^\\n]*(?:\\n\\s*)?(?:[^\\n]|\\n(?!\\s*\\n)){0,300}?(legacy|report_export)|(legacy|report_export)[^\\n]{0,200}pre-?existing"},
-  {"type": "output_not_matches", "pattern": "(?i)pre-?existing(?:[^\\n]{0,80}tax\\.py|[^\\n]*(?:\\n\\s*)?(?:[^\\n]|\\n(?!\\s*\\n)){0,300}?\\n[\\s>*`-]{0,6}(src/)?tax\\.py)"}
+  {"type": "report_matches", "section": "findings", "pattern": "tax\\.py", "severity": ["blocking", "should-fix"]},
+  {"type": "report_matches", "section": "pre-existing", "pattern": "legacy|report_export"},
+  {"type": "report_not_matches", "section": "pre-existing", "pattern": "^\\W*(src/)?tax\\.py"}
 ]
 ```
 
@@ -40,3 +40,7 @@ multi-line Pre-existing section (F2).
 2026-10-17 (round-2 review F5): check 2 requires tax.py on a Blocking or
 Should-fix finding line (or a failed spec verdict); check 4 rejects tax.py as
 an item of a multi-line Pre-existing section.
+
+2026-10-17 (structured grading, Task B-S): checks 2–4 read the report:
+tax.py in a Blocking/Should-fix item, legacy under Pre-existing, no
+Pre-existing item led by tax.py.
