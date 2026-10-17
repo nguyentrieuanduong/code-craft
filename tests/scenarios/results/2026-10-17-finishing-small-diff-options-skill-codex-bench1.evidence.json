@@ -1,0 +1,4 @@
+{
+  "final_text": "**Branch:** `feature/export-formats`, 1 commit ahead of `main`; clean working tree. The diff changes 2 files, with 21 insertions. The final full suite passed: `python3 -m unittest discover tests` ran 2 tests, 0 failures.\n\n**Risk:** Standard based on the diff; no recorded review tier was available. No design or plan links were found in the repository.\n\n1. Merge into main locally\n2. Push branch and open a PR\n3. Keep the branch as-is (I'll handle it later)\n4. Discard the branch and its changes",
+  "tool_uses": []
+}

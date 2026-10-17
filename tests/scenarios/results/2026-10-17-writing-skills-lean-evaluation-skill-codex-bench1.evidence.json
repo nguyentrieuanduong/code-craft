@@ -1,0 +1,4 @@
+{
+  "final_text": "Run `python3 -m tools.check` and confirm the new positive and negative routing cases pass. Review any collision warnings. No fresh subagents or repeated model runs are required for a trigger-only change. Include the intended routing shift and its rationale in the commit.",
+  "tool_uses": []
+}
