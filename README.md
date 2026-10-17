@@ -112,7 +112,7 @@ Upgrading starts with updating your checkout (`git pull` in
 **Claude Code plugin:**
 
 ```bash
-# upgrade: picks up a new plugin.json version, then restart Claude Code
+# upgrade a cached (non-folder) install to a new plugin.json version, then restart
 claude plugin update code-craft@code-craft
 
 # uninstall
@@ -198,7 +198,8 @@ The 2026-10 code-review upgrade added 11 focused review scenarios
 (code-review 03–13) and 2 finishing-work scenarios (04–05), and updated
 code-review 01. By maintainer decision each ran once on the updated
 plugin (Claude, `--model sonnet`), after-only with no before sample; the
-two that failed (code-review 03 and 06) were rerun after wording fixes:
+two that failed (code-review 03 and 06) were rerun after wording fixes;
+the other 12 ran once, before those fixes, and were not rerun.
 13 of 14 pass all checks on their final run (failing:
 review-ambiguous-intent). On manual reading, its final failure is a
 pattern false positive: the flagged finding asks for an
