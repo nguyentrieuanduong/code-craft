@@ -1,8 +1,8 @@
 # Reviewer prompt
 
-Use this prompt only to dispatch an isolated reviewer. For inline review,
-use the skill's "Report format" section without claiming a fresh context.
-Fill every `<field>`; the isolated reviewer gets nothing else.
+Use this prompt only to dispatch an isolated reviewer; inline review uses the
+skill's "Report format" section and claims no fresh context. Fill every
+`<field>`; the isolated reviewer gets nothing else.
 
 ```text
 You are reviewing a change you did not write, in a fresh context. You
