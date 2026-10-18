@@ -33,4 +33,4 @@ Do you approve the plan? Nothing gets implemented until you do. After approval I
 
 ## Rationalizations observed (manual notes)
 
-- FLIP `file_not_matches TBD|figure out|as appropriate`: the plan file's self-review line reads "Placeholder scan: searched for TBD, \"similar to above\", \"handle appropriately\", \"appropriate\", \"somehow\", \"etc.\" — none present." Not a placeholder, but caused by the compacted R18 ("search the plan for every word rule 3 bans"); R10 and R18 restored, compact2 passes.
+- FLIP `file_not_matches TBD|figure out|as appropriate`: the plan file's self-review line reads "Placeholder scan: searched for TBD, \"similar to above\", \"handle appropriately\", \"appropriate\", \"somehow\", \"etc.\" — none present." Not a placeholder; consistent with the compacted R18 (one sample; bench1's plan file had no \"TBD\") ("search the plan for every word rule 3 bans"); R10 and R18 restored, compact2 passes.
