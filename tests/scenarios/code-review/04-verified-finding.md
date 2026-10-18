@@ -23,7 +23,8 @@ suite green, 1 test passing. Produce your review with its verdicts.
   {"type": "report_matches", "field": "changed lines", "pattern": "^\\d+$"},
   {"type": "report_matches", "field": "actionable", "pattern": "^[12]$"},
   {"type": "report_matches", "section": "findings", "pattern": "paginate\\.py:\\d+", "severity": ["blocking", "should-fix"]},
-  {"type": "output_matches", "pattern": "(?i)last (item|element)|off[- ]by[- ]one|size ?- ?1|4 items|four items"}
+  {"type": "output_matches", "pattern": "(?i)last (item|element)|off[- ]by[- ]one|size ?- ?1|4 items|four items"},
+  {"type": "report_actionable_count"}
 ]
 ```
 
@@ -39,3 +40,7 @@ second Should-fix is defensible (user decision).
 
 2026-10-17 (structured grading, Task B-S): checks 2–4 read the report: line
 count, 1 or 2 actionable, a Blocking/Should-fix item at paginate.py:N.
+
+Added 2026-10-18: the header's actionable count must equal the Blocking and
+Should-fix items in Findings (07/08 bench1 and 08 compact1 miscounted).
+Earlier results were scored without it.

@@ -449,6 +449,23 @@ class ReportCheckTest(unittest.TestCase):
         self.assertTrue(self.check({"type": "report_not_matches", "field": "risk tier", "pattern": "high"}))
         self.assertFalse(self.check({"type": "report_matches", "field": "absent", "pattern": "."}))
 
+    def test_report_actionable_count(self):
+        spec = {"type": "report_actionable_count"}
+        header = "Diff: 41 changed lines — {n} actionable finding{s}.\n\nFindings\n"
+        miscounted = header.format(n=1, s="") + (
+            "F2. Blocking (status: still open, 4th round) — src/slug.py:5 — a--b — use +\n"
+            "F3. Should-fix — tests/test_slug.py:10 — no test fails — add tests\n"
+        )
+        consistent = header.format(n=1, s="") + (
+            "F1. Addressed — src/slug.py:5 — lower() applied\n"
+            "F2. Still open (Should-fix) — src/slug.py:5 — a--b — use +\n"
+        )
+        zero = "Diff: 27 changed lines — 0 actionable findings.\n\nFindings\nNone\n"
+        self.assertFalse(self.check(spec, miscounted))
+        self.assertTrue(self.check(spec, consistent))
+        self.assertTrue(self.check(spec, zero))
+        self.assertFalse(self.check(spec, "no report here"))
+
     def test_section_checks_with_severity(self):
         tax = {"type": "report_matches", "section": "findings", "pattern": "tax\\.py"}
         self.assertTrue(self.check(tax))

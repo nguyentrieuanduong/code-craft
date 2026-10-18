@@ -20,7 +20,8 @@ verdicts.
 ```json
 [
   {"type": "report_matches", "field": "security", "pattern": "^(blocking|fail)"},
-  {"type": "output_matches", "pattern": "(?i)inject|parameteri|placeholder"}
+  {"type": "output_matches", "pattern": "(?i)inject|parameteri|placeholder"},
+  {"type": "report_actionable_count"}
 ]
 ```
 
@@ -35,3 +36,7 @@ blocks.
 
 2026-10-17 (structured grading, Task B-S): check 1 reads the Security
 verdict field.
+
+Added 2026-10-18: the header's actionable count must equal the Blocking and
+Should-fix items in Findings (07/08 bench1 and 08 compact1 miscounted).
+Earlier results were scored without it.

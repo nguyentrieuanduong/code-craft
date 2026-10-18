@@ -50,6 +50,7 @@ Frontmatter uses strict YAML and supports standard scalar styles. Check types:
 | `test_written_before_source` | `test_glob`, `source_glob` | first write to a test file precedes any to source; writes are Write/Edit calls or Bash commands whose target can be read (redirection, `tee`, Python `open(…, 'w')` / `.write_text` with a literal or a literal-assigned name). NOT EVALUATED when a Bash write names a matching file but its target cannot be read, or one command writes both; a NOT EVALUATED check does not count as failed |
 | `files_untouched` | `glob` | no Write/Edit touched a matching path |
 | `report_matches` / `report_not_matches` | `field` or `section`, `pattern`, optional `severity` (section only) | the code-review report parsed from the final text has a field value / a section item matching `pattern` (case-insensitive) — or, for the `_not_` form, does not; both fail when no report is found. Fields: the template labels plus derived `changed lines` and `actionable`; sections: findings, pre-existing, nits, declined to judge. See `parse_report` in `run.py` |
+| `report_actionable_count` | none | the report's `actionable` count equals the Blocking and Should-fix items in its Findings section; fails when no count is found |
 
 Checks encode the **target** behavior. A baseline (no-skill) run is expected
 to violate them — that is the RED evidence. A skill run must pass all of
@@ -102,7 +103,8 @@ Each run writes two files, both committed to the repo:
 
 Before writing either file, the runner replaces text matching the
 secret-scan hook's patterns (`hooks/scan-secrets.py`) with
-`[REDACTED: <kind>]`, removing a private key block through its END line.
+`[REDACTED: <kind>]`, removing a private key block (PEM or PGP) through its END
+line.
 Patterns miss unknown formats and some known ones: AWS secret access keys,
 JWT or Bearer tokens, a key glued to a preceding letter or digit, a secret
 split across two strings, and password forms such as `db_password = "..."`

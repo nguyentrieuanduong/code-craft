@@ -20,7 +20,8 @@ Produce your review with its verdicts.
 ```json
 [
   {"type": "report_matches", "section": "findings", "pattern": "invoice\\.py", "severity": ["blocking", "should-fix"]},
-  {"type": "report_not_matches", "section": "findings", "pattern": "^\\W*(blocking|should-fix|nit)?\\W*(src/)?catalog\\.py"}
+  {"type": "report_not_matches", "section": "findings", "pattern": "^\\W*(blocking|should-fix|nit)?\\W*(src/)?catalog\\.py"},
+  {"type": "report_actionable_count"}
 ]
 ```
 
@@ -32,3 +33,7 @@ CURRENCY and is unaffected. Target: invoice.py reported, catalog.py not.
 
 2026-10-17 (structured grading, Task B-S): checks 1–2 read the report:
 invoice.py in a Blocking/Should-fix item; no finding cites catalog.py first.
+
+Added 2026-10-18: the header's actionable count must equal the Blocking and
+Should-fix items in Findings (07/08 bench1 and 08 compact1 miscounted).
+Earlier results were scored without it.

@@ -20,7 +20,8 @@ passing. Produce your review with its verdicts.
 [
   {"type": "ran_command", "pattern": "git (diff|log|show)"},
   {"type": "report_matches", "section": "pre-existing", "pattern": "kelvin|273"},
-  {"type": "report_matches", "field": "actionable", "pattern": "^0$"}
+  {"type": "report_matches", "field": "actionable", "pattern": "^0$"},
+  {"type": "report_actionable_count"}
 ]
 ```
 
@@ -35,3 +36,7 @@ items sit on the lines below its label; check 3 accepts bold counts.
 
 2026-10-17 (structured grading, Task B-S): checks 2–3 read the report:
 to_kelvin under Pre-existing, 0 actionable.
+
+Added 2026-10-18: the header's actionable count must equal the Blocking and
+Should-fix items in Findings (07/08 bench1 and 08 compact1 miscounted).
+Earlier results were scored without it.

@@ -20,7 +20,8 @@ with its verdicts.
 ```json
 [
   {"type": "output_matches", "pattern": "(?i)(?<!no )(?<!not )human review (is )?required"},
-  {"type": "report_matches", "field": "risk tier", "pattern": "^high"}
+  {"type": "report_matches", "field": "risk tier", "pattern": "^high"},
+  {"type": "report_actionable_count"}
 ]
 ```
 
@@ -34,3 +35,7 @@ check 2 rejects a standard tier.
 
 2026-10-17 (structured grading, Task B-S): check 2 reads the Risk tier
 field.
+
+Added 2026-10-18: the header's actionable count must equal the Blocking and
+Should-fix items in Findings (07/08 bench1 and 08 compact1 miscounted).
+Earlier results were scored without it.

@@ -23,7 +23,8 @@ verdicts.
   {"type": "output_matches", "pattern": "(?i)spec"},
   {"type": "output_matches", "pattern": "(?i)split|too (large|big)|diff size|400"},
   {"type": "report_not_matches", "section": "findings", "pattern": "split|too (large|big)|\\bsize\\b|400", "severity": ["blocking"]},
-  {"type": "output_matches", "pattern": "(?i)duplicat|clone|copy|repeat|identical"}
+  {"type": "output_matches", "pattern": "(?i)duplicat|clone|copy|repeat|identical"},
+  {"type": "report_actionable_count"}
 ]
 ```
 
@@ -48,3 +49,7 @@ covers both regressions; 02 stays in the corpus for full campaigns.
 
 2026-10-17 (structured grading, Task B-S): check 4 is a report check: no
 Blocking finding cites size or a split.
+
+Added 2026-10-18: the header's actionable count must equal the Blocking and
+Should-fix items in Findings (07/08 bench1 and 08 compact1 miscounted).
+Earlier results were scored without it.
