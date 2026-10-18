@@ -593,6 +593,12 @@ class WriteResultTest(unittest.TestCase):
         )
 
 
+    def test_colliding_redacted_dict_keys_keep_every_value(self):
+        first, second = "sk-" + "d" * 24, "sk-" + "e" * 24
+        redacted = runner.redact_secrets({first: "one", second: "two", "plain": "three"})
+        label = "[REDACTED: Anthropic/OpenAI-style key]"
+        self.assertEqual(redacted, {label: "one", f"{label} #2": "two", "plain": "three"})
+
 class DisallowedToolsTest(unittest.TestCase):
     def test_both_plan_mode_tools_blocked(self):
         # EnterPlanMode alone is enough to leak plan drafts into

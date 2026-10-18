@@ -527,10 +527,17 @@ def redact_secrets(value):
             value = pattern.sub(f"[REDACTED: {label}]", value)
         return value
     if isinstance(value, dict):
-        return {
-            redact_secrets(key): redact_secrets(item)
-            for key, item in value.items()
-        }
+        # Two secret keys can redact to the same label; number the repeats so
+        # no value is dropped.
+        redacted = {}
+        for key, item in value.items():
+            base = new_key = redact_secrets(key)
+            count = 2
+            while new_key in redacted:
+                new_key = f"{base} #{count}"
+                count += 1
+            redacted[new_key] = redact_secrets(item)
+        return redacted
     if isinstance(value, (list, tuple)):
         return [redact_secrets(item) for item in value]
     return value
