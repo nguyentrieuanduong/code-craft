@@ -107,6 +107,8 @@ Patterns miss unknown formats and some known ones: AWS secret access keys,
 JWT or Bearer tokens, a key glued to a preceding letter or digit, a secret
 split across two strings, and password forms such as `db_password = "..."`
 or an unquoted `PASSWORD=...`. Read both files before staging them.
+`tests/test_scenarios.py` also fails when any committed result file matches
+a secret pattern; it cannot catch the formats listed above.
 Results written by anything other than `run.py` are redacted only if that
 writer calls `run.redact_secrets`. The scratch Codex driver's 2026-10-17
 files (`*-skill-codex-bench1.*`) are not redacted at all. Its 2026-10-18
