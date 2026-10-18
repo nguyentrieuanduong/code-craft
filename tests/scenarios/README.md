@@ -47,7 +47,7 @@ Frontmatter uses strict YAML and supports standard scalar styles. Check types:
 | `file_matches` / `file_not_matches` | `glob`, `pattern` | some matching file's content matches / none does |
 | `anywhere_matches` | `glob`, `pattern` | final text OR a matching file matches |
 | `ran_command` / `not_ran_command` | `pattern` | some Bash command matches / none does |
-| `test_written_before_source` | `test_glob`, `source_glob` | first Write/Edit to a test file precedes any to source |
+| `test_written_before_source` | `test_glob`, `source_glob` | first write to a test file precedes any to source; writes are Write/Edit calls or Bash commands whose target can be read (redirection, `tee`, Python `open(…, 'w')` / `.write_text` with a literal or a literal-assigned name). NOT EVALUATED when a Bash write names a matching file but its target cannot be read, or one command writes both; a NOT EVALUATED check does not count as failed |
 | `files_untouched` | `glob` | no Write/Edit touched a matching path |
 | `report_matches` / `report_not_matches` | `field` or `section`, `pattern`, optional `severity` (section only) | the code-review report parsed from the final text has a field value / a section item matching `pattern` (case-insensitive) — or, for the `_not_` form, does not; both fail when no report is found. Fields: the template labels plus derived `changed lines` and `actionable`; sections: findings, pre-existing, nits, declined to judge. See `parse_report` in `run.py` |
 

@@ -349,13 +349,66 @@ def _commands(transcript):
     ]
 
 
-def _write_index(transcript, pattern, workspace):
+_HEREDOC_BODY = re.compile(r"<<-?\s*['\"]?(\w+)['\"]?[^\n]*\n.*?^\s*\1\s*$", re.DOTALL | re.MULTILINE)
+_REDIRECT = re.compile(r"(?<![0-9&<>-])>{1,2}(?![&>=])\s*['\"]?([^\s'\";&|<>()]+)")
+_TEE = re.compile(r"\btee\s+(?:-a\s+)?['\"]?([^\s'\";&|<>()]+)")
+_ASSIGN = re.compile(r"\b(\w+)\s*=\s*(?:Path\(\s*)?['\"]([^'\"\n]+)['\"]")
+_OPEN_WRITE = re.compile(r"\bopen\(\s*((?:[^,()\n]|\([^()\n]*\))+?)\s*,\s*(?:mode\s*=\s*)?['\"][wax]b?\+?['\"]")
+_WRITE_TEXT = re.compile(r"(?:Path\(\s*([^()\n]+?)\s*\)|\b(\w+))\.write_(?:text|bytes)\(")
+_OPAQUE_WRITE = re.compile(r"\bsed\s+-i|\b(?:cp|mv|touch|truncate|dd|install)\b")
+_PATH_TOKEN = re.compile(r"[\w./-]+")
+
+
+def _literal(expr, assigns):
+    expr = expr.strip()
+    quoted = re.fullmatch(r"['\"]([^'\"]+)['\"]", expr)
+    if quoted:
+        return quoted.group(1)
+    return assigns.get(expr)
+
+
+def _bash_writes(command):
+    """Paths a shell command writes, and whether it writes something it does not name."""
+    shell = _HEREDOC_BODY.sub("", command)
+    assigns = dict(_ASSIGN.findall(command))
+    paths = {p for p in _REDIRECT.findall(shell) + _TEE.findall(shell) if p != "/dev/null"}
+    opaque = bool(_OPAQUE_WRITE.search(shell))
+    for expr in _OPEN_WRITE.findall(command) + [a or b for a, b in _WRITE_TEXT.findall(command)]:
+        value = _literal(expr, assigns)
+        if value is None:
+            opaque = True
+        else:
+            paths.add(value)
+    return paths, opaque
+
+
+def _mentions(command, pattern, workspace):
+    return any(
+        _tool_path_matches({"file_path": token}, pattern, workspace)
+        for token in _PATH_TOKEN.findall(command)
+    )
+
+
+def _first_write(transcript, pattern, workspace):
+    """(index of the first write to a matching file, whether that write is unattributable)."""
     for index, (name, tool_input) in enumerate(transcript["tool_uses"]):
-        if name in ("Write", "Edit") and _tool_path_matches(
-            tool_input, pattern, workspace
-        ):
-            return index
-    return None
+        if name in ("Write", "Edit") and _tool_path_matches(tool_input, pattern, workspace):
+            return index, False
+        if name != "Bash":
+            continue
+        command = tool_input.get("command", "")
+        paths, opaque = _bash_writes(command)
+        if any(_tool_path_matches({"file_path": p}, pattern, workspace) for p in paths):
+            return index, False
+        if opaque and _mentions(command, pattern, workspace):
+            return index, True
+    return None, False
+
+
+def check_status(passed):
+    if passed is None:
+        return "NOT EVALUATED"
+    return "PASS" if passed else "FAIL"
 
 
 def evaluate_check(check, transcript, workspace):
@@ -395,10 +448,18 @@ def evaluate_check(check, transcript, workspace):
     if kind == "not_ran_command":
         return not any(re.search(pattern, c) for c in _commands(transcript))
     if kind == "test_written_before_source":
-        test_index = _write_index(transcript, check["test_glob"], workspace)
-        source_index = _write_index(
-            transcript, check["source_glob"], workspace
-        )
+        # None = NOT EVALUATED: a Bash write names a matching file but its
+        # target cannot be read from the command, or one command writes both.
+        test_index, test_opaque = _first_write(transcript, check["test_glob"], workspace)
+        source_index, source_opaque = _first_write(transcript, check["source_glob"], workspace)
+        written = [i for i in (test_index, source_index) if i is not None]
+        if not written:
+            return False
+        first = min(written)
+        if test_index == source_index or (first == test_index and test_opaque) or (
+            first == source_index and source_opaque
+        ):
+            return None
         if test_index is None:
             return False
         return source_index is None or test_index < source_index
@@ -498,7 +559,7 @@ def write_result(scenario, arm, label, results, transcript, args, skill_file):
     ]
     for check, passed in results:
         lines.append(
-            f"| {'PASS' if passed else 'FAIL'} | {describe_check(check)} |"
+            f"| {check_status(passed)} | {describe_check(check)} |"
         )
     lines += ["", "## Tool calls", ""]
     for name, tool_input in transcript["tool_uses"]:
@@ -583,8 +644,11 @@ def run_arm(scenario, arm, args, rep=None):
             args,
             skill_file,
         )
-        failed = [c for c, passed in results if not passed]
+        failed = [c for c, passed in results if passed is False]
+        unscored = [c for c, passed in results if passed is None]
         status = "PASS" if not failed else f"{len(failed)} check(s) failed"
+        if unscored:
+            status += f" ({len(unscored)} not evaluated)"
         try:
             shown = out.relative_to(REPO_ROOT)
         except ValueError:

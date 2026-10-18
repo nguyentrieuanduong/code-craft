@@ -322,6 +322,44 @@ class EvaluateCheckTest(unittest.TestCase):
         self.assertFalse(self.check(spec, source_first))
         self.assertFalse(self.check(spec, no_test))
 
+    def test_test_written_before_source_sees_bash_writes(self):
+        spec = {
+            "type": "test_written_before_source",
+            "test_glob": "test_*.py",
+            "source_glob": "calculator.py",
+        }
+        ws = str(self.workspace)
+        heredoc_test_first = transcript(tool_uses=[
+            ("Bash", {"command": "cat > test_calculator.py <<'EOF'\nimport unittest\nEOF"}),
+            ("Bash", {"command": "cat >> calculator.py <<'EOF'\ndef f(a) -> int:\n    return a > 1\nEOF"}),
+        ])
+        python_variable_test_first = transcript(tool_uses=[
+            ("Bash", {"command": "cat test_calculator.py"}),
+            ("Bash", {"command": "python3 - <<'E'\np='test_calculator.py'\ns=open(p).read()\nopen(p,'w').write(s)\nE"}),
+            ("Edit", {"file_path": f"{ws}/calculator.py"}),
+        ])
+        heredoc_source_first = transcript(tool_uses=[
+            ("Bash", {"command": "cat > calculator.py <<'EOF'\nx = 1\nEOF"}),
+            ("Write", {"file_path": f"{ws}/test_calculator.py"}),
+        ])
+        unattributable = transcript(tool_uses=[
+            ("Bash", {"command": "python3 - <<'E'\nimport os\nopen(os.path.join('.', 'test_calculator.py'), 'w').write('x')\nE"}),
+            ("Edit", {"file_path": f"{ws}/calculator.py"}),
+        ])
+        both_in_one_command = transcript(tool_uses=[
+            ("Bash", {"command": "echo a > test_calculator.py && echo b > calculator.py"}),
+        ])
+        reads_only = transcript(tool_uses=[
+            ("Bash", {"command": "cat test_calculator.py calculator.py 2>&1 | head"}),
+            ("Edit", {"file_path": f"{ws}/calculator.py"}),
+        ])
+        self.assertIs(self.check(spec, heredoc_test_first), True)
+        self.assertIs(self.check(spec, python_variable_test_first), True)
+        self.assertIs(self.check(spec, heredoc_source_first), False)
+        self.assertIsNone(self.check(spec, unattributable))
+        self.assertIsNone(self.check(spec, both_in_one_command))
+        self.assertIs(self.check(spec, reads_only), False)
+
     def test_files_untouched(self):
         spec = {"type": "files_untouched", "glob": "calculator.py"}
         ws = str(self.workspace)
@@ -472,6 +510,24 @@ class WriteResultTest(unittest.TestCase):
             # exceed the Markdown excerpt limits (4,000 and 160).
             self.assertEqual(saved["final_text"], "response " * 600)
             self.assertEqual(saved["tool_uses"], [["Bash", {"command": "x" * 200}]])
+
+    def test_not_evaluated_check_is_rendered_and_not_failed(self):
+        from types import SimpleNamespace
+
+        with tempfile.TemporaryDirectory() as directory:
+            scenario = {
+                "name": "sample",
+                "path": runner.REPO_ROOT / "tests/scenarios/writing-skills/01-lean-evaluation.md",
+            }
+            spec = {"type": "test_written_before_source", "test_glob": "t", "source_glob": "s"}
+            result = runner.write_result(
+                scenario, "skill", "x", [(spec, None)], transcript(),
+                SimpleNamespace(results_dir=directory, model="sonnet"), "skills/x/SKILL.md",
+            )
+            self.assertIn("| NOT EVALUATED | test_written_before_source", result.read_text())
+        self.assertEqual(runner.check_status(None), "NOT EVALUATED")
+        self.assertEqual(runner.check_status(True), "PASS")
+        self.assertEqual(runner.check_status(False), "FAIL")
 
     def test_redacts_secret_shaped_text_in_both_artifacts(self):
         from types import SimpleNamespace
