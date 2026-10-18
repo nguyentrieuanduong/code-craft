@@ -576,6 +576,15 @@ class WriteResultTest(unittest.TestCase):
             "[REDACTED: Private key block]",
         )
 
+    def test_redacts_the_whole_pgp_private_key_block(self):
+        marker = "PGP " + "PRIVATE KEY BLOCK-----"
+        body = "lQOYBF" + "c" * 40
+        block = f"-----BEGIN {marker}\n\n{body}\n-----END {marker}\n"
+        self.assertEqual(
+            runner.redact_secrets("before\n" + block + "after"),
+            "before\n[REDACTED: Private key block]\nafter",
+        )
+
     def test_redacts_secret_shaped_dict_keys(self):
         key = "sk-" + "c" * 24
         redacted = runner.redact_secrets({"env": {key: "value"}})

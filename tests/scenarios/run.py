@@ -54,8 +54,8 @@ def _load_secret_patterns():
 # (through the END line, or to the end of an unterminated block).
 REDACTION_PATTERNS = (
     ("Private key block", re.compile(
-        r"(?s)-----BEGIN [A-Z ]*PRIVATE KEY-----"
-        r".*?(?:-----END [A-Z ]*PRIVATE KEY-----|\Z)"
+        r"(?s)-----BEGIN [A-Z ]*PRIVATE KEY(?: BLOCK)?-----"
+        r".*?(?:-----END [A-Z ]*PRIVATE KEY(?: BLOCK)?-----|\Z)"
     )),
 ) + _load_secret_patterns()
 
