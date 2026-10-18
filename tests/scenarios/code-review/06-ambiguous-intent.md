@@ -22,7 +22,7 @@ verdicts.
 [
   {"type": "report_matches", "section": "declined to judge", "pattern": "sort|order"},
   {"type": "output_matches", "pattern": "(?i)sort|order"},
-  {"type": "report_not_matches", "section": "findings", "pattern": "^(?!.*(without assuming|(do not|don't|not) assert|regardless of|independent of|order-independent)[^.]{0,40}\\b(order|sort)).*\\b(sort|order)", "severity": ["blocking", "should-fix"]},
+  {"type": "report_not_matches", "section": "findings", "pattern": "(?:^|[;.\u2014])(?![^;.\u2014]*(?:without assuming|\\b(?:do not|don't|should not|must not) assert))[^;.\u2014]*\\b(?:sort|(?<!in )order)", "severity": ["blocking", "should-fix"]},
   {"type": "report_actionable_count"}
 ]
 ```
@@ -47,7 +47,7 @@ Should-fix items in Findings (07/08 bench1 and 08 compact1 miscounted).
 Earlier results were scored without it.
 
 Pattern changed 2026-10-18 (pinned by `PatternRegressionTest`): the Findings
-check no longer fails an order-independent test request ("without assuming
-an order", "Do not assert order"); a request that presupposes an order still
-fails. Earlier results were scored with the old pattern and are kept as
+check judges each clause: a clause that says "without assuming an order" or
+"do not assert order" passes; any other clause naming sort or order (except
+"in order to") still fails, so a request that presupposes an order fails. Earlier results were scored with the old pattern and are kept as
 recorded.

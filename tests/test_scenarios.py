@@ -360,6 +360,40 @@ class EvaluateCheckTest(unittest.TestCase):
         self.assertIsNone(self.check(spec, both_in_one_command))
         self.assertIs(self.check(spec, reads_only), False)
 
+    def test_test_written_before_source_reads_shell_segments(self):
+        spec = {
+            "type": "test_written_before_source",
+            "test_glob": "test_*.py",
+            "source_glob": "calculator.py",
+        }
+        ws = str(self.workspace)
+        source_edit = ("Edit", {"file_path": f"{ws}/calculator.py"})
+        test_edit = ("Edit", {"file_path": f"{ws}/test_calculator.py"})
+        test_write = ("Write", {"file_path": f"{ws}/test_calculator.py"})
+
+        def bash(command):
+            return ("Bash", {"command": command})
+
+        source_first = (
+            [bash("pip install -q pytest && python3 -m pytest test_calculator.py"), source_edit, test_edit],
+            [bash("cp calculator.py /tmp/calculator.py.orig"), source_edit, test_edit],
+            [bash("sed -E -i 's/a/b/' calculator.py"), test_write],
+            [bash("perl -pi -e 's/a/b/' calculator.py"), test_write],
+            [bash("python3 -c \"open('calculator.py','r+').write('x')\""), test_write],
+            [bash("python3 - <<'E'\nopen('calculator.py', encoding='utf-8', mode='w').write('x')\nE"), test_write],
+            [bash("echo x &> calculator.py"), test_write],
+        )
+        for tools in source_first:
+            with self.subTest(command=tools[0][1].get("command")):
+                self.assertIs(self.check(spec, transcript(tool_uses=tools)), False)
+        heredoc_with_code_text = [
+            bash("cat > test_calculator.py <<'EOF'\nfrom pathlib import Path\np = Path('out')\np.write_text('calculator.py')\nEOF"),
+            source_edit,
+        ]
+        self.assertIs(self.check(spec, transcript(tool_uses=heredoc_with_code_text)), True)
+        quoted_arrow = [bash("git commit -m 'boundary => calculator.py'"), test_write]
+        self.assertIs(self.check(spec, transcript(tool_uses=quoted_arrow)), True)
+
     def test_files_untouched(self):
         spec = {"type": "files_untouched", "glob": "calculator.py"}
         ws = str(self.workspace)
@@ -465,6 +499,18 @@ class ReportCheckTest(unittest.TestCase):
         self.assertTrue(self.check(spec, consistent))
         self.assertTrue(self.check(spec, zero))
         self.assertFalse(self.check(spec, "no report here"))
+        rereview = header.format(n=1, s="") + (
+            "F1. Addressed (was Blocking) — src/slug.py:5 — lower() applied\n"
+            "F2. Still open (Should-fix) — src/slug.py:5 — a--b — use +\n"
+        )
+        sub_bullet = header.format(n=1, s="") + (
+            "F2. Should-fix — src/slug.py:5 — a--b\n"
+            "  - Fix: use +; not blocking\n"
+        )
+        word_count = "Diff: 18 changed lines — one actionable finding.\n\nFindings\nF1. Blocking — src/p.py:4 — off by one\n"
+        self.assertTrue(self.check(spec, rereview))
+        self.assertTrue(self.check(spec, sub_bullet))
+        self.assertTrue(self.check(spec, word_count))
 
     def test_section_checks_with_severity(self):
         tax = {"type": "report_matches", "section": "findings", "pattern": "tax\\.py"}
@@ -609,7 +655,6 @@ class WriteResultTest(unittest.TestCase):
             redacted, {"env": {"[REDACTED: Anthropic/OpenAI-style key]": "value"}}
         )
 
-
     def test_colliding_redacted_dict_keys_keep_every_value(self):
         first, second = "sk-" + "d" * 24, "sk-" + "e" * 24
         redacted = runner.redact_secrets({first: "one", second: "two", "plain": "three"})
@@ -627,6 +672,17 @@ class ResultsSecretScanTest(unittest.TestCase):
             self.assertEqual(
                 runner.secret_hits([clean, dirty]),
                 [("dirty.md", "Anthropic/OpenAI-style key")],
+            )
+
+    def test_secret_hits_decodes_json_strings(self):
+        with tempfile.TemporaryDirectory() as directory:
+            sidecar = Path(directory) / "x.evidence.json"
+            # json.dumps escapes the quotes, which raw-text scanning cannot see.
+            secret = "pass" + "word = " + '"' + "q" * 12 + '"'
+            sidecar.write_text(json.dumps({"tool_uses": [["Bash", {"command": secret}]]}))
+            self.assertEqual(
+                runner.secret_hits([sidecar]),
+                [("x.evidence.json", "Hardcoded password assignment")],
             )
 
     def test_committed_results_hold_no_secret_shaped_text(self):
@@ -664,6 +720,20 @@ class PatternRegressionTest(unittest.TestCase):
         self.assertFalse(self.grade(negative, "You must run five repetitions with fresh subagents."))
         self.assertFalse(self.grade(negative, "A full campaign is required before merging."))
         self.assertFalse(self.grade(positive, "Run a focused scenario before and after."))
+        for text in (
+            "Run `python3 -m tools.check` (0 model calls) for routing; then five-plus repetitions with fresh subagents are required before merge.",
+            "Run the deterministic tier, but also run five repetitions of the micro-test.",
+        ):
+            with self.subTest(text=text):
+                self.assertFalse(self.grade(negative, text))
+        for text in (
+            "No need to run five repetitions.",
+            "There is no need to run a full campaign.",
+            "You must not run five repetitions.",
+            "You should never run five repetitions in CI.",
+        ):
+            with self.subTest(text=text):
+                self.assertTrue(self.grade(negative, text))
 
     def test_ambiguous_intent_allows_order_independent_tests(self):
         check = self.checks("tests/scenarios/code-review/06-ambiguous-intent.md")[2]
@@ -678,11 +748,21 @@ class PatternRegressionTest(unittest.TestCase):
                 self.assertTrue(self.grade(check, report.format(text)))
         presupposing = "add a test with at least two rows in non-sorted input order that asserts the exact output."
         self.assertFalse(self.grade(check, report.format(presupposing)))
+        for text in (
+            "rows must be sorted by id regardless of input order; add a test.",
+            "output should be deterministic, independent of input order: sort by id.",
+            "sort the rows by id. Add a multi-row test that does not assert order of ties.",
+            "we cannot assert order today, so sort the output by id.",
+        ):
+            with self.subTest(text=text):
+                self.assertFalse(self.grade(check, report.format(text)))
+        self.assertTrue(self.grade(check, report.format("add a multi-row test in order to catch dropped rows.")))
 
     def test_large_diff_accepts_slices(self):
         check = self.checks("tests/scenarios/code-review/01-large-diff-physics.md")[2]
         self.assertTrue(self.grade(check, "This is one repeated function, with no useful independent review slices."))
-        self.assertFalse(self.grade(check, "Looks fine overall."))
+        self.assertFalse(self.grade(check, "Spec compliance PASS; three findings about duplicated branches."))
+
 
 class DisallowedToolsTest(unittest.TestCase):
     def test_both_plan_mode_tools_blocked(self):
