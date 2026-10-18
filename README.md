@@ -210,8 +210,13 @@ its dispatch instructions were inspected (the runner disables subagents).
 
 ## Skill compaction (2026-10)
 
-The 15 skills and the reviewer prompt were compacted from 13,916 to 12,377
-words (11% cut) and 1,692 to 1,516 nonblank lines with no description changed.
+The 15 skills and the reviewer prompt were compacted from 13,916 to 12,383
+words (11% cut) and 1,692 to 1,517 nonblank lines with no description changed.
+One rule changed deliberately on the same branch: coding-standards principle 8
+now masks secrets in both configuration logs, resolving its conflict with
+security-baseline SEC-03. In the focused scenario (`coding-standards/02`, one
+run per side) both wordings masked the password, but under the old wording
+the agent reported overriding the standard to do so.
 Committed per-file inventories (`docs/compaction-inventory/`) map the original
 rules to their new text. A lexical checker and manual review found no lost
 commands, thresholds, links, templates, or quoted output phrases. Words and
