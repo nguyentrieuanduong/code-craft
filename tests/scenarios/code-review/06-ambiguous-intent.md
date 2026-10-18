@@ -52,3 +52,9 @@ check exempts only an order phrase governed by an order-independence wording
 order", "in order to"); any other mention of sort or order still fails, so a
 request that presupposes an order fails. Earlier results were scored with the old pattern and are kept as
 recorded.
+
+Known limits of check 3 (review round 3, 2026-10-18; frozen by user decision —
+read the transcript when it fails): it fails some correct order-independent
+wordings it does not list ("does not assert ordering", "accepts the rows in any
+order", "irrespective of order", "without relying on row order", "order-insensitive
+comparison"). It grades all seven recorded responses as their manual notes do.

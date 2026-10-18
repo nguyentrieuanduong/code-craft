@@ -502,28 +502,56 @@ def _segment_writes(tokens):
     return targets, code
 
 
-def _unquote(token):
-    if len(token) > 1 and token[0] == token[-1] and token[0] in "'\"":
-        return token[1:-1]
-    return token
+def _logical_lines(shell):
+    """Split shell text at unquoted newlines and drop comments.
+
+    Backslash-newline joins lines outside single quotes; a '#' that starts a
+    word outside quotes begins a comment that runs to the end of its line.
+    Newlines inside quotes stay in the line, so multi-line arguments survive.
+    """
+    lines, current, quote, index = [], [], None, 0
+    while index < len(shell):
+        char = shell[index]
+        if quote == "'":
+            current.append(char)
+            if char == "'":
+                quote = None
+        elif char == "\\" and index + 1 < len(shell):
+            if shell[index + 1] == "\n":
+                index += 2
+                continue
+            current.append(shell[index:index + 2])
+            index += 2
+            continue
+        elif quote == '"':
+            current.append(char)
+            if char == '"':
+                quote = None
+        elif char in "'\"":
+            quote = char
+            current.append(char)
+        elif char == "\n":
+            lines.append("".join(current))
+            current = []
+        elif char == "#" and (not current or current[-1] in " \t;&|("):
+            while index < len(shell) and shell[index] != "\n":
+                index += 1
+            continue
+        else:
+            current.append(char)
+        index += 1
+    lines.append("".join(current))
+    return lines
 
 
 def _shell_tokens(shell):
-    """Tokens per logical line; a word starting with '#' ends the line (a comment).
-
-    Quotes stay on tokens while lexing so a quoted '#' is not a comment, and
-    are removed afterwards. Raises ValueError on unbalanced quotes.
-    """
+    """Shell tokens with ';' between logical lines. Raises ValueError on unbalanced quotes."""
     tokens = []
-    for line in shell.replace("\\\n", " ").split("\n"):
-        lexer = shlex.shlex(line, posix=False, punctuation_chars=True)
+    for line in _logical_lines(shell):
+        lexer = shlex.shlex(line, posix=True, punctuation_chars=True)
         lexer.commenters = ""
         lexer.whitespace_split = True
-        for token in lexer:
-            if token.startswith("#"):
-                break
-            tokens.append(_unquote(token))
-        tokens.append(";")
+        tokens += list(lexer) + [";"]
     return tokens
 
 

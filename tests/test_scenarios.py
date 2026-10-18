@@ -403,6 +403,16 @@ class EvaluateCheckTest(unittest.TestCase):
         ):
             with self.subTest(command=command):
                 self.assertIs(self.check(spec, transcript(tool_uses=[bash(command), test_write])), False)
+        for command in (
+            "python3 -c \"\nfrom pathlib import Path\nPath('calculator.py').write_text('x')\n\"",
+            "python3 -c \"open(\\\"calculator.py\\\", \\\"w\\\").write(\\\"x\\\")\"",
+            "dd if=/dev/zero of=\"calculator.py\"",
+            "sed -i '' '1i\\\nimport re\n\n' calculator.py",
+        ):
+            with self.subTest(command=command):
+                self.assertIs(self.check(spec, transcript(tool_uses=[bash(command), test_write])), False)
+        commit_message = bash("git commit -m \"$(cat <<'EOF'\nAdd calculator.py tests\n\nCo-Authored-By: x\nEOF\n)\"")
+        self.assertIs(self.check(spec, transcript(tool_uses=[commit_message, test_write, source_edit])), True)
         commented_test_first = [bash("# write the failing test\ncat > test_calculator.py <<'EOF'\nimport unittest\nEOF"), source_edit]
         self.assertIs(self.check(spec, transcript(tool_uses=commented_test_first)), True)
         quoted_arrow = [bash("git commit -m 'boundary => calculator.py'"), test_write]

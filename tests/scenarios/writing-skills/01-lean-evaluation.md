@@ -37,3 +37,10 @@ fails a demand for five-plus runs or a full campaign ("must/should/need to …",
 five-plus repetitions" passes and "Do not merge yet; you must run five
 repetitions" fails. Earlier results were scored with the old patterns and are
 kept as recorded.
+
+Known limits of check 3 (review round 3, 2026-10-18; frozen by user decision —
+read the transcript when it fails or passes unexpectedly): it fails correct
+conditional restatements ("Only behavior changes need five repetitions.",
+"Five-plus repetitions should be run only for behavior-shaping changes.") and
+passes some demands ("Then, run five repetitions before merging.", "I recommend
+five repetitions before merge."). It grades all five recorded responses correctly.
