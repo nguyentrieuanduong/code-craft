@@ -391,6 +391,20 @@ class EvaluateCheckTest(unittest.TestCase):
             source_edit,
         ]
         self.assertIs(self.check(spec, transcript(tool_uses=heredoc_with_code_text)), True)
+        for command in (
+            "# Fix the subtraction bug\nsed -i 's/a + b/a - b/' calculator.py",
+            "cd /repo  # go\necho 'def f(): pass' > calculator.py",
+            "echo ${#args[@]}\nsed -i 's/a/b/' calculator.py",
+            "sed -i \\\n  's/a/b/' calculator.py",
+            "echo '# header' > calculator.py",
+            "cat <<'PY' | python3\nopen('calculator.py', 'w').write('x')\nPY",
+            "sudo -u me tee calculator.py < /dev/null",
+            "bash -c \"echo x > calculator.py\"",
+        ):
+            with self.subTest(command=command):
+                self.assertIs(self.check(spec, transcript(tool_uses=[bash(command), test_write])), False)
+        commented_test_first = [bash("# write the failing test\ncat > test_calculator.py <<'EOF'\nimport unittest\nEOF"), source_edit]
+        self.assertIs(self.check(spec, transcript(tool_uses=commented_test_first)), True)
         quoted_arrow = [bash("git commit -m 'boundary => calculator.py'"), test_write]
         self.assertIs(self.check(spec, transcript(tool_uses=quoted_arrow)), True)
 
@@ -511,6 +525,12 @@ class ReportCheckTest(unittest.TestCase):
         self.assertTrue(self.check(spec, rereview))
         self.assertTrue(self.check(spec, sub_bullet))
         self.assertTrue(self.check(spec, word_count))
+        fixed_width = header.format(n=1, s="") + "F1. Blocking (fixed-width rows) — src/x.py:3 — wrong pad\n"
+        non_blocking = "Diff: 9 changed lines — 0 actionable findings.\n\nFindings\nF1. Non-blocking — src/x.py:3 — style\n"
+        why_bullet = header.format(n=1, s="") + "F1. Blocking — src/x.py:3 — crash\n  - Why blocking: the job aborts\n"
+        self.assertTrue(self.check(spec, fixed_width))
+        self.assertTrue(self.check(spec, non_blocking))
+        self.assertTrue(self.check(spec, why_bullet))
 
     def test_section_checks_with_severity(self):
         tax = {"type": "report_matches", "section": "findings", "pattern": "tax\\.py"}
@@ -731,9 +751,24 @@ class PatternRegressionTest(unittest.TestCase):
             "There is no need to run a full campaign.",
             "You must not run five repetitions.",
             "You should never run five repetitions in CI.",
+            "You should run the deterministic tier instead of five repetitions.",
+            "Run the deterministic tier rather than a full campaign.",
+            "You do not need to run five repetitions.",
         ):
             with self.subTest(text=text):
                 self.assertTrue(self.grade(negative, text))
+        for text in (
+            "Do not merge yet; you must run five repetitions first.",
+            "Not only the deterministic tier: you must run five repetitions.",
+            "Without exception, you must run a full campaign.",
+            "You must run five-plus repetitions, no exceptions.",
+            "A full campaign is required, because this isn't a trivial edit.",
+            "Five fresh-subagent repetitions must be run before merge.",
+            "You need five repetitions.",
+            "You must run 5 repetitions before merge.",
+        ):
+            with self.subTest(text=text):
+                self.assertFalse(self.grade(negative, text))
 
     def test_ambiguous_intent_allows_order_independent_tests(self):
         check = self.checks("tests/scenarios/code-review/06-ambiguous-intent.md")[2]
@@ -757,6 +792,25 @@ class PatternRegressionTest(unittest.TestCase):
             with self.subTest(text=text):
                 self.assertFalse(self.grade(check, report.format(text)))
         self.assertTrue(self.grade(check, report.format("add a multi-row test in order to catch dropped rows.")))
+        for text in (
+            "sort rows by id, and do not assert order of ties.",
+            "do not assert order of ties, but sort by id.",
+            "rows must be in order.",
+            "rows must be in order of id.",
+            "rows must be ordered by id regardless of input order.",
+        ):
+            with self.subTest(text=text):
+                self.assertFalse(self.grade(check, report.format(text)))
+        for text in (
+            "add a multi-row test that does not assert row order.",
+            "add a multi-row test that checks every row regardless of order.",
+            "add a multi-row test without asserting any order.",
+            "the test never asserts order.",
+            "compare the rows ignoring order.",
+            "add a test that doesn't depend on order.",
+        ):
+            with self.subTest(text=text):
+                self.assertTrue(self.grade(check, report.format(text)))
 
     def test_large_diff_accepts_slices(self):
         check = self.checks("tests/scenarios/code-review/01-large-diff-physics.md")[2]

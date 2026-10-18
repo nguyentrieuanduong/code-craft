@@ -468,7 +468,11 @@ def _segment_writes(tokens):
             words.append(token)
             index += 1
     while words and (re.match(r"^\w+=", words[0]) or words[0] in _WRAPPERS):
-        words.pop(0)
+        wrapper = words.pop(0)
+        while wrapper in _WRAPPERS and words and words[0].startswith("-"):
+            option = words.pop(0)
+            if option in ("-u", "-g", "-C", "-h", "-p", "-U") and words:
+                words.pop(0)
     if not words:
         return targets, []
     name, args = Path(words[0]).name, words[1:]
@@ -491,7 +495,36 @@ def _segment_writes(tokens):
         position = args.index("-c")
         if position + 1 < len(args):
             code.append(args[position + 1])
+    elif name in ("bash", "sh", "zsh") and "-c" in args:
+        position = args.index("-c")
+        if position + 1 < len(args):
+            code.append(("shell", args[position + 1]))
     return targets, code
+
+
+def _unquote(token):
+    if len(token) > 1 and token[0] == token[-1] and token[0] in "'\"":
+        return token[1:-1]
+    return token
+
+
+def _shell_tokens(shell):
+    """Tokens per logical line; a word starting with '#' ends the line (a comment).
+
+    Quotes stay on tokens while lexing so a quoted '#' is not a comment, and
+    are removed afterwards. Raises ValueError on unbalanced quotes.
+    """
+    tokens = []
+    for line in shell.replace("\\\n", " ").split("\n"):
+        lexer = shlex.shlex(line, posix=False, punctuation_chars=True)
+        lexer.commenters = ""
+        lexer.whitespace_split = True
+        for token in lexer:
+            if token.startswith("#"):
+                break
+            tokens.append(_unquote(token))
+        tokens.append(";")
+    return tokens
 
 
 def _bash_writes(command):
@@ -505,20 +538,18 @@ def _bash_writes(command):
 
     def strip_body(match):
         line_start = command.rfind("\n", 0, match.start()) + 1
-        header = command[line_start:match.start()]
+        header = command[line_start:match.start()] + " " + match.group(3)
         if re.search(r"(?:^|[\s;&|(])python[\d.]*(?:\s|$)", header):
             codes.append(match.group(4))
         return match.group(3)
 
     shell = _HEREDOC.sub(strip_body, command)
     try:
-        lexer = shlex.shlex(shell.replace("\n", " ; "), posix=True, punctuation_chars=True)
-        lexer.whitespace_split = True
-        tokens = list(lexer)
+        tokens = _shell_tokens(shell)
     except ValueError:
         return set(), [command]
     paths, opaque_texts, segment = set(), [], []
-    for token in tokens + [";"]:
+    for token in tokens:
         if token not in _SEPARATORS:
             segment.append(token)
             continue
@@ -533,6 +564,11 @@ def _bash_writes(command):
             else:
                 paths.add(target)
     for code in codes:
+        if isinstance(code, tuple):
+            written, opaque = _bash_writes(code[1])
+            paths |= written
+            opaque_texts += opaque
+            continue
         written, opaque = _python_writes(code)
         paths |= written
         if opaque:
@@ -562,17 +598,16 @@ def _first_write(transcript, pattern, workspace):
     return None, False
 
 
-_LEAD_SEVERITY = re.compile(r"^\W*(?:[\w-]+\W+){0,2}?(blocking|should[- ]fix)\b")
-_DONE = re.compile(r"\b(addressed|resolved|fixed)\b")
+_LEAD_SEVERITY = re.compile(
+    r"^\W*(?:(?:still\s+open|open|new)\W+)?(?<![\w-])(blocking|should[- ]fix)\b"
+)
+_DONE = re.compile(r"^\W*(?:addressed|resolved|fixed)\b|\(was\b")
 
 
 def _open_actionable(text):
     """Whether a Findings item opens with Blocking or Should-fix and is not marked done."""
     lead = re.split(r"\s+[—–]\s+", text, maxsplit=1)[0]
-    if _DONE.search(lead) and "still open" not in lead:
-        return False
-    match = _LEAD_SEVERITY.match(lead)
-    return bool(match) and not re.search(r"\bnot\s+$", lead[:match.start(1)])
+    return not _DONE.search(lead) and bool(_LEAD_SEVERITY.match(lead))
 
 
 def check_status(passed):
