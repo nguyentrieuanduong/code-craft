@@ -21,7 +21,8 @@ review.
 ```json
 [
   {"type": "output_matches", "pattern": "(?i)F2"},
-  {"type": "output_matches", "pattern": "(?i)(reassess|reconsider|rethink|step back)[^\\n]{0,120}approach|approach[^\\n]{0,80}(reassess|reconsider|rethink)"}
+  {"type": "output_matches", "pattern": "(?i)(reassess|reconsider|rethink|step back)[^\\n]{0,120}approach|approach[^\\n]{0,80}(reassess|reconsider|rethink)"},
+  {"type": "report_actionable_count"}
 ]
 ```
 
@@ -29,3 +30,7 @@ review.
 
 Design item 3, round cap. F2 stayed open through three rounds. Target:
 stop cycling and propose reassessing the approach with the author.
+
+Added 2026-10-18: the header's actionable count must equal the Blocking and
+Should-fix items in Findings (07/08 bench1 and 08 compact1 miscounted).
+Earlier results were scored without it.

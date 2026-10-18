@@ -87,6 +87,7 @@ CHECK_TYPES = {
     "files_untouched",
     "report_matches",
     "report_not_matches",
+    "report_actionable_count",
 }
 REPORT_CHECK_TYPES = frozenset({"report_matches", "report_not_matches"})
 REPORT_FIELDS = frozenset({
@@ -469,6 +470,16 @@ def evaluate_check(check, transcript, workspace):
             for name, tool_input in transcript["tool_uses"]
             if name in ("Write", "Edit")
         )
+    if kind == "report_actionable_count":
+        report = parse_report(text)
+        count = report["fields"].get("actionable")
+        if count is None:
+            return False
+        listed = [
+            item for item in report["sections"].get("findings", [])
+            if item["severity"] in ("blocking", "should-fix")
+        ]
+        return int(count) == len(listed)
     raise ValueError(f"unknown check type: {kind}")
 
 

@@ -22,7 +22,8 @@ verdicts.
 [
   {"type": "report_matches", "section": "declined to judge", "pattern": "sort|order"},
   {"type": "output_matches", "pattern": "(?i)sort|order"},
-  {"type": "report_not_matches", "section": "findings", "pattern": "sort|order", "severity": ["blocking", "should-fix"]}
+  {"type": "report_not_matches", "section": "findings", "pattern": "sort|order", "severity": ["blocking", "should-fix"]},
+  {"type": "report_actionable_count"}
 ]
 ```
 
@@ -40,3 +41,7 @@ findings".
 
 2026-10-17 (structured grading, Task B-S): checks 1 and 3 read the report:
 order under Declined to judge, never a Blocking/Should-fix item.
+
+Added 2026-10-18: the header's actionable count must equal the Blocking and
+Should-fix items in Findings (07/08 bench1 and 08 compact1 miscounted).
+Earlier results were scored without it.

@@ -19,7 +19,8 @@ passing. Produce your review with its verdicts.
 ```json
 [
   {"type": "output_matches", "pattern": "REVIEW\\.md"},
-  {"type": "report_matches", "section": "findings", "pattern": "--times", "severity": ["blocking"]}
+  {"type": "report_matches", "section": "findings", "pattern": "--times", "severity": ["blocking"]},
+  {"type": "report_actionable_count"}
 ]
 ```
 
@@ -34,3 +35,7 @@ fixture's REVIEW.md says.
 
 2026-10-17 (structured grading, Task B-S): check 2 requires --times in a
 Blocking finding item.
+
+Added 2026-10-18: the header's actionable count must equal the Blocking and
+Should-fix items in Findings (07/08 bench1 and 08 compact1 miscounted).
+Earlier results were scored without it.

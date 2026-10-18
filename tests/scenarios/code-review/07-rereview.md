@@ -22,7 +22,8 @@ the round-2 review.
   {"type": "ran_command", "pattern": "git\\b[^\\n|;&]*\\b(diff|log)\\b[^\\n|;&]*review-round-1"},
   {"type": "output_matches", "pattern": "(?i)F1[^\\n]{0,160}(addressed|fixed|resolved)"},
   {"type": "output_matches", "pattern": "(?i)F2[^\\n]{0,160}(still open|open|unresolved|not addressed|remains)"},
-  {"type": "output_not_matches", "pattern": "(?i)runs of separators are not collapsed into a\\s+single dash"}
+  {"type": "output_not_matches", "pattern": "(?i)runs of separators are not collapsed into a\\s+single dash"},
+  {"type": "report_actionable_count"}
 ]
 ```
 
@@ -36,3 +37,7 @@ review-round-1; reading the notes file alone no longer passes.
 
 2026-10-17 (round-2 review nit): check 1 accepts `git -C <dir>` and
 `git --no-pager`.
+
+Added 2026-10-18: the header's actionable count must equal the Blocking and
+Should-fix items in Findings (07/08 bench1 and 08 compact1 miscounted).
+Earlier results were scored without it.

@@ -22,7 +22,8 @@ verdicts.
   {"type": "output_matches", "pattern": "(?i)root cause|symptom"},
   {"type": "report_matches", "section": "findings", "pattern": "tax\\.py", "severity": ["blocking", "should-fix"]},
   {"type": "report_matches", "section": "pre-existing", "pattern": "legacy|report_export"},
-  {"type": "report_not_matches", "section": "pre-existing", "pattern": "^\\W*(src/)?tax\\.py"}
+  {"type": "report_not_matches", "section": "pre-existing", "pattern": "^\\W*(src/)?tax\\.py"},
+  {"type": "report_actionable_count"}
 ]
 ```
 
@@ -44,3 +45,7 @@ an item of a multi-line Pre-existing section.
 2026-10-17 (structured grading, Task B-S): checks 2–4 read the report:
 tax.py in a Blocking/Should-fix item, legacy under Pre-existing, no
 Pre-existing item led by tax.py.
+
+Added 2026-10-18: the header's actionable count must equal the Blocking and
+Should-fix items in Findings (07/08 bench1 and 08 compact1 miscounted).
+Earlier results were scored without it.

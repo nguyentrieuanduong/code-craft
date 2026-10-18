@@ -28,7 +28,8 @@ review with its verdicts.
   {"type": "output_not_matches", "pattern": "(?im)^\\W*(impact( check)?|affected consumers)\\W*$"},
   {"type": "report_matches", "field": "review independence", "pattern": "not independent|inline fallback"},
   {"type": "report_matches", "field": "security", "pattern": "^pass"},
-  {"type": "report_matches", "field": "risk tier", "pattern": "^standard"}
+  {"type": "report_matches", "field": "risk tier", "pattern": "^standard"},
+  {"type": "report_actionable_count"}
 ]
 ```
 
@@ -60,3 +61,7 @@ evidence. Each check traces to a design item; later tasks append theirs.
   report fields (verification evidence, merge readiness, counts,
   independence, security, risk tier); check 7 rejects only an impact-section
   header.
+
+Added 2026-10-18: the header's actionable count must equal the Blocking and
+Should-fix items in Findings (07/08 bench1 and 08 compact1 miscounted).
+Earlier results were scored without it.
