@@ -20,5 +20,5 @@ Base: `main` at 29a1c4e
 | R14 | "&#124; \"I should ask before deploying the canary\" &#124; The hard gate is the only precondition. The canary IS the ask — it exists to gather the evidence the go/no-go decision needs. Pausing before it just delays signal. &#124;" | merged into R5 | |
 | R15 | "&#124; \"It's just a config/flag change\" &#124; Config took Facebook down for ~6h; a repurposed flag ended Knight in 45 minutes. Same ladder. &#124;" | "&#124; \"It's just a config/flag change\" &#124; Config took Facebook down for ~6h; a repurposed flag ended Knight. Same ladder. &#124;" (Knight's 45 minutes stays once, in R1) | |
 
-Counts (checker): 611 -> 531 words (13% cut), 58 -> 54 nonblank lines.
+Counts (checker): 611 -> 531 words (13% cut), 58 -> 55 nonblank lines.
 Reason: E14 keeps every incident figure once, both anti-patterns links, ≤5%, expand–contract, and the hard gate; the cuts are the two restated rows (canary permission, promotion gate) folded into ladder steps 1 and 3 with their key phrases, step 3's last sentence ("The approval gate sits between rings — never before ring one.", restating step 1's no-permission rule and step 3's promotion gate), and the second Knight "45 minutes".

@@ -9,9 +9,10 @@ description: >-
 # Releasing Safely
 
 Run a release as an experiment on real users: smallest real exposure first,
-evidence before expansion, rollback rehearsed before stage one. Deploy and config mechanics — not exotic logic bugs — sank Knight
-($440M in 45 minutes), CrowdStrike (~8.5M machines), Cloudflare, and
-Facebook (`../using-code-craft/references/anti-patterns.md` §10–11).
+evidence before expansion, rollback rehearsed before stage one. Deploy and
+config mechanics — not exotic logic bugs — sank Knight ($440M in 45
+minutes), CrowdStrike (~8.5M machines), Cloudflare, and Facebook
+(`../using-code-craft/references/anti-patterns.md` §10–11).
 
 ## Before the first stage (hard gate)
 
