@@ -31,3 +31,9 @@ Check 2 encodes R7 ("parsers, codecs, and input boundaries get a
 property-based/fuzz-style test") — expected RED under current wording, GREEN
 after the edit. Checks 1, 3, 4 are current behavior and must stay green in
 both arms of the wording eval.
+
+Grader changed 2026-10-18: `test_written_before_source` now also reads Bash
+writes (redirection, tee, cp/mv/install, touch, dd, sed/perl -i, Python
+`open`/`write_text` in code that runs) and reports NOT EVALUATED when a write
+names a matching file but its target cannot be read. Earlier results were
+scored by the Write/Edit-only grader and are kept as recorded.

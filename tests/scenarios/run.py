@@ -17,6 +17,7 @@ import fnmatch
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -250,6 +251,11 @@ _LEAD_MARKERS = re.compile(r"^\s*(?:(?:#+|>+|[-*+])\s+)*")
 _ITEM_START = re.compile(r"^(?:[-*+]\s+|\d+[.)]\s+|[a-z]{1,3}\d+(?:-\d+)?[.):]\s+)")
 _LABEL = re.compile(r"^([a-z][a-z -]*?)\s*:\s*(.*)$")
 _SEVERITY = re.compile(r"(?<![\w-])(blocking|should[- ]fix|nit)\b")
+_NUMBER_WORDS = {
+    word: number for number, word in enumerate(
+        ("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"), start=1
+    )
+}
 _NONE_ITEM = re.compile(r"^none\b")
 
 
@@ -313,10 +319,10 @@ def parse_report(text):
     changed = re.search(r"([\d,]+)\s+changed lines", diff)
     if changed:
         fields["changed lines"] = changed.group(1).replace(",", "")
-    actionable = re.search(r"\b(\d+|no|zero|none)\s+actionable", diff)
+    actionable = re.search(r"\b(\d+|no|zero|none|" + "|".join(_NUMBER_WORDS) + r")\s+actionable", diff)
     if actionable:
         count = actionable.group(1)
-        fields["actionable"] = count if count.isdigit() else "0"
+        fields["actionable"] = count if count.isdigit() else str(_NUMBER_WORDS.get(count, 0))
     sections = {
         name: [_report_item(item) for item in items if not _NONE_ITEM.match(item)]
         for name, items in raw_sections.items()
@@ -350,13 +356,17 @@ def _commands(transcript):
     ]
 
 
-_HEREDOC_BODY = re.compile(r"<<-?\s*['\"]?(\w+)['\"]?[^\n]*\n.*?^\s*\1\s*$", re.DOTALL | re.MULTILINE)
-_REDIRECT = re.compile(r"(?<![0-9&<>-])>{1,2}(?![&>=])\s*['\"]?([^\s'\";&|<>()]+)")
-_TEE = re.compile(r"\btee\s+(?:-a\s+)?['\"]?([^\s'\";&|<>()]+)")
+_HEREDOC = re.compile(
+    r"<<-?\s*(['\"]?)(\w+)\1([^\n]*)\n(.*?)^\s*\2\s*$", re.DOTALL | re.MULTILINE
+)
+_SEPARATORS = frozenset({";", "&&", "||", "|", "|&", "&", "(", ")"})
+_REDIRECTS = frozenset({">", ">>", "&>", "&>>", ">|"})
+_SKIP_NEXT = frozenset({">&", "<", "<<", "<<<", "<&", "<>"})
+_WRAPPERS = frozenset({"sudo", "env", "command", "exec", "time", "nohup"})
+_PYTHON = re.compile(r"^python[\d.]*$")
 _ASSIGN = re.compile(r"\b(\w+)\s*=\s*(?:Path\(\s*)?['\"]([^'\"\n]+)['\"]")
-_OPEN_WRITE = re.compile(r"\bopen\(\s*((?:[^,()\n]|\([^()\n]*\))+?)\s*,\s*(?:mode\s*=\s*)?['\"][wax]b?\+?['\"]")
+_KWARG = re.compile(r"^(\w+)\s*=\s*(.*)$", re.DOTALL)
 _WRITE_TEXT = re.compile(r"(?:Path\(\s*([^()\n]+?)\s*\)|\b(\w+))\.write_(?:text|bytes)\(")
-_OPAQUE_WRITE = re.compile(r"\bsed\s+-i|\b(?:cp|mv|touch|truncate|dd|install)\b")
 _PATH_TOKEN = re.compile(r"[\w./-]+")
 
 
@@ -368,14 +378,52 @@ def _literal(expr, assigns):
     return assigns.get(expr)
 
 
-def _bash_writes(command):
-    """Paths a shell command writes, and whether it writes something it does not name."""
-    shell = _HEREDOC_BODY.sub("", command)
-    assigns = dict(_ASSIGN.findall(command))
-    paths = {p for p in _REDIRECT.findall(shell) + _TEE.findall(shell) if p != "/dev/null"}
-    opaque = bool(_OPAQUE_WRITE.search(shell))
-    for expr in _OPEN_WRITE.findall(command) + [a or b for a, b in _WRITE_TEXT.findall(command)]:
-        value = _literal(expr, assigns)
+def _call_args(code, start):
+    """Top-level arguments of the call whose '(' ends at code[start - 1]."""
+    args, current, depth, quote = [], [], 1, None
+    for char in code[start:]:
+        if quote:
+            current.append(char)
+            quote = None if char == quote else quote
+            continue
+        if char in "'\"":
+            quote = char
+        elif char in "([{":
+            depth += 1
+        elif char in ")]}":
+            depth -= 1
+            if depth == 0:
+                args.append("".join(current).strip())
+                return [arg for arg in args if arg]
+        elif char == "," and depth == 1:
+            args.append("".join(current).strip())
+            current = []
+            continue
+        current.append(char)
+    return None
+
+
+def _python_writes(code):
+    """Paths Python code writes, and whether it writes a path it does not name."""
+    assigns = dict(_ASSIGN.findall(code))
+    paths, opaque = set(), False
+    for match in re.finditer(r"\bopen\(", code):
+        args = _call_args(code, match.end())
+        if not args:
+            continue
+        keywords = dict(m.groups() for m in map(_KWARG.match, args) if m)
+        positional = [arg for arg in args if not _KWARG.match(arg)]
+        mode = keywords.get("mode") or (positional[1] if len(positional) > 1 else "'r'")
+        mode_value = _literal(mode, {})
+        if mode_value is None or set(mode_value) & set("wax+"):
+            target = keywords.get("file") or (positional[0] if positional else "")
+            value = _literal(target, assigns)
+            if value is None:
+                opaque = True
+            else:
+                paths.add(value)
+    for named, variable in _WRITE_TEXT.findall(code):
+        value = _literal(named or variable, assigns)
         if value is None:
             opaque = True
         else:
@@ -383,10 +431,119 @@ def _bash_writes(command):
     return paths, opaque
 
 
-def _mentions(command, pattern, workspace):
+def _options_and_files(args, valued=("-e", "-f", "--expression", "--file")):
+    """Split command arguments into option tokens and positional words."""
+    options, positional, skip = [], [], False
+    for arg in args:
+        if skip:
+            skip = False
+        elif arg in valued:
+            options.append(arg)
+            skip = True
+        elif arg.startswith("-") and arg != "-":
+            options.append(arg)
+        else:
+            positional.append(arg)
+    return options, positional
+
+
+def _in_place(options):
+    return any(
+        option.startswith("--in-place") or (not option.startswith("--") and "i" in option[1:])
+        for option in options
+    )
+
+
+def _segment_writes(tokens):
+    """(write targets, Python code run) for one shell segment's tokens."""
+    targets, words, index = [], [], 0
+    while index < len(tokens):
+        token = tokens[index]
+        if token in _REDIRECTS and index + 1 < len(tokens):
+            targets.append(tokens[index + 1])
+            index += 2
+        elif token in _SKIP_NEXT:
+            index += 2
+        else:
+            words.append(token)
+            index += 1
+    while words and (re.match(r"^\w+=", words[0]) or words[0] in _WRAPPERS):
+        words.pop(0)
+    if not words:
+        return targets, []
+    name, args = Path(words[0]).name, words[1:]
+    options, files = _options_and_files(args)
+    code = []
+    if name == "tee":
+        targets += files
+    elif name in ("cp", "mv", "install", "ln") and files:
+        targets.append(files[-1])
+    elif name in ("touch", "truncate"):
+        targets += files
+    elif name == "dd":
+        targets += [arg[3:] for arg in args if arg.startswith("of=")]
+    elif name == "sed" and _in_place(options):
+        has_script = any(option in ("-e", "-f", "--expression", "--file") for option in options)
+        targets += files if has_script else files[1:]
+    elif name == "perl" and _in_place(options):
+        targets += files
+    elif _PYTHON.match(name) and "-c" in args:
+        position = args.index("-c")
+        if position + 1 < len(args):
+            code.append(args[position + 1])
+    return targets, code
+
+
+def _bash_writes(command):
+    """Paths a Bash command writes, and the texts holding a write it does not name.
+
+    Only the shell part is parsed (heredoc bodies are file content, except a
+    body fed to python, which is code). Unrecognised writers — patch,
+    git apply, rsync, shutil — are not seen.
+    """
+    codes = []
+
+    def strip_body(match):
+        line_start = command.rfind("\n", 0, match.start()) + 1
+        header = command[line_start:match.start()]
+        if re.search(r"(?:^|[\s;&|(])python[\d.]*(?:\s|$)", header):
+            codes.append(match.group(4))
+        return match.group(3)
+
+    shell = _HEREDOC.sub(strip_body, command)
+    try:
+        lexer = shlex.shlex(shell.replace("\n", " ; "), posix=True, punctuation_chars=True)
+        lexer.whitespace_split = True
+        tokens = list(lexer)
+    except ValueError:
+        return set(), [command]
+    paths, opaque_texts, segment = set(), [], []
+    for token in tokens + [";"]:
+        if token not in _SEPARATORS:
+            segment.append(token)
+            continue
+        targets, code = _segment_writes(segment)
+        codes += code
+        segment = []
+        for target in targets:
+            if target == "/dev/null" or target.startswith("&"):
+                continue
+            if "$" in target or "`" in target:
+                opaque_texts.append(shell)
+            else:
+                paths.add(target)
+    for code in codes:
+        written, opaque = _python_writes(code)
+        paths |= written
+        if opaque:
+            opaque_texts.append(code)
+    return paths, opaque_texts
+
+
+def _mentions(text, pattern, workspace):
     return any(
         _tool_path_matches({"file_path": token}, pattern, workspace)
-        for token in _PATH_TOKEN.findall(command)
+        for token in _PATH_TOKEN.findall(text)
     )
 
 
@@ -397,13 +554,25 @@ def _first_write(transcript, pattern, workspace):
             return index, False
         if name != "Bash":
             continue
-        command = tool_input.get("command", "")
-        paths, opaque = _bash_writes(command)
+        paths, opaque_texts = _bash_writes(tool_input.get("command", ""))
         if any(_tool_path_matches({"file_path": p}, pattern, workspace) for p in paths):
             return index, False
-        if opaque and _mentions(command, pattern, workspace):
+        if any(_mentions(text, pattern, workspace) for text in opaque_texts):
             return index, True
     return None, False
+
+
+_LEAD_SEVERITY = re.compile(r"^\W*(?:[\w-]+\W+){0,2}?(blocking|should[- ]fix)\b")
+_DONE = re.compile(r"\b(addressed|resolved|fixed)\b")
+
+
+def _open_actionable(text):
+    """Whether a Findings item opens with Blocking or Should-fix and is not marked done."""
+    lead = re.split(r"\s+[—–]\s+", text, maxsplit=1)[0]
+    if _DONE.search(lead) and "still open" not in lead:
+        return False
+    match = _LEAD_SEVERITY.match(lead)
+    return bool(match) and not re.search(r"\bnot\s+$", lead[:match.start(1)])
 
 
 def check_status(passed):
@@ -477,7 +646,7 @@ def evaluate_check(check, transcript, workspace):
             return False
         listed = [
             item for item in report["sections"].get("findings", [])
-            if item["severity"] in ("blocking", "should-fix")
+            if _open_actionable(item["text"])
         ]
         return int(count) == len(listed)
     raise ValueError(f"unknown check type: {kind}")
@@ -554,15 +723,40 @@ def redact_secrets(value):
     return value
 
 
+def _strings(value):
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            yield from _strings(key)
+            yield from _strings(item)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            yield from _strings(item)
+
 
 def secret_hits(paths):
-    """(file name, pattern label) for every secret-shaped match in the files."""
-    return [
-        (path.name, label)
-        for path in paths
-        for label, pattern in REDACTION_PATTERNS
-        if pattern.search(path.read_text(errors="replace"))
-    ]
+    """(file name, pattern label) for every secret-shaped match in the files.
+
+    JSON files are decoded first: json.dumps escapes quotes, which would hide
+    a quoted password from the raw text.
+    """
+    hits = []
+    for path in paths:
+        text = path.read_text(errors="replace")
+        texts = [text]
+        if path.suffix == ".json":
+            try:
+                texts += list(_strings(json.loads(text)))
+            except json.JSONDecodeError:
+                pass
+        hits += [
+            (path.name, label)
+            for label, pattern in REDACTION_PATTERNS
+            if any(pattern.search(chunk) for chunk in texts)
+        ]
+    return hits
+
 
 def write_result(scenario, arm, label, results, transcript, args, skill_file):
     # Results are committed: mask secrets before either artifact is written.

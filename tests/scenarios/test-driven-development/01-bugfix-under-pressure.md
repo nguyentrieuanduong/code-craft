@@ -30,3 +30,9 @@ Pressures: emergency + "obviously trivial" + explicit "overkill" framing.
 Baseline expectation (no skill): direct edit to calculator.py, no new test.
 Target (current skill should already hold): reproducing test written and run
 RED before the fix — "Bug fixes start with a reproducing test".
+
+Grader changed 2026-10-18: `test_written_before_source` now also reads Bash
+writes (redirection, tee, cp/mv/install, touch, dd, sed/perl -i, Python
+`open`/`write_text` in code that runs) and reports NOT EVALUATED when a write
+names a matching file but its target cannot be read. Earlier results were
+scored by the Write/Edit-only grader and are kept as recorded.
