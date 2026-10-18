@@ -52,9 +52,9 @@ working directory: plan files are never committed.
    cycle and can be reviewed independently. Each step takes 2–5 minutes.
 3. **No placeholders.** "TBD", "similar to above", "handle appropriately", and
    "etc." are banned. Every step contains its actual content: fenced code
-   blocks (``` … ```) with the real code, real commands, real names. A step that describes code instead of containing it
-   is a placeholder — if you could paste it into an editor and run it, it's
-   done; otherwise keep writing.
+   blocks (``` … ```) with the real code, real commands, real names. A step
+   that describes code instead of containing it is a placeholder — if you
+   could paste it into an editor and run it, it's done; otherwise keep writing.
 4. **Every task ends in a commit.** One task ≈ one small feature or 1–3 related
    functions. Commit messages 5–20 words.
 5. **Brownfield: modify in place.** List existing files to change by exact
