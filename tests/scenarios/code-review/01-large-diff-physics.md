@@ -21,7 +21,7 @@ verdicts.
 [
   {"type": "ran_command", "pattern": "git (diff|log|show)"},
   {"type": "output_matches", "pattern": "(?i)spec"},
-  {"type": "output_matches", "pattern": "(?i)split|too (large|big)|diff size|400"},
+  {"type": "output_matches", "pattern": "(?i)split|\\bslices?\\b|too (large|big)|diff size|400"},
   {"type": "report_not_matches", "section": "findings", "pattern": "split|too (large|big)|\\bsize\\b|400", "severity": ["blocking"]},
   {"type": "output_matches", "pattern": "(?i)duplicat|clone|copy|repeat|identical"},
   {"type": "report_actionable_count"}
@@ -53,3 +53,8 @@ Blocking finding cites size or a split.
 Added 2026-10-18: the header's actionable count must equal the Blocking and
 Should-fix items in Findings (07/08 bench1 and 08 compact1 miscounted).
 Earlier results were scored without it.
+
+Pattern changed 2026-10-18 (pinned by `PatternRegressionTest`): check 3 also
+accepts "slices" ("no useful independent review slices" states that the
+change does not split). Earlier results were scored with the old pattern and
+are kept as recorded.

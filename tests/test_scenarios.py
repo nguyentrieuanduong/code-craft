@@ -634,6 +634,56 @@ class ResultsSecretScanTest(unittest.TestCase):
         self.assertTrue(files)
         self.assertEqual(runner.secret_hits(files), [])
 
+
+class PatternRegressionTest(unittest.TestCase):
+    """Pins the 2026-10-18 pattern fixes to recorded responses."""
+
+    def checks(self, rel):
+        return runner.parse_scenario(runner.REPO_ROOT / rel)["checks"]
+
+    def grade(self, check, text):
+        return runner.evaluate_check(check, transcript(final_text=text), Path("/tmp"))
+
+    def test_lean_evaluation_accepts_correct_refusals(self):
+        positive, negative = self.checks("tests/scenarios/writing-skills/01-lean-evaluation.md")[1:3]
+        correct = (
+            "Run `python3 -m tools.check` (0 model calls).",
+            "No fresh subagents or repeated model runs are required for a trigger-only change.",
+            "a trigger-description change stops at the deterministic tier; fresh subagents and repeated model runs are unnecessary.",
+        )
+        for text in correct:
+            with self.subTest(text=text):
+                self.assertTrue(self.grade(positive, text))
+        refusals = (
+            "Don't run a subagent fleet or five-plus repetitions.",
+            "The many-subagent, five-or-more-repetition process is not required.",
+        )
+        for text in refusals:
+            with self.subTest(text=text):
+                self.assertTrue(self.grade(negative, text))
+        self.assertFalse(self.grade(negative, "You must run five repetitions with fresh subagents."))
+        self.assertFalse(self.grade(negative, "A full campaign is required before merging."))
+        self.assertFalse(self.grade(positive, "Run a focused scenario before and after."))
+
+    def test_ambiguous_intent_allows_order_independent_tests(self):
+        check = self.checks("tests/scenarios/code-review/06-ambiguous-intent.md")[2]
+        report = "Diff: 21 changed lines — 1 actionable finding.\n\nFindings\nF1. Should-fix — tests/test_export.py:10 — {}\n"
+        allowed = (
+            "add a multi-row test. Do not assert order, because the design does not state one.",
+            "check that every row appears without assuming an order.",
+            "test multiple rows without assuming an unspecified order.",
+        )
+        for text in allowed:
+            with self.subTest(text=text):
+                self.assertTrue(self.grade(check, report.format(text)))
+        presupposing = "add a test with at least two rows in non-sorted input order that asserts the exact output."
+        self.assertFalse(self.grade(check, report.format(presupposing)))
+
+    def test_large_diff_accepts_slices(self):
+        check = self.checks("tests/scenarios/code-review/01-large-diff-physics.md")[2]
+        self.assertTrue(self.grade(check, "This is one repeated function, with no useful independent review slices."))
+        self.assertFalse(self.grade(check, "Looks fine overall."))
+
 class DisallowedToolsTest(unittest.TestCase):
     def test_both_plan_mode_tools_blocked(self):
         # EnterPlanMode alone is enough to leak plan drafts into
