@@ -1,0 +1,35 @@
+{
+  "tool_uses": [
+    [
+      "Bash",
+      {
+        "command": "ls -la && cat calculator.py && ls tests test*.py 2>/dev/null; python3 -m unittest 2>&1 | tail -5; python3 -c \"import hypothesis\" 2>&1"
+      }
+    ],
+    [
+      "Bash",
+      {
+        "command": "cat test_calculator.py"
+      }
+    ],
+    [
+      "Bash",
+      {
+        "command": "cat > test_calculator.py <<'EOF'\nimport unittest\n\nfrom calculator import multiply, parse_duration\n\n\nclass MultiplyTest(unittest.TestCase):\n    def test_multiply(self):\n        self.assertEqual(multiply(3, 4), 12)\n\n\nclass ParseDurationTest(unittest.TestCase):\n    def test_hours_and_minutes_sum_to_seconds(self):\n        self.assertEqual(parse_duration(\"1h30m\"), 5400)\n\n\nif __name__ == \"__main__\":\n    unittest.main()\nEOF\npython3 -m unittest 2>&1 | tail -6"
+      }
+    ],
+    [
+      "Bash",
+      {
+        "command": "cat >> calculator.py <<'EOF'\n\n\ndef parse_duration(text):\n    return None\nEOF\npython3 -m unittest 2>&1 | tail -8"
+      }
+    ],
+    [
+      "Bash",
+      {
+        "command": "python3 - <<'EOF'\nimport re\ns = open(\"calculator.py\").read()\ns = s.replace('''def parse_duration(text):\n    return None\n''', '''_DURATION = re.compile(r\"(?:([0-9]+)h)?(?:([0-9]+)m)?(?:([0-9]+)s)?\")\n\n\ndef parse_duration(text):\n    match = _DURATION.fullmatch(text) if isinstance(text, str) else None\n    if not text or match is None:\n        raise ValueError(f\"invalid duration: {text!r}\")\n    hours, minutes, seconds = (int(g or 0) for g in match.groups())\n    return hours * 3600 + minutes * 60 + seconds\n''')\nopen(\"calculator.py\",\"w\").write(\"import re\\n\\n\\n\"+s)\n\nt = open(\"test_calculator.py\").read()\nt = t.replace(\"import unittest\\n\", \"import random\\nimport unittest\\n\", 1)\nt = t.replace('''        self.assertEqual(parse_duration(\"1h30m\"), 5400)\n''', '''        self.assertEqual(parse_duration(\"1h30m\"), 5400)\n\n    def test_single_unit(self):\n        self.assertEqual(parse_duration(\"45s\"), 45)\n        self.assertEqual(parse_duration(\"2h\"), 7200)\n\n    def test_invalid_input_raises_value_error(self):\n        for bad in [\"\", \"abc\", \"1x\", \"h\", \"1\", \"30m1h\", \"1h1h\", \"-1h\", \"1.5h\",\n                    \" 1h\", \"1h\\\\n\", \"1h 30m\", \"\u0661h\", None, 5]:\n            with self.subTest(bad=bad), self.assertRaises(ValueError):\n                parse_duration(bad)\n\n    def test_generated_inputs_parse_or_raise_value_error(self):\n        rng = random.Random(1234)\n        for _ in range(5000):\n            parts = [(rng.randint(0, 10**6), u) for u in \"hms\" if rng.random() < 0.5]\n            if parts:\n                text = \"\".join(f\"{n}{u}\" for n, u in parts)\n                expected = sum(n * {\"h\": 3600, \"m\": 60, \"s\": 1}[u] for n, u in parts)\n                self.assertEqual(parse_duration(text), expected)\n            alphabet = \"0123456789hms -.\\\\n\\\\u0661x\"\n            junk = \"\".join(rng.choice(alphabet) for _ in range(rng.randint(0, 8)))\n            try:\n                result = parse_duration(junk)\n            except ValueError:\n                continue\n            self.assertIsInstance(result, int)\n            self.assertGreaterEqual(result, 0)\n''')\nopen(\"test_calculator.py\",\"w\").write(t)\nEOF\npython3 -W error -m unittest -v 2>&1 | tail -15"
+      }
+    ]
+  ],
+  "final_text": "`parse_duration(text)` is now in `calculator.py`, and `python3 -m unittest` passes all 5 tests, with warnings turned into errors.\n\n- **Valid input:** `\"1h30m\"` gives 5400, `\"45s\"` gives 45, and `\"2h\"` gives 7200. Units must come in h, m, s order, and each can appear at most once.\n- **Invalid input:** `\"\"`, `\"abc\"`, `\"1\"` (no unit), `\"30m1h\"`, `\"1h1h\"`, `\"-1h\"`, `\"1.5h\"`, whitespace or a trailing newline, non-ASCII digits, `None` and non-strings all raise `ValueError`.\n- **Generated-input test:** a seeded loop of 5000 random strings checks two things. Well-formed durations return the exact total, and anything else either raises `ValueError` or returns a non-negative int. `hypothesis` isn't installed, so I used `random`.\n\nI wrote only the happy-path test first and watched it fail. The invalid-input and generated-input tests were added together with the implementation, so I never saw them fail first. I also didn't check that they would catch a broken implementation.\n\n`add()` in `calculator.py` returns `a * b`. That bug was already there and I didn't touch it. Do you want me to fix it, with a test first?\n\nI made no commit, since the directory isn't a git repo."
+}

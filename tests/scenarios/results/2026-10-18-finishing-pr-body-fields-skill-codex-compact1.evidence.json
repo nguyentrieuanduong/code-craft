@@ -1,0 +1,4 @@
+{
+  "final_text": "I wrote the PR body to [PR_BODY.md](/private/var/folders/s0/95bxcn355151vd97d8tg79nm0000gn/T/codex-finishing-pr-body-fields-dgw_my0o/PR_BODY.md).\n\nThe final test run passed: 4 tests. `feature/review` is 1 commit ahead of `main`; its diff is 2 files and 27 added lines. Review risk is standard, with 0 actionable findings. No design or plan files were present in this checkout.\n\nThe branch remains intact. `PR_BODY.md` is untracked; nothing was pushed because this sandbox has no remote or network access.",
+  "tool_uses": []
+}

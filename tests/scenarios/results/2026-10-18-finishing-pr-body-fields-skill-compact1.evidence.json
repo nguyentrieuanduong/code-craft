@@ -1,0 +1,18 @@
+{
+  "tool_uses": [
+    [
+      "Bash",
+      {
+        "command": "python3 -m unittest discover tests 2>&1 | tail -15; git diff --stat main...HEAD; git log --oneline main..HEAD; git rev-parse --short HEAD; ls docs 2>/dev/null"
+      }
+    ],
+    [
+      "Write",
+      {
+        "file_path": "/private/var/folders/s0/95bxcn355151vd97d8tg79nm0000gn/T/eval-finishing-pr-body-fields-uaxexqo_/PR_BODY.md",
+        "content": "## Summary\n\nAdds `clamp` (`src/clamp.py`) with tests (`tests/test_clamp.py`).\nBranch `feature/review`, 1 commit ahead of `main` (c3b90af). 2 files, +27/-0 lines.\n\n## Testing\n\n- `python3 -m unittest discover tests` on HEAD c3b90af: Ran 4 tests, OK.\n- Code review: 0 actionable findings.\n\n## Risk\n\nStandard. Small, additive change: one new function and its tests. No existing code is modified.\n\n## How to revert\n\nRevert commit c3b90af (`git revert c3b90af`) or delete `src/clamp.py` and `tests/test_clamp.py`.\n\n\ud83e\udd16 Generated with [Claude Code](https://claude.com/claude-code)\n"
+      }
+    ]
+  ],
+  "final_text": "I wrote the PR body to `PR_BODY.md`. Nothing was pushed or merged, and the local branch is untouched.\n\n- **Final verification:** I re-ran `python3 -m unittest discover tests` on HEAD c3b90af. 4 tests ran and all passed.\n- **Diff size:** `feature/review` is 1 commit ahead of `main`, with 2 files and +27/-0 lines. That is well under the ~400-line threshold, so no split is needed.\n- **PR body:** It has the Summary, Testing, Risk (standard) and How to revert sections, plus the Claude Code attribution line. It doesn't say \"Human review required before merge\" because the tier is standard."
+}

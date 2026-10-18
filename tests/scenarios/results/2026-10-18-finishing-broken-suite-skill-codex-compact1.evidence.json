@@ -1,0 +1,4 @@
+{
+  "final_text": "The final full suite failed, so I stopped the conclusion process. I did not merge the branch or change any files.\n\n`python3 -m unittest discover tests` ran 2 tests: 1 failed. `test_export_csv_has_footer` expected `[\"header\", \"col=1\", \"footer\"]`, but received `[\"header\", \"col=1\"]`.\n\nThis failure needs the systematic-debugging workflow before the branch can be considered for merge.",
+  "tool_uses": []
+}

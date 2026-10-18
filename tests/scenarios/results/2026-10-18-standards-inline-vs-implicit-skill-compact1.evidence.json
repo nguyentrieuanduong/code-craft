@@ -1,0 +1,35 @@
+{
+  "tool_uses": [
+    [
+      "Glob",
+      {
+        "pattern": "**/*.py"
+      }
+    ],
+    [
+      "Read",
+      {
+        "file_path": "/Users/apollo/projects/code-craft/skills/code-review/SKILL.md"
+      }
+    ],
+    [
+      "Read",
+      {
+        "file_path": "/private/var/folders/s0/95bxcn355151vd97d8tg79nm0000gn/T/eval-standards-inline-vs-implicit-5f7leza8/settings.py"
+      }
+    ],
+    [
+      "Read",
+      {
+        "file_path": "/private/var/folders/s0/95bxcn355151vd97d8tg79nm0000gn/T/eval-standards-inline-vs-implicit-5f7leza8/test_settings.py"
+      }
+    ],
+    [
+      "Bash",
+      {
+        "command": "ls -la && wc -l *.py && python3 -m unittest 2>&1 | tail -5; ls REVIEW.md AGENTS.md CLAUDE.md 2>&1"
+      }
+    ]
+  ],
+  "final_text": "Diff: 46 changed lines (no git repo, so this is the full size of both files) \u2014 3 actionable findings.\nReview independence: not independent: inline fallback\nRisk tier: standard\nVerification evidence: `python3 -m unittest` run by me: 5 tests, OK. No design or spec was supplied.\nMerge readiness: not ready \u2014 3 should-fix findings\n\nVerdicts\n- Spec compliance: NOT JUDGED. There is no spec, and `REVIEW.md`, `AGENTS.md` and `CLAUDE.md` don't exist. I judged by what a reasonable user would expect.\n- Code quality: FAIL. Truthiness defaulting, no type hints, no single resolution point, and test gaps.\n- Security: PASS, no security findings. The code does no I/O, parsing, or auth.\n- Security pass: inline fallback\n\nFindings\n1. Should-fix: `settings.py:9` and `settings.py:13`. `config.get(...) or DEFAULT` treats `0` the same as absent. `resolve_retries({\"retries\": 0})` returns `3`, so a user who turns retries off gets three. Replace with `DEFAULT_RETRIES if config.get(\"retries\") is None else config[\"retries\"]`. This is still one line, and the rule is readable as written. `{\"retries\": None}` still falls back to the default.\n2. Should-fix: `settings.py:8-22`. This breaks two coding standards.\n   - No function has type hints.\n   - Defaults are applied in three separate functions, with no single parse step. The standard calls for one frozen, fully resolved config (`@dataclass(frozen=True)` with `timeout`, `retries`, `stages: tuple[str, ...]`) built once and logged raw and resolved. `describe` and the callers would then read only that object.\n3. Should-fix: `test_settings.py`. These cases are missing:\n   - `describe` with no stages. The `\"no stages selected\"` branch has no test, so breaking it wouldn't fail anything.\n   - `selected_stages({})`, which should return all `KNOWN_STAGES`.\n   - A configured `retries` value.\n   - `retries: 0`, once finding 1 is decided. Add the failing test first.\n\nPre-existing\nNone\n\nNits\n- `settings.py:17`: `stage in config.get(\"stages\", ...)` does substring matching if `stages` is a string, and raises `TypeError` if it is `None`. Fix this in the single parse step from finding 2, because this is the system boundary where validation belongs.\n\nDeclined to judge\n- `timeout: 0` falls back to 30 today. It could mean \"no timeout\", or it could be invalid. The author must say which. Whichever they pick, the parse step should reject or honor `0` explicitly instead of defaulting it by accident.\n- Silently dropping unknown stages like `\"lint\"` is asserted by a test, so I treated it as intended. Say so if it should raise instead.\n\n**Must not change before merge**\n- Don't wrap `config.get` or the tuple building in `try/except`. Library-native failures should raise, and the standards say to catch once at the job boundary.\n- Keep `selected_stages` returning a tuple in `KNOWN_STAGES` order. It is immutable, and `test_selected_stages_filters_to_known` depends on the ordering.\n- Keep the module constants as they are. They are immutable and not mutable global state.\n- Don't add a helper or library for the two resolvers. Two similar lines don't justify an abstraction. Only the single resolved-config object from finding 2 is warranted."
+}
