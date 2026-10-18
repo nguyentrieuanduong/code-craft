@@ -28,5 +28,5 @@ Base: `main` at 29a1c4e
 | R22 | "&#124; \"It works now, I don't know why\" &#124; Then it will break later and you won't know why. Find the mechanism. &#124;" | "&#124; \"It works now, I don't know why\" &#124; Then it will break later and you won't know why. Find the mechanism. &#124;" | |
 | R23 | "&#124; \"Restarting/clearing cache fixed it\" &#124; State-dependent bugs return. Identify what state and why. &#124;" | "&#124; \"Restarting/clearing cache fixed it\" &#124; State-dependent bugs return. Identify what state and why. &#124;" | |
 
-Counts (checker): 485 -> 482 words (0% cut), 50 -> 49 nonblank lines.
+Counts (checker): 485 -> 482 words (0% cut), 50 -> 50 nonblank lines.
 Reason: the file is one IRON LAW, four phases of distinct one-line actions, the circuit breaker (kept: executing-plans is not co-loaded), and five distinct rationalizations; no rule restates another in this file.

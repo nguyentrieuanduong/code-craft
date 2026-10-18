@@ -50,7 +50,8 @@ happens to work hides the real defect until it returns, worse.
 ## The 3-failure circuit breaker
 
 If three fixes have failed: **stop fixing.** The mental model is wrong —
-question the architecture and your assumptions before attempt four. State plainly to the user what you know, what you've ruled out, and what
+question the architecture and your assumptions before attempt four. State
+plainly to the user what you know, what you've ruled out, and what
 you now suspect.
 
 ## Forbidden rationalizations
