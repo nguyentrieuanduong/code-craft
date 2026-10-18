@@ -260,6 +260,14 @@ class ScanSecretsTest(unittest.TestCase):
         result = run_hook("scan-secrets.py", payload)
         self.assertEqual(result.returncode, 2, result.stderr)
 
+    def test_still_blocks_pem_private_key_headers(self):
+        # Built at runtime so this file holds no secret-shaped literal.
+        for kind in ("RSA ", "OPENSSH ", "ENCRYPTED ", ""):
+            with self.subTest(kind=kind):
+                header = f"-----BEGIN {kind}" + "PRIVATE KEY-----"
+                result = run_hook("scan-secrets.py", {"tool_input": {"content": header + "\nMIIE...\n"}})
+                self.assertEqual(result.returncode, 2, result.stderr)
+
     def test_allows_pgp_public_key_block(self):
         payload = {"tool_input": {"content": "-----BEGIN PGP PUBLIC KEY BLOCK-----\nmQINBF...\n"}}
         result = run_hook("scan-secrets.py", payload)
