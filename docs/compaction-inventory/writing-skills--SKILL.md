@@ -4,9 +4,9 @@ Base: `main` at 29a1c4e
 
 | # | Original | Outcome | Items |
 |---|---|---|---|
-| R1 | "**Writing skills uses tiered evidence for process documentation.**" | merged into R146 | |
+| R1 | "**Writing skills uses tiered evidence for process documentation.**" | "**Writing skills uses tiered evidence for process documentation.**" | |
 | R2 | "**Personal skills live in your runtime's skills directory**" | cut: non-normative (rule 6) | |
-| R3 | "Every change gets deterministic validation. New skills and behavior-shaping edits also use one focused before/after scenario. Larger repeated campaigns are optional release evidence." | merged into R146 | |
+| R3 | "Every change gets deterministic validation. New skills and behavior-shaping edits also use one focused before/after scenario. Larger repeated campaigns are optional release evidence." | "Every change gets deterministic validation. New skills and behavior-shaping edits also use one focused before/after scenario. Larger repeated campaigns are optional release evidence." | |
 | R4 | "**Core principle:** Match evidence cost to risk and test behavioral claims with the smallest scenario that can disprove them." | "**Core principle:** Match evidence cost to risk and test behavioral claims with the smallest scenario that can disprove them." | |
 | R5 | "**REQUIRED BACKGROUND:** You MUST understand test-driven-development before using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle. This skill adapts TDD to documentation." | "**REQUIRED BACKGROUND:** You MUST understand test-driven-development before using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle. This skill adapts TDD to documentation." | |
 | R6 | "**Official guidance:** For Anthropic's official skill authoring best practices, see anthropic-best-practices.md. This document provides additional patterns and guidelines that complement the TDD-focused approach in this skill." | "**Official guidance:** see anthropic-best-practices.md for Anthropic's skill authoring best practices; this skill complements them with a TDD-focused approach." | |
@@ -23,7 +23,7 @@ Base: `main` at 29a1c4e
 | R17 | "&#124; **Minimal code** &#124; Write skill addressing those specific violations &#124;" | "&#124; **Minimal code** &#124; Write skill addressing those specific violations &#124;" | |
 | R18 | "&#124; **Watch it pass** &#124; Verify agent now complies &#124;" | "&#124; **Watch it pass** &#124; Verify agent now complies &#124;" | |
 | R19 | "&#124; **Refactor cycle** &#124; Find new rationalizations → plug → re-verify &#124;" | "&#124; **Refactor cycle** &#124; Find new rationalizations → plug → re-verify &#124;" | |
-| R20 | "New skills and behavior-shaping edits follow RED-GREEN-REFACTOR. Mechanical metadata, description, link, typo, and routing-fixture changes use the deterministic tier." | merged into R155 | |
+| R20 | "New skills and behavior-shaping edits follow RED-GREEN-REFACTOR. Mechanical metadata, description, link, typo, and routing-fixture changes use the deterministic tier." | "New skills and behavior-shaping edits follow RED-GREEN-REFACTOR. Mechanical metadata, description, link, typo, and routing-fixture changes use the deterministic tier." | |
 | R21 | "**Create when:**" | "**Create when:**" | |
 | R22 | "- Technique wasn't intuitively obvious to you" | "- Technique wasn't intuitively obvious to you" | |
 | R23 | "- You'd reference this again across projects" | "- You'd reference this again across projects" | |
@@ -303,9 +303,10 @@ Base: `main` at 29a1c4e
 | R297 | "5. **Reads patterns** (quick reference table)" | cut: non-normative (rule 6) | |
 | R298 | "6. **Loads example** (only when implementing)" | cut: non-normative (rule 6) | |
 | R299 | "**Optimize for this flow** - put searchable terms early and often." | merged into R70 | |
-| R300 | "**Creating skills uses TDD where behavior changes and deterministic checks where it does not.**" | merged into R155 | |
+| R300 | "**Creating skills uses TDD where behavior changes and deterministic checks where it does not.**" | "**Creating skills uses TDD where behavior changes and deterministic checks where it does not.**" | |
 | R301 | "Same Iron Law for behavior: no behavior-shaping edit without a focused RED. Same cycle: RED (baseline) → GREEN (write skill) → REFACTOR (close loopholes). Same benefits: Better quality, fewer surprises, bulletproof results." | merged into R154 | |
 | R302 | "If you follow TDD for code, follow it for skills. It's the same discipline applied to documentation." | cut: non-normative (rule 6) | |
 
-Counts (checker): 4040 -> 3284 words (18% cut), 532 -> 428 nonblank lines.
+Counts (checker): 4040 -> 3352 words (17% cut), 532 -> 438 nonblank lines.
 Note: the "Code in Flowcharts" anti-example block (R249) is kept and moved under R120 because the checker splits Items on ";" and that block's first line ends in ";", so it cannot be listed as an exemption.
+Restored 2026-10-18 (E20.3, scenario writing-skills-lean-evaluation): R1, R3, R20, and R300 (the restatements of the deterministic-tier rule) back to their original text; R300 sits under its original "The Bottom Line" heading. The compact1 response was correct in substance ("the deterministic tier only", "0 model calls"), so both flips may be check-regex artifacts; restored per E20.3 anyway.
