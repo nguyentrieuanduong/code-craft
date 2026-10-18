@@ -50,10 +50,9 @@ working directory: plan files are never committed.
    codebase patterns — check before inventing.
 2. **Right-size tasks.** A task is the smallest unit that carries its own test
    cycle and can be reviewed independently. Each step takes 2–5 minutes.
-3. **No placeholders.** "TBD", "similar to above", "handle appropriately",
-   "appropriate", "somehow", and "etc." are banned. Every step contains its
-   actual content: fenced code blocks (``` … ```) with the real code, real
-   commands, real names. A step that describes code instead of containing it
+3. **No placeholders.** "TBD", "similar to above", "handle appropriately", and
+   "etc." are banned. Every step contains its actual content: fenced code
+   blocks (``` … ```) with the real code, real commands, real names. A step that describes code instead of containing it
    is a placeholder — if you could paste it into an editor and run it, it's
    done; otherwise keep writing.
 4. **Every task ends in a commit.** One task ≈ one small feature or 1–3 related
@@ -65,7 +64,7 @@ working directory: plan files are never committed.
 ## Self-review before presenting
 
 - [ ] Coverage scan: every design requirement maps to at least one task
-- [ ] Placeholder scan: search the plan for every word rule 3 bans
+- [ ] Placeholder scan: search the plan for "TBD", "somehow", "appropriate", "etc."
 - [ ] Type/interface consistency: task N's outputs match task N+1's inputs
 - [ ] Every step has an exact command or code block
 - [ ] Constraints section uses exact values, not descriptions of values
