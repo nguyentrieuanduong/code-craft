@@ -253,6 +253,18 @@ class ScanSecretsTest(unittest.TestCase):
         result = run_hook("scan-secrets.py", payload)
         self.assertEqual(result.returncode, 0, result.stderr)
 
+    def test_blocks_pgp_private_key_block(self):
+        # Built at runtime so this file holds no secret-shaped literal.
+        header = "-----BEGIN PGP " + "PRIVATE KEY BLOCK-----"
+        payload = {"tool_input": {"content": f"{header}\n\nlQOYBF...\n"}}
+        result = run_hook("scan-secrets.py", payload)
+        self.assertEqual(result.returncode, 2, result.stderr)
+
+    def test_allows_pgp_public_key_block(self):
+        payload = {"tool_input": {"content": "-----BEGIN PGP PUBLIC KEY BLOCK-----\nmQINBF...\n"}}
+        result = run_hook("scan-secrets.py", payload)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_codex_patch_blocks_secret_shaped_content(self):
         value = "sk-" + "a" * 24
         payload = codex_patch(Path("settings.py"), f'API_KEY = "{value}"')
