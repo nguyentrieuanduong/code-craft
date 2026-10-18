@@ -16,9 +16,9 @@ start over. Keeping it "since it's already written" violates the law.
 ## Step 0: Detect the real test runner
 
 Before anything, find how THIS project runs tests (package scripts, Makefile,
-pyproject, CI config). Do not guess between `npm test`, `pytest`, `go test`,
-and `bun test`: use the project's actual command, and reuse that exact command
-for every RED/GREEN check.
+pyproject, CI config). Do not guess. `npm test`, `pytest`, `go test`, and
+`bun test` are different worlds — use the project's actual command, and reuse
+that exact command for every RED/GREEN check.
 
 ## The cycle
 
