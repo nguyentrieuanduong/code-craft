@@ -10,6 +10,12 @@ description: >-
 
 ## Overview
 
+**Writing skills uses tiered evidence for process documentation.**
+
+Every change gets deterministic validation. New skills and behavior-shaping
+edits also use one focused before/after scenario. Larger repeated campaigns
+are optional release evidence.
+
 **Core principle:** Match evidence cost to risk and test behavioral claims with
 the smallest scenario that can disprove them.
 
@@ -32,6 +38,10 @@ authoring best practices; this skill complements them with a TDD-focused approac
 | **Minimal code** | Write skill addressing those specific violations |
 | **Watch it pass** | Verify agent now complies |
 | **Refactor cycle** | Find new rationalizations → plug → re-verify |
+
+New skills and behavior-shaping edits follow RED-GREEN-REFACTOR. Mechanical
+metadata, description, link, typo, and routing-fixture changes use the
+deterministic tier.
 
 ## When to Create a Skill
 
@@ -573,3 +583,8 @@ checklist item below.**
 **Deployment:**
 - [ ] Commit skill to git and push to your fork (if configured)
 - [ ] Consider contributing back via PR (if broadly useful)
+
+## The Bottom Line
+
+**Creating skills uses TDD where behavior changes and deterministic checks
+where it does not.**
