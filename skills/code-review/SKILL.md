@@ -59,12 +59,12 @@ Ask for THREE separate verdicts (they fail independently):
   for 1 and "findings" otherwise.
   Actionable means Blocking or Should-fix; write 0 when there are none and say plainly
   that nothing needs fixing. Past ~400 changed lines reviewer defect
-  detection collapses — nobody can review it all (see
-  `../using-code-craft/references/evidence.md`): say whether the change
-  splits into independently reviewable slices and recommend the split when
-  it does — a recommendation, not a Blocking finding — then review by risk.
-  Generated, deleted, or mechanical bulk counts by its actual risk and
-  reviewability, not its line count.
+  detection collapses (see `../using-code-craft/references/evidence.md`):
+  say whether the change splits into independently reviewable slices and
+  recommend the split when it does — a recommendation, not a Blocking
+  finding. Generated, deleted, or mechanical bulk counts by its actual
+  risk and reviewability, not its line count. A review that never states
+  the size is incomplete.
 - Read the design first, then the diff. Judge against the spec, not
   taste. Where the design is silent, judge by what a reasonable user
   would expect; when intent cannot be established, list the question
@@ -182,9 +182,9 @@ evidence.
 - Status each open finding by its ID: **addressed** (with the line that
   fixes it) or **still open**. Do not repost an unchanged finding as new,
   and do not reword or regrade a decided one.
-- After three rounds without convergence, stop cycling — more rounds repeat
-  themselves: say the approach needs reassessment and propose discussing it
-  with the author before another round.
+- After three rounds without convergence, stop cycling: say the approach
+  needs reassessment and propose discussing it with the author before
+  another round.
 
 ## Receiving review
 
@@ -207,3 +207,5 @@ evidence.
 |--------|---------|
 | "It's a nit, I'll skip responding" | Unaddressed comments erode trust. Respond to every one, even with 'declined because X'. |
 | "Review will catch what I missed" | Review is a safety net, not a substitute for verification. Arrive clean. |
+| "The diff is big, but I can review it all" | Nobody can — detection collapses past ~400 changed lines. State the size, recommend a split where one exists, then review by risk. |
+| "One more round will catch the rest" | Rounds past three repeat themselves. Stop and reassess the approach with the author. |
