@@ -599,6 +599,24 @@ class WriteResultTest(unittest.TestCase):
         label = "[REDACTED: Anthropic/OpenAI-style key]"
         self.assertEqual(redacted, {label: "one", f"{label} #2": "two", "plain": "three"})
 
+
+class ResultsSecretScanTest(unittest.TestCase):
+    def test_secret_hits_finds_planted_key(self):
+        with tempfile.TemporaryDirectory() as directory:
+            clean = Path(directory) / "clean.md"
+            dirty = Path(directory) / "dirty.md"
+            clean.write_text("nothing here")
+            dirty.write_text("key " + "sk-" + "f" * 24)
+            self.assertEqual(
+                runner.secret_hits([clean, dirty]),
+                [("dirty.md", "Anthropic/OpenAI-style key")],
+            )
+
+    def test_committed_results_hold_no_secret_shaped_text(self):
+        files = sorted(p for p in runner.RESULTS_DIR.iterdir() if p.is_file())
+        self.assertTrue(files)
+        self.assertEqual(runner.secret_hits(files), [])
+
 class DisallowedToolsTest(unittest.TestCase):
     def test_both_plan_mode_tools_blocked(self):
         # EnterPlanMode alone is enough to leak plan drafts into

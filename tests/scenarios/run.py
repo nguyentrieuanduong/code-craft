@@ -543,6 +543,16 @@ def redact_secrets(value):
     return value
 
 
+
+def secret_hits(paths):
+    """(file name, pattern label) for every secret-shaped match in the files."""
+    return [
+        (path.name, label)
+        for path in paths
+        for label, pattern in REDACTION_PATTERNS
+        if pattern.search(path.read_text(errors="replace"))
+    ]
+
 def write_result(scenario, arm, label, results, transcript, args, skill_file):
     # Results are committed: mask secrets before either artifact is written.
     transcript = redact_secrets(transcript)
