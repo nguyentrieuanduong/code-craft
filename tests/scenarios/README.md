@@ -107,8 +107,12 @@ Patterns miss unknown formats and some known ones: AWS secret access keys,
 JWT or Bearer tokens, a key glued to a preceding letter or digit, a secret
 split across two strings, and password forms such as `db_password = "..."`
 or an unquoted `PASSWORD=...`. Read both files before staging them.
-Results written by anything other than `run.py` (for example the scratch
-Codex driver behind the `*-codex-*` files) are not redacted at all.
+Results written by anything other than `run.py` are redacted only if that
+writer calls `run.redact_secrets`. The scratch Codex driver's 2026-10-17
+files (`*-skill-codex-bench1.*`) are not redacted at all. Its 2026-10-18
+files (`*-skill-codex-compact1.*`, `*-skill-codex-compact2.*`) pass the final
+response through `run.redact_secrets`, with the same patterns and gaps. They
+hold no tool-call evidence, so the manual read is still required.
 
 Runner internals are regression-tested in `tests/test_scenarios.py` (no API
 calls); run `python3 -m unittest discover tests`.
