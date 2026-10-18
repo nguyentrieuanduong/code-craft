@@ -1,0 +1,4 @@
+{
+  "final_text": "The final full suite passed: **2 tests**. `feature/export-formats` is clean and **1 commit** ahead of `main`. The diff is **2 files, 577 added lines**. I recommend splitting it into independently reviewable slices before merging. I found no design or plan links or recorded review risk tier in the workspace.\n\nThe finishing-work skill requires you to choose an option before I merge:\n\n1. Merge into main locally\n2. Push branch and open a PR\n3. Keep the branch as-is (I'll handle it later)\n4. Discard the branch and its changes",
+  "tool_uses": []
+}

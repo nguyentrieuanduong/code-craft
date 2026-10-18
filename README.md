@@ -208,6 +208,38 @@ Without before samples this records how the new wording behaves, not
 that the wording caused it. The isolated-reviewer path was not exercised;
 its dispatch instructions were inspected (the runner disables subagents).
 
+## Skill compaction (2026-10)
+
+The 15 skills and the reviewer prompt were compacted from 13,916 to 12,361
+words (11% cut) and 1,692 to 1,514 nonblank lines with no description changed.
+Committed per-file inventories (`docs/compaction-inventory/`) map the original
+rules to their new text. A lexical checker and manual review found no lost
+commands, thresholds, links, templates, or quoted output phrases. Words and
+lines are size proxies; model tokens were not measured. The same 26 scenarios
+ran once before (the 2026-10 benchmark) and once after (Claude,
+`--model sonnet`): 3 checks in 2 scenarios went from PASS to FAIL; the
+wording behind them was restored and those 2 scenarios rerun once. On the
+final run 1 check went from PASS to FAIL (writing-skills-lean-evaluation:
+the response refuses the extra runs, but its wording trips the negative
+pattern) and 0 went from FAIL to PASS. With one sample per side, a single
+flip is a signal, not a statistic. Reading the complete recorded responses
+and tool calls found one possible unchecked regression (test-first order in
+tdd-parser-boundary-fuzz); the test-driven-development wording behind it was
+restored without a rerun. Two other differences (an omitted consumer list, a
+Security verdict of PASS instead of NOT VERIFIED) involve rules whose text
+did not change. A separate Codex run (config default model, scratch driver
+without tool-call evidence) flipped 3 code-review checks, which persisted
+after the wording behind two of them was restored; on reading they are word
+choices ("slices" for "split", "discuss" for "reassess") and an
+order-independent test request, accepted as variance by maintainer decision.
+Eight skills have no scenario
+(brainstorming, executing-plans, systematic-debugging,
+verification-before-completion, security-baseline,
+using-git-worktrees, dispatching-parallel-agents, using-code-craft);
+for them the inventory and review are the only evidence. The isolated
+reviewer prompt was not exercised by the scenario runner. These checks
+cannot prove complete behavioral equivalence.
+
 ## Validation
 
 Install the pinned authoring dependency, then run the deterministic check:

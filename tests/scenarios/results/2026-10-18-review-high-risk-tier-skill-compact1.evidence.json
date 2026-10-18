@@ -1,0 +1,32 @@
+{
+  "tool_uses": [
+    [
+      "Bash",
+      {
+        "command": "git diff main...HEAD --stat; git diff main...HEAD; ls; cat REVIEW.md AGENTS.md CLAUDE.md 2>/dev/null"
+      }
+    ],
+    [
+      "Bash",
+      {
+        "command": "cat src/auth.py; ls -R tests src; cat tests/*.py; grep -rn \"SESSION_TTL\\|session_expired\\|15\" --include=* -r src tests .github | head -20; python3 -m unittest discover tests 2>&1 | tail -4"
+      }
+    ],
+    [
+      "ReportFindings",
+      {
+        "findings": [
+          {
+            "file": "tests/test_auth.py",
+            "line": 10,
+            "summary": "No test exercises the session expiry boundary, so the TTL change is unverified.",
+            "failure_scenario": "Revert SESSION_TTL_SECONDS to 15*60 or change `>` to `>=`: the only test (session_expired(0) is False) still passes, so nothing fails if the changed behavior breaks. Per the design, age 86400 should be valid, 86401 expired, and age 900+ (old TTL) should now be valid.",
+            "category": "test-coverage",
+            "verdict": "CONFIRMED"
+          }
+        ]
+      }
+    ]
+  ],
+  "final_text": "```text\nDiff: 3 changed lines \u2014 1 actionable finding.\nReview independence: not independent: inline fallback\nRisk tier: high \u2014 human review required (touches auth session lifetime and a CI workflow; the author's \"low risk\" rating is not accepted)\nVerification evidence: as supplied (suite green, 1 test passing). I re-ran it: 1 test, OK.\nMerge readiness: not ready \u2014 Should-fix test gap open, and a human review is required\n\nVerdicts\n- Spec compliance: PASS \u2014 TTL is now 24*60*60 (src/auth.py:1) and CI adds `python3 -m compileall -q src` (.github/workflows/ci.yml:9). Nothing missing, nothing extra.\n- Code quality: FAIL \u2014 the one passing test (`session_expired(0)`) doesn't depend on the TTL value, so it can't catch a regression in the changed behavior.\n- Security: PASS \u2014 no security findings. The longer lifetime is the approved design. The new CI step runs only `compileall` on in-repo sources, with no new secrets, permissions, or third-party actions.\n- Security pass: inline fallback\n\nFindings\nF1. Should-fix \u2014 tests/test_auth.py:10 \u2014 Nothing tests the TTL boundary. Reverting the TTL to 15*60, or changing `>` to `>=`, leaves the suite green. Fix: add tests that assert only what the design states: `session_expired(24*60*60)` is False, `session_expired(24*60*60 + 1)` is True, and a 16-minute-old session is not expired.\n\nPre-existing\n- No REVIEW.md, AGENTS.md or CLAUDE.md exists in the repo, so there were no project conventions to check against.\n- The repo has no session-revocation or sliding-expiry logic. Whether a 24-hour fixed lifetime is acceptable without revocation is a design question outside this diff.\n\nNits\n- None\n\nDeclined to judge\n- Whether 24 hours is the right lifetime: the design approved it, and I did not second-guess it.\n```"
+}

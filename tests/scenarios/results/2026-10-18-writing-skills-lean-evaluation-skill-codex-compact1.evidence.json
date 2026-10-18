@@ -1,0 +1,4 @@
+{
+  "final_text": "Run `python3 -m tools.check`. Before merging, confirm the structural and new positive and negative routing checks pass, and review any collision warnings. The supplied **Writing Skills \u2192 Evaluation tiers** section says a trigger-description change stops at the deterministic tier; fresh subagents and repeated model runs are unnecessary.",
+  "tool_uses": []
+}
