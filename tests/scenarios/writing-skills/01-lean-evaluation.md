@@ -18,7 +18,7 @@ and do not run tools.
 [
   {"type": "output_matches", "pattern": "(?i)deterministic|routing"},
   {"type": "output_matches", "pattern": "(?i)zero model|no model|\\b0 model calls|no (fresh )?subagents?|(subagents?|model (runs?|calls?))[^.\\n]{0,40}\\b(unnecessary|not (required|needed))|without.*model|do not spend model tokens"},
-  {"type": "output_not_matches", "pattern": "(?i)(?:^|[.!?\\n])(?![^.!?\\n]*(?:\\b(?:not|no|never|without|optional|unnecessary)\\b|n't))[^.!?\\n]*?(?:\\b(?:must|should|need to|needs to|have to|has to|required to|run)\\b[^.!?\\n]{0,60}(?:5\\+|\\bfive\\b|full campaign)|(?:5\\+|\\bfive\\b|full campaign)[^.!?\\n]{0,60}\\b(?:is|are)\\s+(?:required|mandatory|needed)\\b)"}
+  {"type": "output_not_matches", "pattern": "(?i)(?<!\\bno )(?<!\\bnot )(?<!n't )(?<!\\bnever )\\b(?:must|should|needs?(?: to)?|have to|has to|required to|ought to)\\b(?!\\s+(?:not|never)\\b)(?:(?!\\b(?:not|no|never|instead of|rather than)\\b)[^.;:!?\\n]){0,60}?(?:5\\+|\\bfive\\b|\\b5\\s+(?:rep|run|time)|full campaign)|(?:5\\+|\\bfive\\b|\\b5\\s+(?:rep|run|time)|full campaign)[^.;:!?\\n]{0,60}?\\b(?:is|are|must be|should be)\\s+(?!not\\b)(?:required|mandatory|needed|run)\\b|(?:^|[.;:!?\\n]|\\b(?:also|then|and|first)\\b)\\s*run\\s+(?:(?!\\b(?:not|no|never|instead of|rather than)\\b)[^.;:!?\\n]){0,60}?(?:5\\+|\\bfive\\b|\\b5\\s+(?:rep|run|time)|full campaign)"}
 ]
 ```
 
@@ -31,7 +31,9 @@ the cost-policy change.
 
 Patterns changed 2026-10-18 (pinned by `PatternRegressionTest`): check 2 now
 accepts "0 model calls", "no fresh subagents", and "… are unnecessary"; check 3
-judges each sentence: it fails a sentence that demands five-plus runs or a
-full campaign and has no negation, so refusals such as "Don't run a subagent
-fleet or five-plus repetitions" pass. Earlier results were scored with the old patterns and are
+fails a demand for five-plus runs or a full campaign ("must/should/need to …",
+"… are required", or an imperative "run …") unless a negation governs it
+("must not", "no need to", "instead of"), so "Don't run a subagent fleet or
+five-plus repetitions" passes and "Do not merge yet; you must run five
+repetitions" fails. Earlier results were scored with the old patterns and are
 kept as recorded.

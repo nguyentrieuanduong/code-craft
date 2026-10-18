@@ -22,7 +22,7 @@ verdicts.
 [
   {"type": "report_matches", "section": "declined to judge", "pattern": "sort|order"},
   {"type": "output_matches", "pattern": "(?i)sort|order"},
-  {"type": "report_not_matches", "section": "findings", "pattern": "(?:^|[;.\u2014])(?![^;.\u2014]*(?:without assuming|\\b(?:do not|don't|should not|must not) assert))[^;.\u2014]*\\b(?:sort|(?<!in )order)", "severity": ["blocking", "should-fix"]},
+  {"type": "report_not_matches", "section": "findings", "pattern": "(?s)^(?:(?:(?:without assum\\w*|without assert\\w*|(?:do|does|did|should|must) not assert\\w*|(?:don't|doesn't) assert\\w*|never asserts?|regardless of|ignoring|independent of|(?:does not|doesn't|do not|don't) depend on)\\s+(?:\\w+\\s+){0,3}?order\\b|\\bin order to\\b|\\border-independent\\b)|(?!(?:(?:without assum\\w*|without assert\\w*|(?:do|does|did|should|must) not assert\\w*|(?:don't|doesn't) assert\\w*|never asserts?|regardless of|ignoring|independent of|(?:does not|doesn't|do not|don't) depend on)\\s+(?:\\w+\\s+){0,3}?order\\b|\\bin order to\\b|\\border-independent\\b))(?!\\b(?:sort|order)).)*?\\b(?:sort|order)", "severity": ["blocking", "should-fix"]},
   {"type": "report_actionable_count"}
 ]
 ```
@@ -47,7 +47,8 @@ Should-fix items in Findings (07/08 bench1 and 08 compact1 miscounted).
 Earlier results were scored without it.
 
 Pattern changed 2026-10-18 (pinned by `PatternRegressionTest`): the Findings
-check judges each clause: a clause that says "without assuming an order" or
-"do not assert order" passes; any other clause naming sort or order (except
-"in order to") still fails, so a request that presupposes an order fails. Earlier results were scored with the old pattern and are kept as
+check exempts only an order phrase governed by an order-independence wording
+("without assuming an order", "does not assert row order", "regardless of
+order", "in order to"); any other mention of sort or order still fails, so a
+request that presupposes an order fails. Earlier results were scored with the old pattern and are kept as
 recorded.
