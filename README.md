@@ -210,7 +210,7 @@ its dispatch instructions were inspected (the runner disables subagents).
 
 ## Skill compaction (2026-10)
 
-The 15 skills and the reviewer prompt were compacted from 13,916 to 12,376
+The 15 skills and the reviewer prompt were compacted from 13,916 to 12,377
 words (11% cut) and 1,692 to 1,516 nonblank lines with no description changed.
 Committed per-file inventories (`docs/compaction-inventory/`) map the original
 rules to their new text. A lexical checker and manual review found no lost

@@ -8,8 +8,8 @@ description: >-
 # Code Review
 
 An explicitly requested review runs even when verification evidence is
-missing, test output included: review the diff, and name the missing evidence in the verdict
-("Verification evidence: none supplied"). Merge readiness still requires
+missing, test output included: review the diff, and name the missing
+evidence in the verdict ("Verification evidence: none supplied"). Merge readiness still requires
 verification-before-completion — never call a diff ready to merge without
 it.
 
@@ -169,7 +169,7 @@ evidence.
   fallback."
 - A verified security-baseline violation introduced by the diff makes
   the Security verdict BLOCKING and blocks readiness regardless of the
-  other verdicts — spec and quality passing does not make it ready.
+  other verdicts — spec and quality passing does not make the diff ready.
   Resolve a disputed finding with evidence before clearing it.
 - A clean pass says "no security findings" explicitly. A check you could
   not run is named as unverified — never reported as a pass.

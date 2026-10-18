@@ -35,6 +35,6 @@ Base: `main` at 29a1c4e
 | R29 | "&#124; \"A few example inputs cover the parser\" &#124; Example tests hit the cases you thought of; parsers break on the ones you didn't. Generate inputs and assert the invariant. &#124;" | "&#124; \"A few example inputs cover the parser\" &#124; Example tests hit the cases you thought of; parsers break on the ones you didn't. &#124;" (the invariant instruction stays in R18) | |
 
 Counts (checker): 798 -> 790 words (1% cut), 91 -> 90 nonblank lines.
-Reason: E7 keeps the IRON LAW, delete-and-start-over, Step 0, GREEN's stray-prints clause, the full helper rule, "What to test" rule 3 in full, and both example blocks (distinct patterns: a cycle and two anti-patterns); the remaining cut is R29's last sentence.
+Reason: E7 keeps the IRON LAW, delete-and-start-over, Step 0, GREEN's stray-prints clause, the full helper rule, "What to test" rule 3 in full, and both example blocks (distinct patterns: a cycle and two anti-patterns); the remaining cuts are R7's wording and R29's last sentence.
 Restored 2026-10-18 (E20.6, user decision, no rerun): R9 and R12 back to their original text after the Claude compact1 tdd-parser-boundary-fuzz response added the generated-input and invalid-input tests together with the implementation ("I never saw them fail first"), where bench1 wrote them first.
 Review fix 2026-10-18 (E22): R4 and R5 restored to the original; "Do not guess between `npm test`, …" made four examples read as a closed list.
