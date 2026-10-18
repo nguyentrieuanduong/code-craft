@@ -48,9 +48,9 @@ description: >-
 - Do NOT guard library-native failures. Let missing keys, invalid indexes,
   bad types, and provider errors raise naturally unless handling adds
   project-specific context.
-- Catch and log ONCE at a high layer (workflow/job/request boundary) with
-  full context. Catch earlier only to recover, translate to a domain error, or
-  add context the boundary cannot know.
+- Catch and log ONCE at a high layer (workflow/job/request boundary) where
+  full context exists. Catch earlier only to recover, translate to a domain
+  error, or add context the boundary cannot know.
 - Never add error handling for scenarios that cannot happen. Validate at
   system boundaries (user input, external APIs); trust internal code.
 - **Resilient attribute collection**: when gathering best-effort attributes,
