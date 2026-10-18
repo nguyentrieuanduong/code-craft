@@ -29,6 +29,7 @@ for every RED/GREEN check.
 - Name the behavior: `test_expired_token_is_rejected`, not `test_case_2`.
 - **Run it. Watch it fail. Read the failure.** It must fail because the
   behavior is missing — not from a typo, import error, or syntax error.
+  A test failing for the wrong reason is not RED.
 
 ### GREEN — minimal code to pass
 
@@ -36,8 +37,9 @@ for every RED/GREEN check.
   extra parameters, no speculative branches, no "while I'm here".
 - **Run the full suite.** The new test passes, every other test still passes,
   output is pristine (no warnings you introduced, no stray prints).
-- **A parser/codec/deserializer is still RED** until the suite contains the
-  generated-input test from "What to test" rule 3.
+- **Parser/codec/deserializer GREEN has one extra condition:** the suite
+  contains the generated-input test from "What to test" rule 3. Without it
+  the function is still RED, no matter how many example tests pass.
 
 ### REFACTOR — only on green
 
