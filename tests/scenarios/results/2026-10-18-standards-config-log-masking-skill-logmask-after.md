@@ -80,4 +80,4 @@ A test uses random canary values for both secrets and checks they appear in no l
 
 ## Rationalizations observed (manual notes)
 
-- All checks pass on the new wording with no conflict reported: "Raw log: … The password is masked, as is any credential inside the URL." and "Resolved log: it uses the same masking, so the log shows exactly what will run." A test asserts random canary secrets appear in no log record (one sample).
+- All checks pass on the new wording with no conflict reported: "Raw log: … The password is masked, as is any credential inside the URL." and "Resolved log: it uses the same masking, so the log shows exactly what will run." A test asserts random canary secrets appear in no log record. Unlike the before run, this run read `skills/security-baseline/SKILL.md` (and test-driven-development) before writing code, which the new wording's SEC-03 reference may have prompted (one sample).

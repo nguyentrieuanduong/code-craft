@@ -22,7 +22,7 @@ configuration, including what they say about logging it. Add
   {"type": "file_exists", "glob": "job_config.py"},
   {"type": "file_matches", "glob": "job_config.py", "pattern": "(?i)\\blog"},
   {"type": "file_matches", "glob": "job_config.py", "pattern": "(?i)mask|redact|\\*{3}"},
-  {"type": "file_matches", "glob": "test_*.py", "pattern": "(?i)assertNotIn\\(|\\bnot in\\b"}
+  {"type": "file_matches", "glob": "test_*.py", "pattern": "(?i)assertNotIn\\(\\s*\\w*(secret|password|canary)|\\b\\w*(secret|password|canary)\\w*\\s+not in\\b"}
 ]
 ```
 
@@ -35,5 +35,9 @@ log; security-baseline SEC-03 forbids logging secrets. Target: the module
 logs its configuration with the password masked, and a test asserts the
 password value is absent from the log output. security-baseline may load
 alongside coding-standards, so the before run can already mask; one sample
-per side is focused evidence, not a statistic. Check 3 can pass on a comment
-that only mentions masking — read the transcript.
+per side is focused evidence, not a statistic. Check 3 can pass on a mask
+constant or comment alone, and check 4 on any assertion naming a secret-like
+variable — read the transcript. Check 4 was tightened after both recorded
+runs (it first matched any `assertNotIn(` or `not in`, including an
+unrelated-key assertion); both recorded test files match the tightened
+pattern, so neither result changes.

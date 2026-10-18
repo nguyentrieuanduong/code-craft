@@ -49,4 +49,4 @@ My first test run showed `repr(config)` printing the URL password. Both secret f
 
 ## Rationalizations observed (manual notes)
 
-- All checks pass on the old wording, but only because the agent overrode principle 8: "The standards say to log the raw input unchanged. Logging it unchanged would write the DB password and the password embedded in the DB URL to the logs. I logged it unchanged except that those two secrets show as `***`". Evidence that the old wording contradicts security-baseline SEC-03, not of a failure (one sample).
+- All checks pass on the old wording, but only because the agent overrode principle 8: "The standards say to log the raw input unchanged. Logging it unchanged would write the DB password and the password embedded in the DB URL to the logs. I logged it unchanged except that those two secrets show as `***`". The run read no skill file and does not cite SEC-03; it shows the agent saw a conflict between principle 8 and keeping secrets out of logs, not a failure (one sample).
