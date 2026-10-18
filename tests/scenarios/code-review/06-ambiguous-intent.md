@@ -54,7 +54,8 @@ request that presupposes an order fails. Earlier results were scored with the ol
 recorded.
 
 Known limits of check 3 (review round 3, 2026-10-18; frozen by user decision —
-read the transcript when it fails): it fails some correct order-independent
+read the transcript when it fails or passes unexpectedly): it fails some
+correct order-independent
 wordings it does not list ("does not assert ordering", "accepts the rows in any
 order", "irrespective of order", "without relying on row order", "order-insensitive
 comparison"). It grades all seven recorded responses as their manual notes do.
