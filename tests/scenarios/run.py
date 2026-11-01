@@ -763,27 +763,56 @@ def run_claude(scenario, workspace, skill_text, args):
 
 # ------------------------------------------------------------------- results
 
-def redact_secrets(value):
-    """Return a copy of a transcript value with secret-shaped strings masked."""
+def _redact(value, replacements):
+    """Return a copy of a transcript value with each (pattern, replacement) applied."""
     if isinstance(value, str):
-        for label, pattern in REDACTION_PATTERNS:
-            value = pattern.sub(f"[REDACTED: {label}]", value)
+        for pattern, replacement in replacements:
+            value = pattern.sub(replacement, value)
         return value
     if isinstance(value, dict):
-        # Two secret keys can redact to the same label; number the repeats so
-        # no value is dropped.
+        # Two keys can redact to the same text; number the repeats so no
+        # value is dropped.
         redacted = {}
         for key, item in value.items():
-            base = new_key = redact_secrets(key)
+            base = new_key = _redact(key, replacements)
             count = 2
             while new_key in redacted:
                 new_key = f"{base} #{count}"
                 count += 1
-            redacted[new_key] = redact_secrets(item)
+            redacted[new_key] = _redact(item, replacements)
         return redacted
     if isinstance(value, (list, tuple)):
-        return [redact_secrets(item) for item in value]
+        return [_redact(item, replacements) for item in value]
     return value
+
+
+SECRET_REPLACEMENTS = tuple(
+    (pattern, f"[REDACTED: {label}]") for label, pattern in REDACTION_PATTERNS
+)
+
+
+def redact_secrets(value):
+    """Return a copy of a transcript value with secret-shaped strings masked."""
+    return _redact(value, SECRET_REPLACEMENTS)
+
+
+def machine_path_replacements(workspace):
+    """(pattern, replacement) pairs that mask the home and eval workspace paths."""
+    literals = {str(Path.home()): "~"}
+    if workspace is not None:
+        # On macOS the temp dir and its resolved form differ by /private.
+        literals[str(Path(workspace))] = "<workspace>"
+        literals[str(Path(workspace).resolve())] = "<workspace>"
+    # Longest first, so a workspace inside home is replaced whole.
+    return [
+        (re.compile(re.escape(literal) + r"(?![\w.-])"), replacement)
+        for literal, replacement in sorted(literals.items(), key=lambda pair: -len(pair[0]))
+    ]
+
+
+def redact_machine_paths(value, workspace):
+    """Return a copy of a transcript value with machine paths masked."""
+    return _redact(value, machine_path_replacements(workspace))
 
 
 def _strings(value):
@@ -821,9 +850,10 @@ def secret_hits(paths):
     return hits
 
 
-def write_result(scenario, arm, label, results, transcript, args, skill_file):
-    # Results are committed: mask secrets before either artifact is written.
-    transcript = redact_secrets(transcript)
+def write_result(scenario, arm, label, results, transcript, args, skill_file, workspace=None):
+    # Results are committed: mask secrets and machine paths before either
+    # artifact is written.
+    transcript = redact_secrets(redact_machine_paths(transcript, workspace))
     results_dir = Path(args.results_dir) if args.results_dir else RESULTS_DIR
     results_dir.mkdir(parents=True, exist_ok=True)
     date = datetime.date.today().isoformat()
@@ -928,6 +958,7 @@ def run_arm(scenario, arm, args, rep=None):
             transcript,
             args,
             skill_file,
+            workspace=workspace,
         )
         failed = [c for c, passed in results if passed is False]
         unscored = [c for c, passed in results if passed is None]
