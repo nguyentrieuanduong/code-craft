@@ -5,6 +5,7 @@ Covers scenario parsing, transcript parsing, every check type, and the
 shipped corpus + fixtures. Run: python3 -m unittest discover tests
 """
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -751,6 +752,11 @@ class ResultsSecretScanTest(unittest.TestCase):
         files = sorted(p for p in runner.RESULTS_DIR.iterdir() if p.is_file())
         self.assertTrue(files)
         self.assertEqual(runner.secret_hits(files), [])
+
+    def test_committed_results_hold_no_machine_paths(self):
+        leak = re.compile(r"/var/folders/\w{2}/|/tmp/eval-|" + re.escape(str(Path.home())) + r"(?![\w.-])")
+        files = sorted(p for p in runner.RESULTS_DIR.iterdir() if p.is_file())
+        self.assertEqual([p.name for p in files if leak.search(p.read_text(errors="replace"))], [])
 
 
 class PatternRegressionTest(unittest.TestCase):
