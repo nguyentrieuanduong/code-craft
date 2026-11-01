@@ -76,6 +76,19 @@ description: >-
 - Comment only when the WHY is non-obvious: hidden constraint, workaround for
   a specific bug, behavior that would surprise a reader.
 
+## Working files
+
+- Your scratch (throwaway scripts, captured output, downloads) goes in the
+  project's visible `tmp/`, not `/tmp`, `$TMPDIR` or `~`: those collide
+  across agents, vanish, and leak machine paths (SEC-10). If `tmp/` isn't
+  ignored, add it to the local exclude file
+  (`git rev-parse --git-path info/exclude`), not `.gitignore`.
+- If test, lint or build discovery walks `tmp/`, tell the user; don't edit
+  their config.
+- Each download gets its own subfolder; run nothing from inside it.
+- Production code and tests keep the OS temp API (`tempfile`,
+  `os.tmpdir()`). Never commit scratch.
+
 ## Python specifics
 
 - PEP 8, 120-character lines.
