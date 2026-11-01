@@ -691,7 +691,6 @@ class WriteResultTest(unittest.TestCase):
         label = "[REDACTED: Anthropic/OpenAI-style key]"
         self.assertEqual(redacted, {label: "one", f"{label} #2": "two", "plain": "three"})
 
-
     def test_masks_workspace_and_home_paths_in_both_artifacts(self):
         from types import SimpleNamespace
 
@@ -723,6 +722,7 @@ class WriteResultTest(unittest.TestCase):
             self.assertEqual(saved["tool_uses"][1][1]["command"], "cat <workspace>/a.py ~/.config/x")
             # A longer name that merely starts with the home path is not masked.
             self.assertEqual(saved["final_text"], f"saved to <workspace>/tmp/out.txt; {home}2/other")
+
 
 class ResultsSecretScanTest(unittest.TestCase):
     def test_secret_hits_finds_planted_key(self):
