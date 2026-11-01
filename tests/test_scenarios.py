@@ -692,6 +692,38 @@ class WriteResultTest(unittest.TestCase):
         self.assertEqual(redacted, {label: "one", f"{label} #2": "two", "plain": "three"})
 
 
+    def test_masks_workspace_and_home_paths_in_both_artifacts(self):
+        from types import SimpleNamespace
+
+        home = str(Path.home())
+        with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as workspace:
+            resolved = str(Path(workspace).resolve())
+            scenario = {
+                "name": "sample",
+                "path": runner.REPO_ROOT / "tests/scenarios/writing-skills/01-lean-evaluation.md",
+            }
+            evidence = transcript(
+                tool_uses=[
+                    ("Write", {"file_path": f"{workspace}/tmp/out.txt"}),
+                    ("Bash", {"command": f"cat {resolved}/a.py {home}/.config/x"}),
+                ],
+                final_text=f"saved to {workspace}/tmp/out.txt; {home}2/other",
+            )
+            result = runner.write_result(
+                scenario, "skill", "x", [], evidence,
+                SimpleNamespace(results_dir=directory, model="sonnet"),
+                "skills/x/SKILL.md", workspace=workspace,
+            )
+            sidecar = result.with_suffix(".evidence.json").read_text()
+            for artifact in (result.read_text(), sidecar):
+                self.assertNotIn(workspace, artifact)
+                self.assertNotIn(resolved, artifact)
+            saved = json.loads(sidecar)
+            self.assertEqual(saved["tool_uses"][0][1]["file_path"], "<workspace>/tmp/out.txt")
+            self.assertEqual(saved["tool_uses"][1][1]["command"], "cat <workspace>/a.py ~/.config/x")
+            # A longer name that merely starts with the home path is not masked.
+            self.assertEqual(saved["final_text"], f"saved to <workspace>/tmp/out.txt; {home}2/other")
+
 class ResultsSecretScanTest(unittest.TestCase):
     def test_secret_hits_finds_planted_key(self):
         with tempfile.TemporaryDirectory() as directory:
