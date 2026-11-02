@@ -42,7 +42,8 @@ class SecurityBaselineRulesTest(unittest.TestCase):
         for required in (
             "No machine-identifying data in version control",
             "OS temp paths, real account/user/session IDs",
-            "private IPs, emails or MAC addresses",
+            "personal hostnames or emails",
+            "Private IPs and MAC addresses are guidance, not a gate",
             "logs or pasted output",
             "Code resolves home at runtime",
             "gitignored local config",
@@ -53,6 +54,10 @@ class SecurityBaselineRulesTest(unittest.TestCase):
         ):
             with self.subTest(required=required):
                 self.assertIn(required, self.text, REFRESH_HINT)
+
+    def test_checklist_does_not_gate_private_ips(self):
+        checklist = self.text.split("## Pre-commit security checklist")[1].split("##")[0]
+        self.assertNotIn("private IPs", checklist)
 
     def test_rules_are_numbered_without_gaps(self):
         expected = [f"SEC-{n:02d}" for n in range(1, len(self.rules) + 1)]

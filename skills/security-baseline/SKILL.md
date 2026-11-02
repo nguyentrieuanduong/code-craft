@@ -54,12 +54,14 @@ prefer provenance/signed releases where the ecosystem offers them, and state
 why the dependency is needed.
 
 **SEC-10 No machine-identifying data in version control** — no home paths
-or usernames, OS temp paths, real account/user/session IDs, personal
-hostnames, private IPs, emails or MAC addresses in code, fixtures, docs,
-logs or pasted output. Code resolves home at runtime (`Path.home()`); docs
-use `~`; machine-specific values go in gitignored local config. Redact
-captured output before committing: `~`, `<redacted>`, `192.0.2.x`
-(RFC 5737), `example.com`. Once pushed, only a history rewrite removes it.
+or usernames, OS temp paths, real account/user/session IDs,
+personal hostnames or emails in code, fixtures, docs,
+logs or pasted output. Code resolves home at runtime (`Path.home()`);
+docs use `~`; machine-specific values go in gitignored local config.
+Redact captured output before committing: `~`, `<redacted>`, `example.com`.
+Once pushed, only a history rewrite removes it.
+Private IPs and MAC addresses are guidance, not a gate: prefer
+`192.0.2.x` (RFC 5737) when the real value adds nothing.
 
 ## Pre-commit security checklist
 
@@ -67,7 +69,7 @@ captured output before committing: `~`, `<redacted>`, `192.0.2.x`
       `secret`, `token=`, private key headers)
 - [ ] `grep` the added lines for machine-identifying data (SEC-10): your
       `$HOME` and hostname, `/Users/`, `/home/`, `/var/folders/`, real IDs,
-      private IPs, `.local` hosts
+      `.local` hosts
 - [ ] No debug prints / console.log left in
 - [ ] Every new input path has validation at the boundary
 - [ ] Every new query is parameterized
