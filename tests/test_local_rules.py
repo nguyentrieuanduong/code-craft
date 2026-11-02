@@ -34,7 +34,8 @@ class WorkingFilesRuleTest(unittest.TestCase):
 
     def test_bootstrap_points_scratch_to_project_tmp(self):
         self.assertIn(
-            "Scratch (scripts, screenshots, output) goes in the project's `tmp/`, not `/tmp`",
+            "Scratch (scripts, screenshots, output) goes in the project's `tmp/`, not `/tmp`"
+            ' — see coding-standards "Working files".',
             " ".join(BOOTSTRAP.read_text().split()),
             REFRESH_HINT,
         )

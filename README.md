@@ -283,7 +283,7 @@ The bootstrap now has a one-line scratch pointer to project `tmp/`, because
 the Working-files rule only loads with coding-standards.
 `using-code-craft/01-scratch-outside-coding` (a verification step, not
 production code): before 6/9, after 9/9. Before, the agent put the test log
-in `$HOME` and a helper file in `/tmp`; after, both went in `tmp/` and
+in `$HOME` and a helper file in `/tmp`; after, the log went in `tmp/` and
 `tmp/` was added to `.git/info/exclude`. Same caveats as above: one sonnet
 sample per side, and the installed plugin also injected the old bootstrap.
 
