@@ -12,7 +12,7 @@ When porting to a new harness, extend this file — never edit skill bodies.
 | Dispatch an isolated reviewer (no conversation context) | `Agent` tool with a non-fork `subagent_type` (e.g. `general-purpose`); never `fork`, which inherits the conversation | not available — review inline and disclose it | not verified to start without context — review inline and disclose it |
 | Track task state | `TaskCreate` / `TaskUpdate` | plan checkboxes in the plan file | plan checkboxes in the plan file |
 | Ask the user a question | plain response (or AskUserQuestion) | plain response | plain response |
-| Search the codebase | `grep`/`find` via Bash, or Explore agent | built-in search | `rg` via shell |
+| Search the codebase | `rg` via Bash (fallback `grep -rn` when `rg` is missing), or Explore agent | built-in search | `rg` via shell |
 | Create isolated workspace | `Agent(isolation: "worktree")` or `EnterWorktree` if surfaced | not available — fall back to `git worktree add` | not available — fall back to `git worktree add` |
 
 ## Fallback rule

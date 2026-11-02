@@ -11,7 +11,7 @@ These rules are **blocking constraints**, not advice. Code violating one does
 not ship, does not get committed with a TODO, and does not wait for review to
 be caught.
 
-## The nine rules
+## The ten rules
 
 **SEC-01 Encryption everywhere** — encryption at rest for all data stores;
 TLS 1.2+ in transit. No plaintext transport, even "internal".
@@ -53,10 +53,23 @@ hallucinated, and recurring fake names get pre-registered by attackers —
 prefer provenance/signed releases where the ecosystem offers them, and state
 why the dependency is needed.
 
+**SEC-10 No machine-identifying data in version control** — no home paths
+or usernames, OS temp paths, real account/user/session IDs,
+personal hostnames or emails in code, fixtures, docs,
+logs or pasted output. Code resolves home at runtime (`Path.home()`);
+docs use `~`; machine-specific values go in gitignored local config.
+Redact captured output before committing: `~`, `<redacted>`, `example.com`.
+Once pushed, only a history rewrite removes it.
+Private IPs and MAC addresses are guidance, not a gate: prefer
+`192.0.2.x` (RFC 5737) when the real value adds nothing.
+
 ## Pre-commit security checklist
 
 - [ ] `grep` the diff for key-like strings (`sk-`, `api_key`, `password`,
       `secret`, `token=`, private key headers)
+- [ ] `grep` the added lines for machine-identifying data (SEC-10): your
+      `$HOME` and hostname, `/Users/`, `/home/`, `/var/folders/`, real IDs,
+      `.local` hosts
 - [ ] No debug prints / console.log left in
 - [ ] Every new input path has validation at the boundary
 - [ ] Every new query is parameterized
@@ -73,3 +86,4 @@ why the dependency is needed.
 | "This input comes from our own frontend" | Attackers do not use your frontend. Validate server-side. |
 | "Wildcard permissions unblock me now" | Scoping later never happens. Scope now. |
 | "The model suggested this package, so it exists" | A suggestion is not evidence (see SEC-09). Check the registry first. |
+| "It's only a local path or an ID, not a secret" | It identifies you and breaks on every other machine. Redact while capturing; once pushed, only a history rewrite removes it. |

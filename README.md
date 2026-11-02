@@ -168,7 +168,9 @@ priority order:
 6. [AI-DLC](https://github.com/awslabs/aidlc-workflows) — adaptive depth, plan-driven codegen, security baseline, state/resume
 
 Plus the maintainer's personal coding style, folded into
-`skills/coding-standards`.
+`skills/coding-standards`, and two rules that originate in code-craft:
+the coding-standards "Working files" section and security-baseline SEC-10
+(no machine-identifying data in version control).
 
 ## Contributing workflow
 
@@ -250,6 +252,32 @@ using-git-worktrees, dispatching-parallel-agents, using-code-craft);
 for them the inventory and review are the only evidence. The isolated
 reviewer prompt was not exercised by the scenario runner. These checks
 cannot prove complete behavioral equivalence.
+
+## Eval status (2026-11 local rules)
+
+Two focused before/after scenarios, `--model sonnet --arm skill`, one
+sample per side — a signal, not a statistic:
+
+- `coding-standards/03-working-files`: before 6/9, after 9/9. Before, the
+  agent put the scratch script and output in `/tmp`; after, both went in
+  `tmp/`, added to `.git/info/exclude`, with no `.gitignore` edit.
+- `security-baseline/01-machine-identifying-data`: the first version had no
+  RED (9/9 before SEC-10) and was redesigned around committing a raw capture
+  verbatim. Redesigned: before 9/10, after 9/10 (10 checks as run). Both
+  runs masked the identifiers; before, the agent committed without searching
+  the diff, and after it cited SEC-10 and searched the new files before
+  committing. The remaining FAIL is the `git diff | grep` check, which that
+  search does not match; it was kept as written by maintainer decision.
+  Private IPs and MAC addresses were made guidance after these runs, and
+  the scenario's IP check was removed (every run passed it; there was no
+  MAC check); that wording was not rerun.
+
+`tests/test_local_rules.py` guards both rules against a reference refresh,
+along with the SEC numbering and rule count. The scenario runner masks the
+eval workspace and home paths in result artifacts, and
+`ResultsSecretScanTest` fails if a committed result holds a machine path.
+security-baseline now has a scenario, so the 2026-10 list of skills without
+one is down to seven.
 
 ## Validation
 
