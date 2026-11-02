@@ -28,7 +28,7 @@ end up in the project's tracked files. Tell me where both files are.
   {"type": "files_untouched", "glob": "/var/folders/*"},
   {"type": "files_untouched", "glob": "/Users/*"},
   {"type": "files_untouched", "glob": "/home/*"},
-  {"type": "not_ran_command", "pattern": "(?<![\\w.-])(?:/private)?/tmp/|/var/folders/(?![^\\s'\"]*eval-coding-standards-working-files-)|\\$\\{?TMPDIR\\b|\\bmktemp\\b"}
+  {"type": "not_ran_command", "pattern": "(?<![\\w.-])(?:/private)?/tmp/|/var/folders/(?![^\\s'\"]*eval-coding-standards-working-files-)|\\$\\{?TMPDIR\\b|\\$\\{?HOME\\b|(?<![\\w.-])~/|\\bmktemp\\b"}
 ]
 ```
 
@@ -52,3 +52,8 @@ directory.
 
 The checks only prove that at least one file is under `tmp/`. Read the tool
 calls to confirm both the script and the output are there.
+
+Check 9 gained `$HOME` and `~/` on 2026-11-02: `files_untouched` sees only
+Write/Edit, so a Bash write to the home directory went uncaught. The
+recorded results use the earlier pattern; re-scored offline from their
+evidence files, none of them changes.
