@@ -287,6 +287,10 @@ in `$HOME` and a helper file in `/tmp`; after, the log went in `tmp/` and
 `tmp/` was added to `.git/info/exclude`. Same caveats as above: one sonnet
 sample per side, and the installed plugin also injected the old bootstrap.
 
+Both rules were then reworded to allow any git-ignored scratch folder,
+`tmp/` by default, and the bootstrap now also names `$TMPDIR` and `~`. Rerun
+of both after-scenarios (`-wording-v2`): 9/9 each.
+
 ## Validation
 
 Install the pinned authoring dependency, then run the deterministic check:
