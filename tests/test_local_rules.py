@@ -10,6 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 STANDARDS = ROOT / "skills" / "coding-standards" / "SKILL.md"
+BOOTSTRAP = ROOT / "skills" / "using-code-craft" / "SKILL.md"
 SECURITY = ROOT / "skills" / "security-baseline" / "SKILL.md"
 SKILLS_README = ROOT / "skills" / "README.md"
 NUMBER_WORDS = {9: "nine", 10: "ten", 11: "eleven", 12: "twelve"}
@@ -18,10 +19,10 @@ REFRESH_HINT = "local code-craft rule; merge it back after a reference refresh"
 
 class WorkingFilesRuleTest(unittest.TestCase):
     def test_working_files_section_is_present(self):
-        text = STANDARDS.read_text()
+        text = " ".join(STANDARDS.read_text().split())
         for required in (
             "## Working files",
-            "project's visible `tmp/`, not `/tmp`, `$TMPDIR` or `~`",
+            "visible, git-ignored scratch folder in the project — `tmp/` by default — not `/tmp`, `$TMPDIR` or `~`",
             "(`git rev-parse --git-path info/exclude`), not `.gitignore`",
             "discovery walks `tmp/`, tell the user",
             "own subfolder; run nothing from inside it",
@@ -30,6 +31,14 @@ class WorkingFilesRuleTest(unittest.TestCase):
         ):
             with self.subTest(required=required):
                 self.assertIn(required, text, REFRESH_HINT)
+
+    def test_bootstrap_points_scratch_to_project_tmp(self):
+        self.assertIn(
+            "Scratch (scripts, screenshots, output) goes in a git-ignored project folder like `tmp/`,"
+            ' not `/tmp`, `$TMPDIR` or `~` — see coding-standards "Working files".',
+            " ".join(BOOTSTRAP.read_text().split()),
+            REFRESH_HINT,
+        )
 
 
 class SecurityBaselineRulesTest(unittest.TestCase):

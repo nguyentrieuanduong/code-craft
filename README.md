@@ -276,8 +276,20 @@ sample per side — a signal, not a statistic:
 along with the SEC numbering and rule count. The scenario runner masks the
 eval workspace and home paths in result artifacts, and
 `ResultsSecretScanTest` fails if a committed result holds a machine path.
-security-baseline now has a scenario, so the 2026-10 list of skills without
-one is down to seven.
+security-baseline and using-code-craft now have scenarios, so the 2026-10
+list of skills without one is down to six.
+
+The bootstrap now has a one-line scratch pointer to project `tmp/`, because
+the Working-files rule only loads with coding-standards.
+`using-code-craft/01-scratch-outside-coding` (a verification step, not
+production code): before 6/9, after 9/9. Before, the agent put the test log
+in `$HOME` and a helper file in `/tmp`; after, the log went in `tmp/` and
+`tmp/` was added to `.git/info/exclude`. Same caveats as above: one sonnet
+sample per side, and the installed plugin also injected the old bootstrap.
+
+Both rules were then reworded to allow any git-ignored scratch folder,
+`tmp/` by default, and the bootstrap now also names `$TMPDIR` and `~`. Rerun
+of both after-scenarios (`-wording-v2`): 9/9 each.
 
 ## Validation
 

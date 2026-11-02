@@ -78,11 +78,11 @@ description: >-
 
 ## Working files
 
-- Your scratch (throwaway scripts, captured output, downloads) goes in the
-  project's visible `tmp/`, not `/tmp`, `$TMPDIR` or `~`: those collide
-  across agents, vanish, and leak machine paths (SEC-10). If `tmp/` isn't
-  ignored, add it to the local exclude file
-  (`git rev-parse --git-path info/exclude`), not `.gitignore`.
+- Your scratch (throwaway scripts, captured output, downloads) goes in a
+  visible, git-ignored scratch folder in the project — `tmp/` by default —
+  not `/tmp`, `$TMPDIR` or `~`: those collide across agents, vanish, and
+  leak machine paths (SEC-10). If `tmp/` isn't ignored, add it to the local
+  exclude file (`git rev-parse --git-path info/exclude`), not `.gitignore`.
 - If test, lint or build discovery walks `tmp/`, tell the user; don't edit
   their config.
 - Each download gets its own subfolder; run nothing from inside it.
