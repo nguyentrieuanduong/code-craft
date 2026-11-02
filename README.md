@@ -269,7 +269,8 @@ sample per side — a signal, not a statistic:
   committing. The remaining FAIL is the `git diff | grep` check, which that
   search does not match; it was kept as written by maintainer decision.
   Private IPs and MAC addresses were made guidance after these runs, and
-  their check was removed (all runs passed it); that wording was not rerun.
+  the scenario's IP check was removed (every run passed it; there was no
+  MAC check); that wording was not rerun.
 
 `tests/test_local_rules.py` guards both rules against a reference refresh,
 along with the SEC numbering and rule count. The scenario runner masks the
