@@ -10,6 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 STANDARDS = ROOT / "skills" / "coding-standards" / "SKILL.md"
+BOOTSTRAP = ROOT / "skills" / "using-code-craft" / "SKILL.md"
 SECURITY = ROOT / "skills" / "security-baseline" / "SKILL.md"
 SKILLS_README = ROOT / "skills" / "README.md"
 NUMBER_WORDS = {9: "nine", 10: "ten", 11: "eleven", 12: "twelve"}
@@ -30,6 +31,13 @@ class WorkingFilesRuleTest(unittest.TestCase):
         ):
             with self.subTest(required=required):
                 self.assertIn(required, text, REFRESH_HINT)
+
+    def test_bootstrap_points_scratch_to_project_tmp(self):
+        self.assertIn(
+            "Scratch (scripts, screenshots, output) goes in the project's `tmp/`, not `/tmp`",
+            " ".join(BOOTSTRAP.read_text().split()),
+            REFRESH_HINT,
+        )
 
 
 class SecurityBaselineRulesTest(unittest.TestCase):
