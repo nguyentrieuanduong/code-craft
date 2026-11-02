@@ -19,10 +19,10 @@ REFRESH_HINT = "local code-craft rule; merge it back after a reference refresh"
 
 class WorkingFilesRuleTest(unittest.TestCase):
     def test_working_files_section_is_present(self):
-        text = STANDARDS.read_text()
+        text = " ".join(STANDARDS.read_text().split())
         for required in (
             "## Working files",
-            "project's visible `tmp/`, not `/tmp`, `$TMPDIR` or `~`",
+            "visible, git-ignored scratch folder in the project — `tmp/` by default — not `/tmp`, `$TMPDIR` or `~`",
             "(`git rev-parse --git-path info/exclude`), not `.gitignore`",
             "discovery walks `tmp/`, tell the user",
             "own subfolder; run nothing from inside it",
@@ -34,8 +34,8 @@ class WorkingFilesRuleTest(unittest.TestCase):
 
     def test_bootstrap_points_scratch_to_project_tmp(self):
         self.assertIn(
-            "Scratch (scripts, screenshots, output) goes in the project's `tmp/`, not `/tmp`"
-            ' — see coding-standards "Working files".',
+            "Scratch (scripts, screenshots, output) goes in a git-ignored project folder like `tmp/`,"
+            ' not `/tmp`, `$TMPDIR` or `~` — see coding-standards "Working files".',
             " ".join(BOOTSTRAP.read_text().split()),
             REFRESH_HINT,
         )

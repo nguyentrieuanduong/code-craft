@@ -12,8 +12,9 @@ description: >-
 and follow it — before clarifying questions, exploring files, or writing
 code.** User instructions override skills; nothing else does.
 
-Scratch (scripts, screenshots, output) goes in the project's `tmp/`, not
-`/tmp` — see coding-standards "Working files".
+Scratch (scripts, screenshots, output) goes in a git-ignored project folder
+like `tmp/`, not `/tmp`, `$TMPDIR` or `~` — see coding-standards
+"Working files".
 
 | Situation | Skill |
 |-----------|-------|
